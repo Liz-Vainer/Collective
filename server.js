@@ -62,3 +62,6 @@ const port = 5000;
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+app.get('/', (req, res) => {
+    res.send('Welcome to the server! Use /api/data to interact with the API.');
+});

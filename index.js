@@ -38,7 +38,7 @@ app.post("/users", async (req, res) => {   //getting the input from new.ejs for 
 app.get("/users/:id", async (req, res) => { //basically shows one user at a time
   const { id } = req.params;          //req.params is a js object and const {id} means that we want only the id part
   const user = await User.findById(id);   //finding the user with that same id
-  console.log(user);
+  console.log(user);        //prints the user!
   res.render("users/profile", { user });
 });
 

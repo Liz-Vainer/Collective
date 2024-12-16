@@ -23,6 +23,33 @@ app.use(methodOverride("_method"));
 
 const categories = ["Gobnik", "Unknown", "some"];
 
+app.get("/", (req, res) => {
+  //root page goes to lgin page
+  res.redirect("/login");
+});
+
+app.get("/login", async (req, res) => {
+  //login after submit goes to post request in /users/login
+  res.render("users/login");
+});
+
+app.post("/users/login", async (req, res) => {
+  //gets body from login page and check if user exists in database
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.send("Wrong email");
+    } else if (user.password != password) {
+      res.send("Wrong password");
+    }
+    res.redirect(`/users/${user.id}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred during login");
+  }
+});
+
 app.get("/users", async (req, res) => {
   const { category } = req.query;
   if (category) {

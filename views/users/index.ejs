@@ -6,12 +6,15 @@
     <title>All Users</title>
 </head>
 <body>
-    <h1>All users:</h1>
+    <h1><%= category %> users:</h1>
     <ul>
         <% for(let user of users){ %>
             <li> <a href="/users/<%=user.id %>"> <%= user.name %></a> </li>
         <% } %>
     </ul>
     <a href="/users/new">Sign up</a>
+    <% if(category!=='All'){%>
+        <a href="/users">All users</a>
+    <%}%>
 </body>
 </html>

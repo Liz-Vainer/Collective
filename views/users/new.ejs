@@ -16,8 +16,9 @@
         <input type="password" name="password" placeholder="password" id="password">
         <label for="category">Category:</label>
         <select name="category" id="category">
-            <option value="Gobnik">Gobnik</option>
-            <option value="Unkmown">Unkmown</option>
+            <% for(let category of categories){%>
+                <option value="<%=category%>"><%=category%></option>
+            <%}%>
         </select>
         <button>Create User</button>
     </form>

@@ -9,26 +9,29 @@ import background_login from '../Assets/background_login.png';
 
 const LoginSignup = () => {
   const [action, setAction] = useState("Login");
+  const [showBody,setShowBody]=useState(false);
   const navigate = useNavigate(); // Use the navigate function from react-router-dom
 
   const handleSubmit = () => {
     if (action === "Login") {
       navigate("/home"); // Redirect to the Home page after login
     } else if (action === "Sign Up") {
-      navigate("/home"); // Redirect to the Home page after signup
+     setShowBody(true); // Redirect to the Home page after signup
     }
   };
 
   return (
-    <div className="body" style={{ backgroundImage: `url(${background_login})` }}>
+    <div className="body" style={{ backgroundImage: `url(${background_login})` }}> 
       <div className="welcome-message">
         <h1>Welcome to Collective!</h1>
       </div>
-      <div className="container">
+
+      <div className="container"> 
         <div className="header">
           <div className="text">{action}</div>
           <div className="underlane"></div>
         </div>
+
         <div className="inputs">
           <div className="input">
             <img src={user_icon} alt="user" className="image" />
@@ -36,21 +39,21 @@ const LoginSignup = () => {
           </div>
 
        
-          {action === "Sign Up" && (
+          {action === "Sign Up" && (//mail input only in sign up
             <div className="input">
-              <img src={email_icon} alt="email" className="image" />
+              <img src={email_icon} alt="email" className="image" /> 
               <input type="email" placeholder="Email" />
             </div>
           )}
 
-          {/* Always show Password field */}
+        
           <div className="input">
             <img src={password_closed} alt="password" className="image" />
             <input type="password" placeholder="Password" />
           </div>
 
-          {/* Show Forgot Password link only for Login */}
-          {action === "Login" && (
+          
+          {action === "Login" && ( // forgot password for login
             <div className="forgotPassword">
               Forgot Password? <span>Click Here!</span>
             </div>
@@ -85,7 +88,12 @@ const LoginSignup = () => {
   </div>
 </div>
 
-        
+{showBody && (
+        <div className="new-body">
+          <h2>This is the new main body for Sign Up!</h2>
+          {/* You can add any other content here for the new body */}
+        </div>
+      )}
       </div>
     </div>
   );

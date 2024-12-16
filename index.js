@@ -1,14 +1,13 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const mongoose = require("mongoose");
+const mongoose = require("mongoose");    
 const User = require("./models/user");
-const methodOverride = require("method-override");
+const methodOverride = require("method-override");  
 
 mongoose.set("strictQuery", true);
-mongoose
-  .connect("mongodb://127.0.0.1:27017/UsersDb")
-  .then(() => {
+mongoose.connect("mongodb://127.0.0.1:27017/UsersDb")  
+  .then(() => {    
     console.log("Mongo connection open!");
   })
   .catch((err) => {
@@ -16,8 +15,8 @@ mongoose
     console.log(err);
   });
 
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));   
+app.set("view engine", "ejs");          
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));

@@ -16,7 +16,7 @@
 
 .body {
     display: flex;
-    flex-direction: column; /* Stack the elements vertically */
+    flex-direction: column; 
     justify-content: flex-start;
     align-items: center;
     height: 100vh;
@@ -103,6 +103,7 @@
  }
  .submit-container{
     display: flex;
+    justify-content: center;
     gap:30px;
     margin: 60px auto;
    
@@ -123,4 +124,7 @@
  .gray{
   background:#eaeaea;
   color: #676767;
+ }
+ .submit:hover{
+  background-color: #96ca98;
  }

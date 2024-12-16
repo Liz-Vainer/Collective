@@ -1,3 +1,31 @@
+.welcome-message{
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0px;
+}
+.welcome-message h1{
+  font-size: 40px;
+  font-weight: bold;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  color:#18392b;
+  margin: 0;
+}
+
+
+.body {
+    display: flex;
+    flex-direction: column; /* Stack the elements vertically */
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+    color:white;
+}
 .image {
     width: 20px;
     height: 20px;
@@ -5,12 +33,12 @@
   .container{
     flex-direction: column;
     margin:auto;
-    margin-top: 200px;
+    margin-top: 20px;
     background: #ffff;
     padding-bottom: 30px;
     width: 600px;
     border-radius: 20px;
-
+    margin-bottom:200px;
 
   }
   .header{
@@ -24,14 +52,14 @@
   }
   .text{
     
-    color:#3c009d;
+    color:#4a7652;
     font-size: 48px;
     font-weight: 700;
   }
   .undrline{
     width: 61px;
     height: 6px;
-    background: #3c009d;
+    background: #4a7652;
     border-radius: 9px;
 
   }
@@ -70,7 +98,7 @@
     font-size: 18px;
  }
  .forgotPassword span{
-    color: #4c00b4;
+    color: #4a7652;
     cursor: pointer;
  }
  .submit-container{
@@ -86,7 +114,7 @@
     width: 220px;
     height: 59px;
     color:#fff;
-    background: #4c00b4;
+    background: #4a7652;
     border-radius: 50px;
     font-size: 19px;
     font-weight: 70;

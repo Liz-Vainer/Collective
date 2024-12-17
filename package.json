@@ -1,56 +1,45 @@
 {
-<<<<<<< HEAD
-    "name": "login-signup",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-      "cra-template": "1.2.0",
-      "react": "^19.0.0",
-      "react-dom": "^19.0.0",
-      "react-router-dom": "^7.0.2",
-      "react-scripts": "^5.0.1"
-    },
-    "scripts": {
-      "start": "react-scripts start",
-      "build": "react-scripts build",
-      "test": "react-scripts test",
-      "eject": "react-scripts eject"
-    },
-    "eslintConfig": {
-      "extends": [
-        "react-app",
-        "react-app/jest"
-      ]
-    },
-    "browserslist": {
-      "production": [
-        ">0.2%",
-        "not dead",
-        "not op_mini all"
-      ],
-      "development": [
-        "last 1 chrome version",
-        "last 1 firefox version",
-        "last 1 safari version"
-      ]
-    }
-  }
-=======
-  "name": "collective_ex",
+  "name": "login-signup",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
+  "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
+    "cra-template": "1.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.2",
+    "react-scripts": "^5.0.1",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "method-override": "^3.0.0",
     "mongoose": "^8.8.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
->>>>>>> 144e82dd836fb3a5984e68baa75c6dff5535c1c0

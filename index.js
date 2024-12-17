@@ -1,105 +1,117 @@
 const express = require("express");
-const app = express();
 const path = require("path");
-const mongoose = require("mongoose");      //like import from python or include in c ----> we need to import mongoose to our file in order to use it
-const User = require("./models/user");
-const methodOverride = require("method-override");   //to use PUT methos, when you want to change existing data you need this line to use method PUT
+const mongoose = require("mongoose");      // like import from Python or include in C —> we need to import mongoose to our file in order to use it
+const methodOverride = require("method-override");   // to use PUT method, when you want to change existing data you need this line to use method PUT
+const User = require("./models/user");  // Import the User model
 
+const app = express();
+
+// Set up MongoDB connection with Mongoose
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb://127.0.0.1:27017/UsersDb")  //to establish a connection to MongoDB database
-  .then(() => {    //the connect method returns a promise so we can then and catch it
-    console.log("Mongo connection open!");
+mongoose.connect("mongodb://127.0.0.1:27017/UsersDb")  // to establish a connection to MongoDB database
+  .then(() => {
+    console.log("Mongo connection open!");  // Success message when MongoDB connection is established
   })
   .catch((err) => {
-    console.log("A mongo connection error as occured");
+    console.log("A mongo connection error has occurred");  // Error handling in case of connection failure
     console.log(err);
   });
 
-app.set("views", path.join(__dirname, "views"));   //for ejs (also the views is the directory we keep all the templates)
-app.set("view engine", "ejs");    //for ejs too
+// EJS setup
+app.set("views", path.join(__dirname, "views"));   // views directory is where templates are stored
+app.set("view engine", "ejs");    // Set EJS as the templating engine
 
-app.use(express.urlencoded({ extended: true }));   //in order to use the method override (PUT)
-app.use(methodOverride("_method"));      //in order to use the method override (PUT)
+// Middleware
+app.use(express.urlencoded({ extended: true }));   // In order to parse form data (needed for POST requests)
+app.use(methodOverride("_method"));      // Allow PUT and DELETE methods in forms (not just POST and GET)
 
-const categories = ["Gobnik", "Unknown", "some"];   //CHANGE THIS!
+// Categories for user selection (This will be used in creating or editing users)
+const categories = ["Gobnik", "Unknown", "some"];   // Change this as per your needs (e.g., user roles or types)
 
-app.get("/", (req, res) => {    //when user launches the site he will be transported (redirected to /login as main page)
-  //root page goes to lgin page
-  res.redirect("/login");     //redirect to /login (root)
+
+// Route 1: Homepage / Root (Redirect to login)
+app.get("/", (req, res) => {    
+  res.redirect("/login");     // Redirect to the login page when the root page is accessed
 });
 
-app.get("/login", async (req, res) => {       //when user is lending to /login, we render a page for him so he can log in
-  //login after submit goes to post request in /users/login
-  res.render("users/login");
+// Route 2: Login Page
+app.get("/login", async (req, res) => {       
+  res.render("users/login");    // Render the login page for users to enter their credentials
 });
 
-app.post("/users/login", async (req, res) => {        //after we typed our account in /login, our information is transported via POST methos, and here we catch that POST info
-  //gets body from login page and check if user exists in database
-  const { email, password } = req.body;     //getting the email and passowrd as key value pairs
+// Route 3: Handle POST request for Login
+app.post("/users/login", async (req, res) => {        
+  const { email, password } = req.body;     // Extract email and password from the form data
   try {
-    const user = await User.findOne({ email });     //if the email was accurate it will find one in the data base  (await function because .findOne takes time)
+    const user = await User.findOne({ email });     // Check if user with given email exists in the database
     if (!user) {    
-      res.send("Wrong email");     //NEED TO CHANGE THAT! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    } else if (user.password != password) {        //if the email is right but the password is wrong, we might need to stop the procces, if it is right we transfer him to next page
-      res.send("Wrong password");
+      res.send("Wrong email");     // Error handling: Email doesn't exist in the database
+    } else if (user.password !== password) {        // Check if the entered password matches the one in the database
+      res.send("Wrong password");  // Error handling: Password mismatch
     }
-    res.redirect(`/users/${user.id}`);     //if none of the ifs are true, meaning the info was right, we redirect the user the /users/the user he typed in, via user.id
-  } catch (err) {      //if there are any other error, it will catch it here and stop
+    res.redirect(`/users/${user.id}`);     // If successful, redirect to the user's profile page
+  } catch (err) {      // Catch any errors, such as database issues or other unexpected errors
     console.error(err);
-    res.status(500).send("An error occurred during login");
+    res.status(500).send("An error occurred during login");  // Handle unexpected errors
   }
 });
 
-app.get("/users/:id", async (req, res) => {    //after you logged in as a user, it will show us the user
-  const { id } = req.params;  //getting the id of a user
+// Route 4: New User Creation (Render New User Form)
+app.get("/users/new", (req, res) => {   
+  res.render("users/new", { categories });  // Render the form for creating a new user, passing the categories as options
+});
+
+// Route 5: Show User Profile
+app.get("/users/:id", async (req, res) => {    
+  const { id } = req.params;  // Get the user ID from the URL parameters
   const user = await User.findById(id);   
-  res.render("users/profile", { user });    //after it found the user, via id, it will render us his page
+  res.render("users/profile", { user });    // Render the user's profile page
 });
 
- //in user/profile, we have to options, either we go back to all users (/users) or we go to specifid user (/user?category=regular) for example
+// Route 6: List All Users or Filtered by Category
 app.get("/users", async (req, res) => {   
-  const { category } = req.query;   //if we used /user?query than it will show us that same users with the same category
+  const { category } = req.query;   // Get the category from the query string (e.g., /users?category=Gobnik)
   if (category) {
-    const users = await User.find({ category });
-    res.render("users/index", { users, category });  //sends us to a new page with those users with same category
-  } else {      //if the GET is without query (/users) than it shows all the users
+    const users = await User.find({ category });  // Find users by the selected category
+    res.render("users/index", { users, category });  // Render the list of users filtered by category
+  } else {      // If no category is provided, show all users
     const users = await User.find({});
-    res.render("users/index", { users, category: "All" });
+    res.render("users/index", { users, category: "All" });  // Show all users, and set category as "All"
   }
 });
 
-app.get("/users/new", (req, res) => {   //if player wants new user, than he clicks on the new button and he gets redirected to /users/new
-  res.render("users/new", { categories });
+// Route 7: Handle POST request for creating a new user
+app.post("/users", async (req, res) => {   
+  const newUser = new User(req.body);  // Create a new User object from the form data
+  await newUser.save();  // Save the new user to the database
+  res.redirect(`/users/${newUser.id}`);    // Redirect to the new user's profile page
 });
 
-//this POST function is to recieve POST info when you are creating new user from users/new
-app.post("/users", async (req, res) => {   //NEW USER
-  const newUser = new User(req.body);
-  await newUser.save();
-  res.redirect(`/users/${newUser.id}`);    //after creating new users, redirecting us to new page (.redirect and not .render because it is a POST function)
+// Route 8: Edit User (Render Edit User Form)
+app.get("/users/:id/edit", async (req, res) => {     // Render form to edit an existing user's information
+  const { id } = req.params;  // Extract user ID from the URL
+  const user = await User.findById(id);  // Find the user by ID from the database
+  res.render("users/edit", { user, categories });  // Render the edit form, passing the current user data and categories
 });
 
-app.get("/users/:id/edit", async (req, res) => {     //if user wants to edit his user from the /users/profile
-  const { id } = req.params;
-  const user = await User.findById(id);
-  res.render("users/edit", { user, categories });
-});
-
-app.put("/users/:id", async (req, res) => {    //to get the function you need to edit user via /users/profile, .put because we used in the href: "?_method=PUT"
-  const { id } = req.params;
+// Route 9: Handle PUT request to update user information
+app.put("/users/:id", async (req, res) => {    
+  const { id } = req.params;  // Extract the user ID from the URL
   const user = await User.findByIdAndUpdate(id, req.body, {
-    runValidators: true,    //??
-    new: true,              //??
+    runValidators: true,    // Run validation rules when updating user data
+    new: true,              // Return the updated user data (not the old one)
   });
-  res.redirect(`/users/${user.id}`);   //after finishing editing users info, redirecting to his page vie users/id
+  res.redirect(`/users/${user.id}`);   // After updating, redirect to the updated user's profile page
 });
 
-app.delete("/users/:id", async (req, res) => {   //if user decided to delete his user via /user/profile (via "?_method=DELETE")
-  const { id } = req.params;
-  const deletedUser = await User.findByIdAndDelete(id);
-  res.redirect("/users");  //after finishing deleting redirects to page with all the users
+// Route 10: Delete User (Handle DELETE request)
+app.delete("/users/:id", async (req, res) => {   
+  const { id } = req.params;  // Get user ID from the URL parameters
+  const deletedUser = await User.findByIdAndDelete(id);  // Delete the user from the database
+  res.redirect("/users");  // After deletion, redirect to the list of all users
 });
 
+// Start the Express server
 app.listen(3000, () => {
-  console.log("App is listening on port 3000..");   
+  console.log("App is listening on port 3000..");  // Confirm the server is running
 });

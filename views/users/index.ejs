@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All Users</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1><%= category %> users:</h1>
     <ul>
-        <% for(let user of users){ %>
-            <li> <a href="/users/<%=user.id %>"> <%= user.name %></a> </li>
-        <% } %>
+      <% for(let user of users){ %>
+      <li><a href="/users/<%=user.id %>"> <%= user.name %></a></li>
+      <% } %>
     </ul>
-    <a href="/users/new">Sign up</a>
+    <!-- <a href="/users/new">Sign up</a> -->
+    <!-- maybe not need -->
     <% if(category!=='All'){%>
-        <a href="/users">All users</a>
+    <a href="/users">All users</a>
     <%}%>
-</body>
+    <a href="/">Sign out</a>
+  </body>
 </html>

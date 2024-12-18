@@ -1,0 +1,13 @@
+.mainbody{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensure the div takes at least 100% of the viewport height */
+    width: 100%;       /* Ensure the div takes up the full width of the viewport */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+   
+}

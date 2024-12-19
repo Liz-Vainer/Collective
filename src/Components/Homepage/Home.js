@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import background_fornow from '../Assets/background_login.png';
 import { useNavigate } from 'react-router-dom';
-import { FaDoorOpen, FaCog, FaInfoCircle } from 'react-icons/fa';
+import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch } from 'react-icons/fa';
 import { GoogleMap, Marker, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
 import './Home.css';
 
@@ -40,17 +40,23 @@ const Home = () => {
   const [map, setMap] = useState(null);
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
 
-  const addToFavorites = (community) => {
+  const addToFavorites = async (community) => {
     if (!favorites.some((fav) => fav.id === community.id)) {
       setFavorites([...favorites, community]);
     } else {
       alert(`${community.name} is already in your favorites.`);
     }
   };
+
+  // Filtered Communities Based on Search Query
+  const filteredCommunities = fakeCommunities.filter((community) =>
+    community.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   //===================== Loading/Error Handling =====================
   if (loadError) return <div>Error loading maps</div>;
@@ -65,11 +71,6 @@ const Home = () => {
         backgroundColor: 'transparent',
       }}
     >
-      {/* Back to Login Button */}
-      <button className="backButton" onClick={handleBackToLogin}>
-        Back to Login
-      </button>
-
       {/* Upper Tool Section */}
       <div className="upper-tool">
         <button className="exit-button" onClick={handleBackToLogin}>
@@ -81,16 +82,24 @@ const Home = () => {
         <button className="info-button" onClick={handleInfo}>
           <FaInfoCircle size={30} color="white" />
         </button>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+          />
+          <button className="search-icon-button">
+            <FaSearch size={20} color="gray" />
+          </button>
+        </div>
       </div>
 
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
-          <h1>Welcome to the Home Page!</h1>
-          <p>This is the page you navigate to after login or signup.</p>
           <h1>Welcome to Be'er Sheba!</h1>
-          <p>Here is a map of Be'er Sheba, Israel.</p>
-
           {/* Google Map */}
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
@@ -102,8 +111,8 @@ const Home = () => {
             {/* Central Marker */}
             <Marker position={center} />
 
-            {/* Markers for Fake Communities */}
-            {fakeCommunities.map((community) => (
+            {/* Markers for Filtered Communities */}
+            {filteredCommunities.map((community) => (
               <Marker
                 key={community.id}
                 position={{ lat: community.lat, lng: community.lng }}

@@ -16,6 +16,7 @@ const LoginSignup = () => {
   const [action, setAction] = useState("Login");
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
+  const [userType, setUserType] = useState("Citizen");
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
   const [religion, setReligion] = useState(""); // Track selected religion
 
@@ -186,7 +187,21 @@ const LoginSignup = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-
+            {action === "Sign Up" && (
+  <div className="question">
+    <label htmlFor="user-type-select">Which user are you?</label>
+    <select
+      id="user-type-select"
+      className="religion-list"
+      value={userType}
+      onChange={(e) => setUserType(e.target.value)}
+    >
+      <option value="Citizen">Citizen</option>
+      <option value="Event Organizer">Event Organizer</option>
+      <option value="City Official">City Official</option>
+    </select>
+  </div>
+)}
             {action === "Login" && (
               <div className="forgotPassword">
                 Forgot Password? <span>Click Here!</span>

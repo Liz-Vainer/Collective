@@ -1,12 +1,11 @@
 {
-  "proxy":"http://localhost:3000",
   "name": "login-signup",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
   "description": "",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -15,9 +14,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@react-google-maps/api": "^2.20.3",
+    "cors": "^2.8.5",
     "cra-template": "1.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.9.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.4.0",
     "react-router-dom": "^7.0.2",
     "react-scripts": "^5.0.1",
     "web-vitals": "^4.2.4"

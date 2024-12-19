@@ -1,28 +1,27 @@
-import React, { useState,useEffect,useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './LoginSignup.css';
-import user_icon from '../Assets/person_icon.png';
-import email_icon from '../Assets/email_icon.png';
-import password_open from '../Assets/password_look_icon.png';
-import password_closed from '../Assets/password_closed_icon.png';
-import background_login from '../Assets/background_login.png';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import "./LoginSignup.css";
+import user_icon from "../Assets/person_icon.png";
+import email_icon from "../Assets/email_icon.png";
+import password_open from "../Assets/password_look_icon.png";
+import password_closed from "../Assets/password_closed_icon.png";
+import background_login from "../Assets/background_login.png";
 
-import art_community from '../Assets/art_community.jpg';
-import yoga_community from '../Assets/yoga_community.jpg';
-import sports_community from '../Assets/sports_community.jpg';
-import music_community from '../Assets/music_community.jpg';
+import art_community from "../Assets/art_community.jpg";
+import yoga_community from "../Assets/yoga_community.jpg";
+import sports_community from "../Assets/sports_community.jpg";
+import music_community from "../Assets/music_community.jpg";
 
 const LoginSignup = () => {
   const [action, setAction] = useState("Login");
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
-  const [religion, setReligion] = useState(''); // Track selected religion
+  const [religion, setReligion] = useState(""); // Track selected religion
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
   const carouselRef = useRef(null);
-
 
   const images = [
     art_community,
@@ -55,7 +54,8 @@ const LoginSignup = () => {
     }
   }, [currentImageIndex]);
 
-
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
@@ -106,7 +106,7 @@ const LoginSignup = () => {
   const handleCheckboxChange = (event) => {
     setIsReligious(event.target.checked); // Set if the user is religious
     if (!event.target.checked) {
-      setReligion(''); // Reset religion selection if checkbox is unchecked
+      setReligion(""); // Reset religion selection if checkbox is unchecked
     }
   };
 
@@ -116,7 +116,10 @@ const LoginSignup = () => {
 
   // =================== Main Body (Rendering Logic) ===================
   return (
-    <div className="body" style={{ backgroundImage: `url(${background_login})` }}>
+    <div
+      className="body"
+      style={{ backgroundImage: `url(${background_login})` }}
+    >
       {!showBody ? (
         // =================== Initial Body (Login/Signup) ===================
         <div className="container">
@@ -131,7 +134,12 @@ const LoginSignup = () => {
           <div className="inputs">
             <div className="input">
               <img src={user_icon} alt="user" className="image" />
-              <input type="text" placeholder="Name" />
+              <input
+                name="name"
+                type="text"
+                placeholder="Name"
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
 
             {action === "Sign Up" && (
@@ -143,7 +151,12 @@ const LoginSignup = () => {
 
             <div className="input">
               <img src={password_closed} alt="password" className="image" />
-              <input type="password" placeholder="Password" />
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
 
             {action === "Login" && (
@@ -190,20 +203,29 @@ const LoginSignup = () => {
           {/* =================== Age Question =================== */}
           <div className="question">
             <label htmlFor="age-input">What is your age?</label>
-            <input type="number" id="age-input" className="age-input" placeholder="age" />
+            <input
+              type="number"
+              id="age-input"
+              className="age-input"
+              placeholder="age"
+            />
           </div>
 
           {/* =================== Religious Question =================== */}
           <div className="question">
             <label>Are you religious?</label>
             <label>
-              <input 
-                type="checkbox" 
-                onChange={(e) => setIsReligious(e.target.checked)} 
+              <input
+                type="checkbox"
+                onChange={(e) => setIsReligious(e.target.checked)}
               />
             </label>
             {isReligious && (
-              <select className="religion-list" value={religion} onChange={handleReligionChange}>
+              <select
+                className="religion-list"
+                value={religion}
+                onChange={handleReligionChange}
+              >
                 <option value="muslim">Muslim</option>
                 <option value="jewish">Jewish</option>
                 <option value="christian">Christian</option>
@@ -223,9 +245,11 @@ const LoginSignup = () => {
               <option value="other">Other</option>
             </select>
           </div>
-            {/* =================== Interest Question =================== */}
+          {/* =================== Interest Question =================== */}
           <div className="question">
-            <label htmlFor="interest-select">What is your preferred interest?</label>
+            <label htmlFor="interest-select">
+              What is your preferred interest?
+            </label>
             <select id="interest-select" className="religion-list">
               <option value="entertainment">Entertainment</option>
               <option value="sport">Sport</option>
@@ -235,18 +259,17 @@ const LoginSignup = () => {
           </div>
           {/* =================== Image Carousel =================== */}
           <div className="carousel-container">
-          <div ref={carouselRef} className="carousel-wrapper">
-            {images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt="Community"
-                className="carousel-image"
-              />
-            ))}
+            <div ref={carouselRef} className="carousel-wrapper">
+              {images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt="Community"
+                  className="carousel-image"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-
 
           {/* =================== Action Buttons (Back & Continue) =================== */}
           <div className="submit-container">

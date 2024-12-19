@@ -74,6 +74,7 @@ const LoginSignup = () => {
           // setName(data.name);
           // setPassword(data.password);
           alert("Login successful");
+          
           navigate("/home"); // You can also store the user info in localStorage or context here if needed
         } else {
           // If login fails, show error message
@@ -97,8 +98,7 @@ const LoginSignup = () => {
         const data = await response.json(); // Parse response
 
         if (response.ok) {
-          alert("user created!");
-          navigate("/home"); // You can also store the user info in localStorage or context here if needed
+          // navigate("/home"); // You can also store the user info in localStorage or context here if needed
         } else {
           // If login fails, show error message
           alert(data.message || "Invalid credentials. Please try again.");

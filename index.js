@@ -17,10 +17,7 @@ app.use(cors()); // Enable Cross-Origin Resource Sharing for frontend
 // MongoDB connection setup
 mongoose.set("strictQuery", true);
 mongoose
-  .connect("mongodb://127.0.0.1:27017/UsersDb", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect("mongodb://127.0.0.1:27017/UsersDb")
   .then(() => {
     console.log("Mongo connection open!");
   })
@@ -87,20 +84,24 @@ app.get("/users", async (req, res) => {
 });
 
 // Route 7: Handle POST request for creating a new user
-app.post("/users", async (req, res) => {  
-  const {name,email,password} = req.body;
-    // Hash the password with bcrypt
-  const hashedPassword = await bcrypt.hash(password, 10);  // 10 salt rounds
- // Create a new user with hashed password
-  const newUser = new User({
+// Route 7: Handle POST request for creating a new user
+app.post("/users", async (req, res) => {
+  const { name, email, password } = req.body;
 
-    name,
-    email,
+  // Hash the password with bcrypt
+  const hashedPassword = await bcrypt.hash(password, 10);  // 10 salt rounds
+
+  // Create a new user with hashed password
+  const newUser = new User({
+    name: name,  // Name of the user
+    email: email,  // Email of the user
     password: hashedPassword  // Store hashed password in the database
+  });
+
+  await newUser.save();  // Save the new user
+  res.redirect(`/users/${newUser.id}`);    // Redirect to the new user's profile page
 });
 
-await newUser.save();  // Save the new user
-  res.redirect(`/users/${newUser.id}`);    // Redirect to the new user's profile page
 // 4. Create new user (SignUp)
 app.post("/users", async (req, res) => {
   const { name, email, password } = req.body;

@@ -1,4 +1,5 @@
 {
+  "proxy":"http://localhost:3000",
   "name": "login-signup",
   "version": "1.0.0",
   "private": true,
@@ -14,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "cra-template": "1.2.0",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
@@ -22,7 +24,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.2",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^4.2.4"
   },
   "eslintConfig": {
     "extends": [
@@ -43,6 +46,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.0"

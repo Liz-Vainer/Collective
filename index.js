@@ -63,7 +63,7 @@ app.post("/users/login", async (req, res) => {
 });
 
 // 4. Create new user (SignUp)
-app.post("/users", async (req, res) => {
+app.post("/users/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
   // Check if the user already exists

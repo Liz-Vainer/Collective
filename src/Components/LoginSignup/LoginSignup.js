@@ -56,6 +56,7 @@ const LoginSignup = () => {
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
@@ -84,6 +85,28 @@ const LoginSignup = () => {
       }
     } else if (action === "Sign Up") {
       setShowBody(true); // Show the new body for Sign-Up
+      try {
+        const response = await fetch("http://localhost:3000/users/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email, password }), // Send email and password as JSON
+        });
+
+        const data = await response.json(); // Parse response
+
+        if (response.ok) {
+          alert("user created!");
+          navigate("/home"); // You can also store the user info in localStorage or context here if needed
+        } else {
+          // If login fails, show error message
+          alert(data.message || "Invalid credentials. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error during user creation:", error);
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -145,7 +168,12 @@ const LoginSignup = () => {
             {action === "Sign Up" && (
               <div className="input">
                 <img src={email_icon} alt="email" className="image" />
-                <input type="email" placeholder="Email" />
+                <input
+                  name="email"
+                  type="text"
+                  placeholder="Email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
             )}
 

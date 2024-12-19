@@ -41,6 +41,9 @@
   .upper-tool {
     width: 93%;
     height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     background-color: #a7c9ae;
     margin-top: 20px;
     border-radius: 10px;
@@ -99,3 +102,28 @@
     align-items: center;
     justify-content: center;
   }
+
+  .category-buttons {
+    display: flex;
+    gap: 10px;
+    margin-left: 40px;
+  }
+  
+  .category-button {
+    padding: 5px 10px;
+    border: none;
+    background-color:  rgb(40, 90, 68);
+    color: white;
+    cursor: pointer;
+    
+    border-radius: 5px;
+  }
+  
+  .category-button.active {
+    background-color: #00491e;
+  }
+  
+  .category-button:hover {
+    background-color: #333;
+  }
+  

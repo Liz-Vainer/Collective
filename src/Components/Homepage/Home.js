@@ -26,10 +26,11 @@ const Home = () => {
 
   //===================== Fake Communities Data =====================
   const fakeCommunities = [
-    { id: 1, name: "Art Lovers", lat: 31.2561, lng: 34.7946 },
-    { id: 2, name: "Tech Enthusiasts", lat: 31.2543, lng: 34.7921 },
-    { id: 3, name: "Foodies Hub", lat: 31.2508, lng: 34.7905 },
-    { id: 4, name: "Fitness Freaks", lat: 31.2535, lng: 34.7890 },
+    { id: 1, name: "Art Lovers", lat: 31.2561, lng: 34.7946, category: "Entertainment" },
+    { id: 2, name: "Tech Enthusiasts", lat: 31.2543, lng: 34.7921, category: "Entertainment" },
+    { id: 3, name: "Foodies Hub", lat: 31.2508, lng: 34.7905, category: "Sport" },
+    { id: 4, name: "Fitness Freaks", lat: 31.2535, lng: 34.7890, category: "Sport" },
+    { id: 5, name: "Spiritual Circle", lat: 31.2520, lng: 34.7880, category: "Religion" },
   ];
 
   //===================== State Management =====================
@@ -41,6 +42,7 @@ const Home = () => {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
 
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
@@ -53,10 +55,15 @@ const Home = () => {
     }
   };
 
-  // Filtered Communities Based on Search Query
-  const filteredCommunities = fakeCommunities.filter((community) =>
-    community.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filtered Communities Based on Search Query and Category
+  const filteredCommunities = fakeCommunities.filter((community) => {
+    const matchesCategory =
+      activeCategory === "All" || community.category === activeCategory;
+    const matchesSearch = community.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   //===================== Loading/Error Handling =====================
   if (loadError) return <div>Error loading maps</div>;
@@ -73,28 +80,44 @@ const Home = () => {
     >
       {/* Upper Tool Section */}
       <div className="upper-tool">
-        <button className="exit-button" onClick={handleBackToLogin}>
-          <FaDoorOpen size={30} color="white" />
-        </button>
-        <button className="settings-button" onClick={handleSettings}>
-          <FaCog size={30} color="white" />
-        </button>
-        <button className="info-button" onClick={handleInfo}>
-          <FaInfoCircle size={30} color="white" />
-        </button>
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-          />
-          <button className="search-icon-button">
-            <FaSearch size={20} color="gray" />
-          </button>
-        </div>
-      </div>
+  <button className="exit-button" onClick={handleBackToLogin}>
+    <FaDoorOpen size={30} color="white" />
+  </button>
+  <button className="settings-button" onClick={handleSettings}>
+    <FaCog size={30} color="white" />
+  </button>
+  <button className="info-button" onClick={handleInfo}>
+    <FaInfoCircle size={30} color="white" />
+  </button>
+
+  <div className="search-bar">
+    <input
+      type="text"
+      placeholder="Search..."
+      className="search-input"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+    />
+    <button className="search-icon-button">
+      <FaSearch size={20} color="gray" />
+    </button>
+  </div>
+
+  {/* Category Buttons */}
+  <div className="category-buttons">
+    {["All", "Sport", "Entertainment", "Religion"].map((category) => (
+      <button
+        key={category}
+        className={`category-button ${
+          activeCategory === category ? "active" : ""
+        }`}
+        onClick={() => setActiveCategory(category)}
+      >
+        {category}
+      </button>
+    ))}
+  </div>
+</div>
 
       {/* Main Content Section */}
       <div className="main-container">

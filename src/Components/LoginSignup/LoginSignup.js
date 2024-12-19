@@ -28,8 +28,8 @@ const LoginSignup = () => {
         const data = await response.json(); // Parse response
 
         if (response.ok) {
-          setName(data.name);
-          setPassword(data.password);
+          // setName(data.name);
+          // setPassword(data.password);
           alert("Login successful");
           navigate("/home"); // You can also store the user info in localStorage or context here if needed
         } else {
@@ -63,7 +63,12 @@ const LoginSignup = () => {
         <div className="inputs">
           <div className="input">
             <img src={user_icon} alt="user" className="image" />
-            <input id="name" type="text" placeholder="Name" />
+            <input
+              name="name"
+              type="text"
+              placeholder="Name"
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
           {action === "Sign Up" && ( //mail input only in sign up
@@ -75,7 +80,12 @@ const LoginSignup = () => {
 
           <div className="input">
             <img src={password_closed} alt="password" className="image" />
-            <input id="password" type="password" placeholder="Password" />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
           {action === "Login" && ( // forgot password for login

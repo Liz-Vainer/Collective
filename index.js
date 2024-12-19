@@ -1,75 +1,64 @@
+// Import required modules
 const express = require("express");
-const path = require("path");
-const mongoose = require("mongoose");      // like import from Python or include in C —> we need to import mongoose to our file in order to use it
-const methodOverride = require("method-override");   // to use PUT method, when you want to change existing data you need this line to use method PUT
-const User = require("./models/user");  // Import the User model
+const mongoose = require("mongoose");
+const cors = require("cors");
+const methodOverride = require("method-override");
+const User = require("./models/user"); // Your user model
+
+// Initialize Express
 const app = express();
-const bcrypt = require('bcrypt');
-const cors = require("cors"); 
-app.use(cors());
+
+// Middleware setup
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method")); // For PUT and DELETE requests from forms
+app.use(cors()); // Enable Cross-Origin Resource Sharing for frontend
 
-
-// Set up MongoDB connection with Mongoose
+// MongoDB connection setup
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb://127.0.0.1:27017/UsersDb")  // to establish a connection to MongoDB database
+mongoose
+  .connect("mongodb://127.0.0.1:27017/UsersDb", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
-    console.log("Mongo connection open!");  // Success message when MongoDB connection is established
+    console.log("Mongo connection open!");
   })
   .catch((err) => {
-    console.log("A mongo connection error has occurred");  // Error handling in case of connection failure
+    console.log("Mongo connection error:");
     console.log(err);
   });
 
-// EJS setup
-app.set("views", path.join(__dirname, "views"));   // views directory is where templates are stored
-app.set("view engine", "ejs");    // Set EJS as the templating engine
+// Routes
 
-// Middleware
-app.use(express.urlencoded({ extended: true }));   // In order to parse form data (needed for POST requests)
-app.use(methodOverride("_method"));      // Allow PUT and DELETE methods in forms (not just POST and GET)
-
-// Categories for user selection (This will be used in creating or editing users)
-const categories = ["Gobnik", "Unknown", "some"];   // Change this as per your needs (e.g., user roles or types)
-
-
-// Route 1: Homepage / Root (Redirect to login)
-app.get("/", (req, res) => {    
-  res.redirect("/login");     // Redirect to the login page when the root page is accessed
+// 1. Homepage or Root Route (e.g., redirect to login)
+app.get("/", (req, res) => {
+  res.redirect("/login");
 });
 
-// Route 2: Login Page
-app.get("/login", async (req, res) => {       
-  res.render("users/login");    // Render the login page for users to enter their credentials
+// 2. Login Route
+app.get("/login", (req, res) => {
+  res.send("Login page here"); // Your login page here (can be rendered or just send a message)
 });
 
-// Route 3: Handle POST request for Login
+// 3. Handle Login POST request
 app.post("/users/login", async (req, res) => {
-  const { name, password } = req.body; // Extract email and password from the request body
-
+  const { name, password } = req.body;
   try {
-    const user = await User.findOne({ name }); // Look for a user by the email
+    const user = await User.findOne({ name });
 
     if (!user) {
-      return res.status(400).json({ message: "Wrong user" }); // Email not found
+      return res.status(400).json({ message: "Wrong name" });
     }
 
-    // Compare password using bcrypt
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-      return res.status(400).json({ message: "Wrong password" }); // Incorrect password
+    if (user.password !== password) {
+      return res.status(400).json({ message: "Wrong password" });
     }
-    // Login successful, send user info or a token (for example, JWT)
-    res.status(200).json({
-      message: "Login successful",
-      userId: user.id, // Send user ID or any other necessary data
-      // Optionally, you can send a JWT token here for authentication
-    });
 
+    return res.json({ message: "Login successful", id: user.id });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "An error occurred during login" }); // Handle unexpected errors
+    console.error("Login error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -112,33 +101,91 @@ app.post("/users", async (req, res) => {
 
 await newUser.save();  // Save the new user
   res.redirect(`/users/${newUser.id}`);    // Redirect to the new user's profile page
-});
+// 4. Create new user (SignUp)
+app.post("/users", async (req, res) => {
+  const { name, email, password } = req.body;
 
-// Route 8: Edit User (Render Edit User Form)
-app.get("/users/:id/edit", async (req, res) => {     // Render form to edit an existing user's information
-  const { id } = req.params;  // Extract user ID from the URL
-  const user = await User.findById(id);  // Find the user by ID from the database
-  res.render("users/edit", { user, categories });  // Render the edit form, passing the current user data and categories
-});
+  // Check if the user already exists
+  const existingUser = await User.findOne({ name });
+  if (existingUser) {
+    return res.status(400).json({ message: "User already exists" });
+  }
 
-// Route 9: Handle PUT request to update user information
-app.put("/users/:id", async (req, res) => {    
-  const { id } = req.params;  // Extract the user ID from the URL
-  const user = await User.findByIdAndUpdate(id, req.body, {
-    runValidators: true,    // Run validation rules when updating user data
-    new: true,              // Return the updated user data (not the old one)
+  // Create new user
+  const newUser = new User({
+    name,
+    email,
+    password,
   });
-  res.redirect(`/users/${user.id}`);   // After updating, redirect to the updated user's profile page
+
+  try {
+    await newUser.save(); // Save user to MongoDB
+    res
+      .status(201)
+      .json({ message: "User created successfully", userId: newUser.id });
+  } catch (err) {
+    console.error("Error creating user:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
-// Route 10: Delete User (Handle DELETE request)
-app.delete("/users/:id", async (req, res) => {   
-  const { id } = req.params;  // Get user ID from the URL parameters
-  const deletedUser = await User.findByIdAndDelete(id);  // Delete the user from the database
-  res.redirect("/users");  // After deletion, redirect to the list of all users
+// 5. Get user profile
+app.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error("Error retrieving user:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
-// Start the Express server
-app.listen(3000, () => {
-  console.log("App is listening on port 3000..");  // Confirm the server is running
+// 6. Update user
+app.put("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, email, password } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { name, email, password },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(updatedUser);
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// 7. Delete user
+app.delete("/users/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

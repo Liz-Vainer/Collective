@@ -60,7 +60,6 @@ app.post("/users/login", async (req, res) => {
     if (!match) {
       return res.status(400).json({ message: "Wrong password" }); // Incorrect password
     }
-
     // Login successful, send user info or a token (for example, JWT)
     res.status(200).json({
       message: "Login successful",
@@ -99,9 +98,19 @@ app.get("/users", async (req, res) => {
 });
 
 // Route 7: Handle POST request for creating a new user
-app.post("/users", async (req, res) => {   
-  const newUser = new User(req.body);  // Create a new User object from the form data
-  await newUser.save();  // Save the new user to the database
+app.post("/users", async (req, res) => {  
+  const {name,email,password} = req.body;
+    // Hash the password with bcrypt
+  const hashedPassword = await bcrypt.hash(password, 10);  // 10 salt rounds
+ // Create a new user with hashed password
+  const newUser = new User({
+
+    name,
+    email,
+    password: hashedPassword  // Store hashed password in the database
+});
+
+await newUser.save();  // Save the new user
   res.redirect(`/users/${newUser.id}`);    // Redirect to the new user's profile page
 });
 

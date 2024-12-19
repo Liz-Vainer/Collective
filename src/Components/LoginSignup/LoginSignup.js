@@ -6,20 +6,55 @@ import email_icon from '../Assets/email_icon.png';
 import password_open from '../Assets/password_look_icon.png';
 import password_closed from '../Assets/password_closed_icon.png';
 import background_login from '../Assets/background_login.png';
+import axios from "axios";
 
 const LoginSignup = () => {
   const [action, setAction] = useState("Login");
   const [showBody,setShowBody]=useState(false);
   const navigate = useNavigate(); // Use the navigate function from react-router-dom
 
-  const handleSubmit = () => {
-    if (action === "Login") {
-      navigate("/home"); // Redirect to the Home page after login
-    } else if (action === "Sign Up") {
-     setShowBody(true); // Redirect to the Home page after signup
+  const handleSubmit = async () => {
+    // Collect the form data (name, email, password)
+    const requestBody = {
+      name: document.getElementById("name")?.value, // for name (Login or Sign Up)
+      // email: document.getElementById("email")?.value, // for email (only Sign Up)
+      password: document.getElementById("password")?.value, // for password
+    };
+  
+    try {
+      if (action === "Login") {
+        // Send POST request for login
+        const response = await axios.post("http://localhost:3000/users/login", requestBody);
+  
+        // If login is successful (status code 200)
+        if (response.status === 200) {
+          alert("Login successful!"); // Optionally show success message
+          // Redirect to the home page after login
+          navigate("/home");
+        }
+      } else if (action === "Sign Up") {
+        // Send POST request for sign up
+        const response = await axios.post("http://localhost:3000/users", requestBody);
+  
+        // If sign up is successful
+        if (response.status === 200) {
+          alert("Sign Up successful! Please log in."); // Success message for sign up
+          setAction("Login"); // Change action to Login after successful sign up
+          // You can also redirect the user to the login page or home if you want
+          // navigate("/login"); 
+        }
+      }
+    } catch (error) {
+      // Handle errors
+      if (error.response) {
+        alert(error.response.data.message); // Show error message from backend
+      } else {
+        alert("An error occurred. Please try again.");
+      }
     }
   };
-
+  
+  
   return (
     <div className="body" style={{ backgroundImage: `url(${background_login})` }}> 
       <div className="welcome-message">
@@ -33,23 +68,24 @@ const LoginSignup = () => {
         </div>
 
         <div className="inputs">
+
           <div className="input">
             <img src={user_icon} alt="user" className="image" />
-            <input type="text" placeholder="Name" />
+            <input id="name" type="text" placeholder="Name" />
           </div>
 
        
           {action === "Sign Up" && (//mail input only in sign up
             <div className="input">
               <img src={email_icon} alt="email" className="image" /> 
-              <input type="email" placeholder="Email" />
+              <input id="email" type="email" placeholder="Email" />
             </div>
           )}
 
         
           <div className="input">
             <img src={password_closed} alt="password" className="image" />
-            <input type="password" placeholder="Password" />
+            <input id="password" type="password" placeholder="Password" />
           </div>
 
           

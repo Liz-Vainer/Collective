@@ -20,6 +20,10 @@
   }
   
   .center-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     width: 80%;
     height: 1000px;
     background-color: white;
@@ -28,7 +32,14 @@
     margin-left: 50px;
     margin-right: 20px;
   }
-  
+  .map-container{
+    height: 400px;
+    width: 80%;
+    
+    border: 1px solid #a7c9ae;
+    overflow: hidden;
+    margin: 20px;
+  }
   .right-toolside {
     width: 10%;
     height: 1000px;

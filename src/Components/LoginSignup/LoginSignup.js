@@ -22,7 +22,17 @@ const LoginSignup = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
   const carouselRef = useRef(null);
+  const [userType, setUserType] = useState("citizen"); // Default user type
 
+
+  const handleUserTypeChange = (event) => {
+    setUserType(event.target.value);
+  };
+  
+const handleSignup = () => {
+    alert(`You selected: ${userType}`);
+    navigate('/home'); // Navigate to the home page after signup
+  };
 
   const images = [
     art_community,
@@ -122,6 +132,19 @@ const LoginSignup = () => {
               <img src={password_closed} alt="password" className="image" />
               <input type="password" placeholder="Password" />
             </div>
+
+            {action === "Sign Up" && (
+   <>
+    <div className="input">
+      <label htmlFor="user-type-select" className="label">What type of user are you?</label>
+      <select id="user-type-select" className="religion-list">
+        <option value="citizen">Citizen</option>
+        <option value="community-organizer">Community Organizer</option>
+        <option value="city-official">City Official</option>
+      </select>
+    </div>
+  </>
+)}
 
             {action === "Login" && (
               <div className="forgotPassword">

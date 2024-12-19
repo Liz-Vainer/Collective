@@ -261,3 +261,8 @@ button:hover {
   color:#18392b;
   margin: 0;
 }
+.label{
+  color: #18392b;
+  margin-left: 10px;
+  font-size: 20px;
+}

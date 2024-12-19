@@ -3,8 +3,12 @@ const path = require("path");
 const mongoose = require("mongoose");      // like import from Python or include in C —> we need to import mongoose to our file in order to use it
 const methodOverride = require("method-override");   // to use PUT method, when you want to change existing data you need this line to use method PUT
 const User = require("./models/user");  // Import the User model
-
 const app = express();
+const bcrypt = require('bcrypt');
+const cors = require("cors"); 
+app.use(cors());
+app.use(express.json());
+
 
 // Set up MongoDB connection with Mongoose
 mongoose.set("strictQuery", true);
@@ -40,19 +44,33 @@ app.get("/login", async (req, res) => {
 });
 
 // Route 3: Handle POST request for Login
-app.post("/users/login", async (req, res) => {        
-  const { email, password } = req.body;     // Extract email and password from the form data
+app.post("/users/login", async (req, res) => {
+  const { name, password } = req.body; // Extract email and password from the request body
+
   try {
-    const user = await User.findOne({ email });     // Check if user with given email exists in the database
-    if (!user) {    
-      res.send("Wrong email");     // Error handling: Email doesn't exist in the database
-    } else if (user.password !== password) {        // Check if the entered password matches the one in the database
-      res.send("Wrong password");  // Error handling: Password mismatch
+    const user = await User.findOne({ name }); // Look for a user by the email
+
+    if (!user) {
+      return res.status(400).json({ message: "Wrong user" }); // Email not found
     }
-    res.redirect(`/users/${user.id}`);     // If successful, redirect to the user's profile page
-  } catch (err) {      // Catch any errors, such as database issues or other unexpected errors
+
+    // Compare password using bcrypt
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.status(400).json({ message: "Wrong password" }); // Incorrect password
+    }
+
+    // Login successful, send user info or a token (for example, JWT)
+    res.status(200).json({
+      message: "Login successful",
+      userId: user.id, // Send user ID or any other necessary data
+      // Optionally, you can send a JWT token here for authentication
+    });
+
+  } catch (err) {
     console.error(err);
-    res.status(500).send("An error occurred during login");  // Handle unexpected errors
+    res.status(500).json({ message: "An error occurred during login" }); // Handle unexpected errors
   }
 });
 

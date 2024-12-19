@@ -15,14 +15,14 @@
   "license": "ISC",
   "dependencies": {
     "cra-template": "1.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.0.2",
-    "react-scripts": "^5.0.1",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "method-override": "^3.0.0",
-    "mongoose": "^8.8.4"
+    "mongoose": "^8.8.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.2",
+    "react-scripts": "^5.0.1"
   },
   "eslintConfig": {
     "extends": [
@@ -41,5 +41,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.2.0"
   }
 }

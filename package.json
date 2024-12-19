@@ -15,14 +15,15 @@
   "license": "ISC",
   "dependencies": {
     "cra-template": "1.2.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.8.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.2",
     "react-scripts": "^5.0.1",
-    "ejs": "^3.1.10",
-    "express": "^4.21.2",
-    "method-override": "^3.0.0",
-    "mongoose": "^8.8.4"
+    "web-vitals": "^4.2.4"
   },
   "eslintConfig": {
     "extends": [

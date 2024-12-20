@@ -311,29 +311,31 @@ app.post("/community", async (req, res) => {
 //fake communities to the database
 // Automatically create fake communities when the server starts
 const createFakeCommunities = async () => {
+  await Community.deleteMany({ lan: null });
+
   const fakeCommunities = [
     {
       name: "Art Lovers",
       lat: 31.2561,
-      lan: 34.7946,
+      lng: 34.7946,
       category: "Entertainment",
     },
     {
       name: "Tech Enthusiasts",
       lat: 31.2543,
-      lan: 34.7921,
+      lng: 34.7921,
       category: "Entertainment",
     },
-    { name: "Running club", lat: 31.2508, lan: 34.7905, category: "Sport" },
-    { name: "Local church", lat: 31.2535, lan: 34.789, category: "Religion" },
-    { name: "Swimming pool", lat: 31.2535, lan: 34.789, category: "Religion" },
+    { name: "Running club", lat: 31.2508, lng: 34.7905, category: "Sport" },
+    { name: "Local church", lat: 31.2535, lng: 34.789, category: "Religion" },
+    { name: "Swimming pool", lat: 31.2535, lng: 34.789, category: "Religion" },
   ];
 
   try {
     for (let community of fakeCommunities) {
       const existingCommunity = await Community.findOne({
         lat: community.lat, // Check if community with same lat exists
-        lan: community.lan, // Check if community with same lng exists
+        lng: community.lng, // Check if community with same lng exists
       });
 
       if (!existingCommunity) {

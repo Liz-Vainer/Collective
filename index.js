@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: "http://localhost:3001", // Adjust this to your frontend URL
   })
-); // Enable Cross-Origin Resource Sharing for frontend
+); // Enable Cross-Origin Resourcenp Sharing for frontend
 
 // Connection for UsersDb
 const usersDbConnection = mongoose.createConnection(

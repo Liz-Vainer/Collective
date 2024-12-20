@@ -69,6 +69,13 @@ const Community = communityDbConnection.model("Community", CommunitySchema);
 const Orginaizer = organizerDbConnection.model("Orginaizer", OrginaizerSchema);
 const Official = officialDbConnection.model("Official", OfficialSchema);
 
+module.exports = {
+  User,
+  Community,
+  Orginaizer,
+  Official,
+};
+
 // Routes
 
 // Function to try to log in by checking each model (User, Organizer, Official)

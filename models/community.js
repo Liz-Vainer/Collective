@@ -8,4 +8,5 @@ const communitySchema = new mongoose.Schema({
   lat: { type: Number, required: true, unique: false },
 });
 
+// const Community = mongoose.model("Community", communitySchema);
 module.exports = communitySchema;

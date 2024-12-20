@@ -41,30 +41,6 @@ const Home = () => {
     lng: 34.791462, // Coordinates for Be'er Sheva, Israel
   };
 
-  //===================== Fake Communities Data =====================
-  const [fakeCommunities, setCommunities] = useState([]);
-  useEffect(() => {
-    const fetchCommunities = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:3000/get-fake-communities"
-        );
-        const data = await response.json();
-
-        if (response.ok) {
-          setCommunities(data.communities || []);
-        } else {
-          alert(data.message || "Failed to fetch communities.");
-        }
-      } catch (error) {
-        console.error("Error fetching communities:", error);
-        alert("An error occurred. Please try again.");
-      }
-    };
-
-    fetchCommunities();
-  }, []);
-
   //===================== State Management =====================
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyDXrYi-yg0G4hUZ9_OLbuRC7Uzx_2zJI3c",
@@ -77,6 +53,30 @@ const Home = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [communities, setCommunities] = useState([]); // To hold the fetched communities
 
+  //===================== Fake Communities Data =====================
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/communities?search=${searchQuery}&category=${activeCategory}`
+        );
+        const data = await response.json();
+
+        console.log("Fetched data:", data); // Log the raw data
+
+        // If the data contains a property like 'data' that holds the array of communities
+        if (Array.isArray(data)) {
+          setCommunities(data); // Set the communities from the 'data' property
+        } else {
+          alert("Data fetched is not an array.");
+        }
+      } catch (error) {
+        console.error("Error fetching communities:", error);
+        alert("An error occurred. Please try again.");
+      }
+    };
+    fetchCommunities();
+  }, [searchQuery, activeCategory]);
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {

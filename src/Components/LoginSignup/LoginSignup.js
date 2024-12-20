@@ -6,6 +6,7 @@ import email_icon from "../Assets/email_icon.png";
 import password_open from "../Assets/password_look_icon.png";
 import password_closed from "../Assets/password_closed_icon.png";
 import background_login from "../Assets/background_login.png";
+import { useUser } from "../UserContext";
 
 import art_community from "../Assets/art_community.jpg";
 import yoga_community from "../Assets/yoga_community.jpg";
@@ -54,6 +55,7 @@ const LoginSignup = () => {
     }
   }, [currentImageIndex]);
 
+  const { setUser } = useUser();
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -65,18 +67,16 @@ const LoginSignup = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name, password }), // Send email and password as JSON
+          body: JSON.stringify({ name, password }),
         });
 
-        const data = await response.json(); // Parse response
+        const data = await response.json();
 
         if (response.ok) {
-          // setName(data.name);
-          // setPassword(data.password);
+          setUser(data); // Make sure 'data' contains the user object
           alert("Login successful");
-          navigate("/home"); // You can also store the user info in localStorage or context here if needed
+          navigate("/home");
         } else {
-          // If login fails, show error message
           alert(data.message || "Invalid credentials. Please try again.");
         }
       } catch (error) {
@@ -84,24 +84,23 @@ const LoginSignup = () => {
         alert("An error occurred. Please try again.");
       }
     } else if (action === "Sign Up") {
-      setShowBody(true); // Show the new body for Sign-Up
+      setShowBody(true);
       try {
         const response = await fetch("http://localhost:3000/users/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name, email, password }), // Send email and password as JSON
+          body: JSON.stringify({ name, email, password }),
         });
 
-        const data = await response.json(); // Parse response
+        const data = await response.json();
 
         if (response.ok) {
-          alert("user created!");
-          navigate("/home"); // You can also store the user info in localStorage or context here if needed
+          alert("User created!");
+          setUser(data); // Make sure the data has user information
         } else {
-          // If login fails, show error message
-          alert(data.message || "Invalid credentials. Please try again.");
+          alert(data.message || "There was an issue signing up.");
         }
       } catch (error) {
         console.error("Error during user creation:", error);

@@ -1,12 +1,10 @@
 import React from 'react';
 import './App.css';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
-import Home from './Components/Homepage/Home'; 
-<<<<<<< HEAD
-=======
-import SettingsPage from './Components/SettingsPage/SettingsPage'
->>>>>>> 7f5af59 (Add files to maria branch)
+import Home from './Components/Homepage/Home';
+import SettingsPage from './Components/SettingsPage/SettingsPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Info from './Components/Info/Info';
 
 function App() {
   return (
@@ -14,10 +12,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginSignup />} />
         <Route path="/home" element={<Home />} />
-<<<<<<< HEAD
-=======
-        <Route path="/settings" element={<SettingsPage/>}/>
->>>>>>> 7f5af59 (Add files to maria branch)
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/info" element={<Info />} />
       </Routes>
     </Router>
   );

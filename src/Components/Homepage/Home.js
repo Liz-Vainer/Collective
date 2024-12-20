@@ -14,9 +14,9 @@ const Home = () => {
   const handleSettings = () => {
     navigate("/settings")
   };
+
   const handleInfo = () => {
-    // Add functionality for info button, e.g. navigate to an info page
-    alert("Info Button Clicked");
+    navigate("/info")
   };
   const mapContainerStyle = {
     height: '100%',
@@ -28,18 +28,27 @@ const Home = () => {
   };
   return (
     <div className="mainbody" style={{ backgroundImage: `url(${background_fornow})`, backgroundColor: 'transparent' }}>
-      <button className="backButton" onClick={handleBackToLogin}>
-        Back to Login
-      </button>
+      <div className="upper-tool">
+      <button className="exit-button" onClick={handleBackToLogin}>
+          <FaDoorOpen size={30} color="white" />
+        </button>
+        <button className="settings-button" onClick={handleSettings}>
+          <FaCog size={30} color="white" />
+        </button>
+        <button className="info-button" onClick={handleInfo}>
+          <FaInfoCircle size={30} color="white" />
+        </button>
+        </div>  
 
     
-      <h3>ilter</h3>
+      <h3>Filter</h3>
      <div className="search box">
     <form action=" " onSubmit="return false">
     <input type="text" placeholder="search" />
     <button id="search">Search</button>
     </form>
     </div>
+
     <div className="filterBox">
       <a href="a" className="btn active" data-filter="all">All</a>
       <a href="a" className="btn active" data-filter="Religion">Religion</a>
@@ -51,19 +60,7 @@ const Home = () => {
 
 
 
-   <div className="upper-tool">
-      <button className="exit-button" onClick={handleBackToLogin}>
-          <FaDoorOpen size={30} color="white" />
-        </button>
-        <button className="settings-button" onClick={handleSettings}>
-          <FaCog size={30} color="white" />
-        </button>
-        <button className="info-button" onClick={handleInfo}>
-          <FaInfoCircle size={30} color="white" />
-        </button>
-        </div>  {/* Upper tool is placed above everything */}
-        
-      
+  
       <div className="main-container">
         <div className="center-main">
           <p>Here is a map of Be'er Sheba, Israel.</p>

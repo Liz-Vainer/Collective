@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-import React, { useState } from 'react';
-=======
-import React, { useState,useEffect,useRef } from 'react';
->>>>>>> 7f5af59 (Add files to maria branch)
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginSignup.css';
 import user_icon from '../Assets/person_icon.png';
 import email_icon from '../Assets/email_icon.png';
-import password_open from '../Assets/password_look_icon.png';
 import password_closed from '../Assets/password_closed_icon.png';
 import background_login from '../Assets/background_login.png';
-
-<<<<<<< HEAD
-const LoginSignup = () => {
-  const [action, setAction] = useState("Login");
-  const [showBody,setShowBody]=useState(false);
-  const navigate = useNavigate(); // Use the navigate function from react-router-dom
-=======
 import art_community from '../Assets/art_community.jpg';
 import yoga_community from '../Assets/yoga_community.jpg';
 import sports_community from '../Assets/sports_community.jpg';
@@ -24,15 +12,13 @@ import music_community from '../Assets/music_community.jpg';
 
 const LoginSignup = () => {
   const [action, setAction] = useState("Login");
-  const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
+  const [showBody, setShowBody] = useState(false);
   const navigate = useNavigate();
-  const [isReligious, setIsReligious] = useState(false); // Track if user is religious
-  const [religion, setReligion] = useState(''); // Track selected religion
-
+  const [isReligious, setIsReligious] = useState(false);
+  const [religion, setReligion] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
+  const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef(null);
-
 
   const images = [
     art_community,
@@ -47,119 +33,28 @@ const LoginSignup = () => {
         setIsAnimating(true);
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
       }
-    }, 2000); // Change image every 2 seconds
+    }, 2000);
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, [isAnimating]);
 
   useEffect(() => {
     if (carouselRef.current) {
-      // Move the image left by applying a translateX on the wrapper
       const wrapper = carouselRef.current;
       wrapper.style.transform = `translateX(-${currentImageIndex * 300}px)`;
 
-      // Allow the animation to complete before switching isAnimating
       setTimeout(() => {
         setIsAnimating(false);
-      }, 1000); // Match the transition duration
+      }, 1000);
     }
   }, [currentImageIndex]);
 
->>>>>>> 7f5af59 (Add files to maria branch)
-
   const handleSubmit = () => {
     if (action === "Login") {
-      navigate("/home"); // Redirect to the Home page after login
+      navigate("/home");
     } else if (action === "Sign Up") {
-<<<<<<< HEAD
-     setShowBody(true); // Redirect to the Home page after signup
+      setShowBody(true);
     }
-  };
-
-  return (
-    <div className="body" style={{ backgroundImage: `url(${background_login})` }}> 
-      <div className="welcome-message">
-        <h1>Welcome to Collective!</h1>
-      </div>
-
-      <div className="container"> 
-        <div className="header">
-          <div className="text">{action}</div>
-          <div className="underlane"></div>
-        </div>
-
-        <div className="inputs">
-          <div className="input">
-            <img src={user_icon} alt="user" className="image" />
-            <input type="text" placeholder="Name" />
-          </div>
-
-       
-          {action === "Sign Up" && (//mail input only in sign up
-            <div className="input">
-              <img src={email_icon} alt="email" className="image" /> 
-              <input type="email" placeholder="Email" />
-            </div>
-          )}
-
-        
-          <div className="input">
-            <img src={password_closed} alt="password" className="image" />
-            <input type="password" placeholder="Password" />
-          </div>
-
-          
-          {action === "Login" && ( // forgot password for login
-            <div className="forgotPassword">
-              Forgot Password? <span>Click Here!</span>
-            </div>
-          )}
-        </div>
-
-        <div className="submit-container">
-  <div
-    className={action === "Sign Up" ? "submit gray" : "submit"}
-    onClick={() => {
-      if (action === "Login") {
-        handleSubmit(); // If in Login, handle submission and navigate
-      } else {
-        setAction("Login"); // Switch to Login if in Sign Up
-      }
-    }}
-  >
-    {action === "Login" ? "Login" : "Sign Up"}
-  </div>
-
-  <div
-    className={action === "Login" ? "submit gray" : "submit"}
-    onClick={() => {
-      if (action === "Sign Up") {
-        handleSubmit(); // If in Sign Up, handle submission and navigate
-      } else {
-        setAction("Sign Up"); // Switch to Sign Up if in Login
-      }
-    }}
-  >
-    {action === "Login" ? "Sign Up" : "Login"}
-  </div>
-</div>
-
-{showBody && (
-        <div className="new-body">
-          <h2>This is the new main body for Sign Up!</h2>
-          {/* You can add any other content here for the new body */}
-        </div>
-      )}
-      </div>
-=======
-      setShowBody(true); // Show the new body for Sign-Up
-    }
-  };
-
-  // =================== Back to Login / Sign Up Functions ===================
-  const handleBackToLogin = () => {
-    setShowBody(false); // Hide the new body and return to the original one
-    setAction("Login"); // Switch action back to Login
   };
 
   const handleBackToSignup = () => {
@@ -168,26 +63,16 @@ const LoginSignup = () => {
   };
 
   const handleContinue = () => {
-    navigate("/home"); // Navigate to the main page (Home)
-  };
-
-  // =================== Handle Religious Checkbox ===================
-  const handleCheckboxChange = (event) => {
-    setIsReligious(event.target.checked); // Set if the user is religious
-    if (!event.target.checked) {
-      setReligion(''); // Reset religion selection if checkbox is unchecked
-    }
+    navigate("/home");
   };
 
   const handleReligionChange = (event) => {
-    setReligion(event.target.value); // Set selected religion
+    setReligion(event.target.value);
   };
 
-  // =================== Main Body (Rendering Logic) ===================
   return (
     <div className="body" style={{ backgroundImage: `url(${background_login})` }}>
       {!showBody ? (
-        // =================== Initial Body (Login/Signup) ===================
         <div className="container">
           <div className="welcome-message">
             <h1>Welcome to Collective!</h1>
@@ -227,9 +112,9 @@ const LoginSignup = () => {
               className={action === "Sign Up" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Login") {
-                  handleSubmit(); // If in Login, handle submission and navigate
+                  handleSubmit();
                 } else {
-                  setAction("Login"); // Switch to Login if in Sign Up
+                  setAction("Login");
                 }
               }}
             >
@@ -240,9 +125,9 @@ const LoginSignup = () => {
               className={action === "Login" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Sign Up") {
-                  handleSubmit(); // Show new body for Sign-Up
+                  handleSubmit();
                 } else {
-                  setAction("Sign Up"); // Switch to Sign Up if in Login
+                  setAction("Sign Up");
                 }
               }}
             >
@@ -251,28 +136,27 @@ const LoginSignup = () => {
           </div>
         </div>
       ) : (
-        // =================== New Body (For Sign Up) ===================
         <div className="container">
           <h2>Can you tell us more about you?</h2>
           <h3>(Optional)</h3>
 
-          {/* =================== Age Question =================== */}
           <div className="question">
             <label htmlFor="age-input">What is your age?</label>
             <input type="number" id="age-input" className="age-input" placeholder="age" />
           </div>
 
-          {/* =================== Religious Question =================== */}
           <div className="question">
             <label>Are you religious?</label>
-            <label>
-              <input 
-                type="checkbox" 
-                onChange={(e) => setIsReligious(e.target.checked)} 
-              />
-            </label>
+            <input
+              type="checkbox"
+              onChange={(e) => setIsReligious(e.target.checked)}
+            />
             {isReligious && (
-              <select className="religion-list" value={religion} onChange={handleReligionChange}>
+              <select
+                className="religion-list"
+                value={religion}
+                onChange={handleReligionChange}
+              >
                 <option value="muslim">Muslim</option>
                 <option value="jewish">Jewish</option>
                 <option value="christian">Christian</option>
@@ -281,7 +165,6 @@ const LoginSignup = () => {
             )}
           </div>
 
-          {/* =================== Ethnicity Question =================== */}
           <div className="question">
             <label htmlFor="ethnicity-select">What is your ethnicity?</label>
             <select id="ethnicity-select" className="religion-list">
@@ -292,7 +175,7 @@ const LoginSignup = () => {
               <option value="other">Other</option>
             </select>
           </div>
-            {/* =================== Interest Question =================== */}
+
           <div className="question">
             <label htmlFor="interest-select">What is your preferred interest?</label>
             <select id="interest-select" className="religion-list">
@@ -302,22 +185,20 @@ const LoginSignup = () => {
               <option value="other">Other</option>
             </select>
           </div>
-          {/* =================== Image Carousel =================== */}
+
           <div className="carousel-container">
-          <div ref={carouselRef} className="carousel-wrapper">
-            {images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt="Community"
-                className="carousel-image"
-              />
-            ))}
+            <div ref={carouselRef} className="carousel-wrapper">
+              {images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt="Community"
+                  className="carousel-image"
+                />
+              ))}
+            </div>
           </div>
-        </div>
 
-
-          {/* =================== Action Buttons (Back & Continue) =================== */}
           <div className="submit-container">
             <div className="submit" onClick={handleBackToSignup}>
               Back to Sign up
@@ -329,7 +210,6 @@ const LoginSignup = () => {
           </div>
         </div>
       )}
->>>>>>> 7f5af59 (Add files to maria branch)
     </div>
   );
 };

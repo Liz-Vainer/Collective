@@ -41,13 +41,28 @@ const Home = () => {
   };
 
   //===================== Fake Communities Data =====================
-  const fakeCommunities = [
-    { id: 1, name: "Art Lovers", lat: 31.2561, lng: 34.7946,category: "Entertainment" },
-    { id: 2, name: "Tech Enthusiasts", lat: 31.2543, lng: 34.7921,category:"Entertainment" },
-    { id: 3, name: "Running club", lat: 31.2508, lng: 34.7905,category:"Sport"},
-    { id: 4, name: "Local church", lat: 31.2535, lng: 34.789,category:"Religion"},
-    { id: 5, name: "Swimming pool", lat: 31.2535, lng: 34.789,category:"Religion"},
-  ];
+  const [fakeCommunities, setCommunities] = useState([]);
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setCommunities(data.communities || []);
+        } else {
+          alert(data.message || "Failed to fetch communities.");
+        }
+      } catch (error) {
+        console.error("Error fetching communities:", error);
+        alert("An error occurred. Please try again.");
+      }
+    };
+
+    fetchCommunities();
+  }, []);
 
   //===================== State Management =====================
   const { isLoaded, loadError } = useJsApiLoader({
@@ -63,25 +78,26 @@ const Home = () => {
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/users/${user.id}/fav`
-        );
-        const data = await response.json();
+      if (user.userType !== "Official")
+        try {
+          const response = await fetch(
+            `http://localhost:3000/users/${user.id}/fav/${user.userType}`
+          );
+          const data = await response.json();
 
-        if (response.ok) {
-          setFavorites(data.favorites || []); // Set favorites to the state
-        } else {
-          alert(data.message || "Failed to fetch favorites.");
+          if (response.ok) {
+            setFavorites(data.favorites || []);
+          } else {
+            alert(data.message || "Failed to fetch favorites.");
+          }
+        } catch (error) {
+          console.error("Error fetching favorites:", error);
+          alert("An error occurred. Please try again.");
         }
-      } catch (error) {
-        console.error("Error fetching favorites:", error);
-        alert("An error occurred. Please try again.");
-      }
     };
 
     fetchFavorites();
-  }, [user.id]);
+  }, [user.id, user.userType]);
 
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
@@ -97,6 +113,7 @@ const Home = () => {
           body: JSON.stringify({
             id: user.id, // Pass the user's id from the logged-in user
             community, // Send the community object directly
+            userType: user.userType,
           }),
         });
 
@@ -142,58 +159,58 @@ const Home = () => {
     >
       {/* Upper Tool Section */}
       <div className="upper-tool">
-  <button className="exit-button" onClick={handleBackToLogin}>
-    <FaDoorOpen size={30} color="white" />
-  </button>
-  <button className="settings-button" onClick={handleSettings}>
-    <FaCog size={30} color="white" />
-  </button>
-  <button className="info-button" onClick={handleInfo}>
-    <FaInfoCircle size={30} color="white" />
-  </button>
+        <button className="exit-button" onClick={handleBackToLogin}>
+          <FaDoorOpen size={30} color="white" />
+        </button>
+        <button className="settings-button" onClick={handleSettings}>
+          <FaCog size={30} color="white" />
+        </button>
+        <button className="info-button" onClick={handleInfo}>
+          <FaInfoCircle size={30} color="white" />
+        </button>
 
-  <div className="search-bar">
-    <input
-      type="text"
-      placeholder="Search..."
-      className="search-input"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-    />
-    <button className="search-icon-button">
-      <FaSearch size={20} color="gray" />
-    </button>
-  </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+          />
+          <button className="search-icon-button">
+            <FaSearch size={20} color="gray" />
+          </button>
+        </div>
 
-  {/* Category Buttons */}
-  <div className="category-buttons">
-    {["All", "Sport", "Entertainment", "Religion"].map((category) => (
-      <button
-        key={category}
-        className={`category-button ${
-          activeCategory === category ? "active" : ""
-        }`}
-        onClick={() => setActiveCategory(category)}
-      >
-        {category}
-      </button>
-    ))}
-  </div>
-</div>
+        {/* Category Buttons */}
+        <div className="category-buttons">
+          {["All", "Sport", "Entertainment", "Religion"].map((category) => (
+            <button
+              key={category}
+              className={`category-button ${
+                activeCategory === category ? "active" : ""
+              }`}
+              onClick={() => setActiveCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
-          <GoogleMap className="google-map"
+          <GoogleMap
+            className="google-map"
             mapContainerStyle={mapContainerStyle}
             center={center}
             zoom={15}
             onLoad={onLoad}
             onUnmount={onUnmount}
           >
-            
             {/* Markers for Filtered Communities */}
             {filteredCommunities.map((community) => (
               <Marker
@@ -234,9 +251,7 @@ const Home = () => {
           <h3>Your Favorites</h3>
           <ul>
             {favorites.map((fav) => (
-              <li key={fav.id}>
-                {fav.name} 
-              </li>
+              <li key={fav.id}>{fav.name}</li>
             ))}
           </ul>
         </div>

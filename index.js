@@ -71,39 +71,60 @@ const Official = officialDbConnection.model("Official", OfficialSchema);
 
 // Routes
 
-//User Routes
-// 1. Homepage or Root Route (e.g., redirect to login)
-// app.get("/", (req, res) => {
-//   res.redirect("/login");
-// });
-
-// // 2. Login Route
-// app.get("/login", (req, res) => {
-//   res.send("Login page here"); // Your login page here (can be rendered or just send a message)
-// });
-
-// 3. Handle Login POST request
-app.post("/users/login", async (req, res) => {
-  const { name, password } = req.body;
-
+// Function to try to log in by checking each model (User, Organizer, Official)
+async function handleLogin(name, password, res) {
   try {
-    const user = await User.findOne({ name });
+    let user;
+    let userType;
+
+    // Check User model
+    user = await User.findOne({ name });
+    if (user) {
+      userType = "User";
+    } else {
+      // Check Orginaizer model if not found in User model
+      user = await Orginaizer.findOne({ name });
+      if (user) {
+        userType = "Orginaizer";
+      } else {
+        // Check Official model if not found in Orginaizer model
+        user = await Official.findOne({ name });
+        if (user) {
+          userType = "Official";
+        }
+      }
+    }
+
     if (!user) {
-      return res.status(400).json({ message: "Wrong name" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Wrong password" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    res.json({ message: "Login successful", id: user.id });
+    res.json({
+      message: `${userType} Login successful`,
+      id: user.id,
+      userType,
+    });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
-});
+}
 
+// Login route for any user
+app.post("/login", async (req, res) => {
+  const { name, password } = req.body;
+
+  if (!name || !password) {
+    return res.status(400).json({ message: "Name and password are required" });
+  }
+
+  await handleLogin(name, password, res);
+});
 // Route 5: Show User Profile
 // app.get("/users/:id", async (req, res) => {
 //   const { id } = req.params; // Get the user ID from the URL parameters
@@ -124,7 +145,7 @@ app.post("/users/login", async (req, res) => {
 //   }
 // });
 
-// 4. Create new user (SignUp)
+// Create new user (SignUp)
 app.post("/citizen/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -148,66 +169,65 @@ app.post("/citizen/signup", async (req, res) => {
   }
 });
 
-// 5. Get user profile
-app.get("/users/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.json(user);
-  } catch (err) {
-    console.error("Error retrieving user:", err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
 // 6. Update user
-app.put("/users/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name, email, password } = req.body;
+// app.put("/users/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { name, email, password } = req.body;
 
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { name, email, password },
-      { new: true, runValidators: true }
-    );
+//   try {
+//     const updatedUser = await User.findByIdAndUpdate(
+//       id,
+//       { name, email, password },
+//       { new: true, runValidators: true }
+//     );
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
 
-    res.json(updatedUser);
-  } catch (err) {
-    console.error("Error updating user:", err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+//     res.json(updatedUser);
+//   } catch (err) {
+//     console.error("Error updating user:", err);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 
 // 7. Delete user
-app.delete("/users/:id", async (req, res) => {
-  const { id } = req.params;
+// app.delete("/users/:id", async (req, res) => {
+//   const { id } = req.params;
 
-  try {
-    const deletedUser = await User.findByIdAndDelete(id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.json({ message: "User deleted successfully" });
-  } catch (err) {
-    console.error("Error deleting user:", err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+//   try {
+//     const deletedUser = await User.findByIdAndDelete(id);
+//     if (!deletedUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     res.json({ message: "User deleted successfully" });
+//   } catch (err) {
+//     console.error("Error deleting user:", err);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 
 app.post("/users/add-to-fav", async (req, res) => {
-  const { id, community } = req.body; // Get user id and community details
+  const { id, community, userType } = req.body; // Get user id and community details
+
+  let Model;
+  switch (userType) {
+    case "User":
+      Model = User;
+      break;
+    case "Orginaizer":
+      Model = Orginaizer;
+      break;
+    case "Official":
+      Model = Official;
+      break;
+    default:
+      return res.status(400).json({ message: "Invalid user type" });
+  }
 
   try {
-    const existingUser = await User.findById(id);
+    const existingUser = await Model.findById(id);
     const isAlreadyFavorite = existingUser.favorites.includes(community);
     if (isAlreadyFavorite) {
       return res.status(400).json({
@@ -228,10 +248,30 @@ app.post("/users/add-to-fav", async (req, res) => {
 });
 
 //fetch users favorites
-app.get("/users/:id/fav", async (req, res) => {
-  const { id } = req.params;
+app.get("/users/:id/fav/:userType", async (req, res) => {
+  const { id, userType } = req.params;
+
+  let Model;
+  switch (userType) {
+    case "User":
+      Model = User;
+      break;
+    case "Orginaizer":
+      Model = Orginaizer;
+      break;
+    case "Official":
+      Model = Official;
+      break;
+    default:
+      return res.status(400).json({ message: "Invalid user type" });
+  }
+
   try {
-    const user = await User.findById(id);
+    const user = await Model.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     res.json({ favorites: user.favorites });
   } catch (err) {
     console.error("Error retrieving user favorites:", err);
@@ -268,6 +308,61 @@ app.post("/community", async (req, res) => {
   }
 });
 
+//fake communities to the database
+// Automatically create fake communities when the server starts
+const createFakeCommunities = async () => {
+  const fakeCommunities = [
+    {
+      name: "Art Lovers",
+      lat: 31.2561,
+      lan: 34.7946,
+      category: "Entertainment",
+    },
+    {
+      name: "Tech Enthusiasts",
+      lat: 31.2543,
+      lan: 34.7921,
+      category: "Entertainment",
+    },
+    { name: "Running club", lat: 31.2508, lan: 34.7905, category: "Sport" },
+    { name: "Local church", lat: 31.2535, lan: 34.789, category: "Religion" },
+    { name: "Swimming pool", lat: 31.2535, lan: 34.789, category: "Religion" },
+  ];
+
+  try {
+    for (let community of fakeCommunities) {
+      const existingCommunity = await Community.findOne({
+        lat: community.lat, // Check if community with same lat exists
+        lan: community.lan, // Check if community with same lng exists
+      });
+
+      if (!existingCommunity) {
+        const newCommunity = new Community(community);
+        await newCommunity.save();
+      }
+    }
+
+    console.log("Fake communities added successfully.");
+  } catch (err) {
+    console.error("Error adding fake communities:", err);
+    console.log("Failed to add fake communities.");
+  }
+};
+
+// Run the function to create fake communities when the server starts
+createFakeCommunities();
+
+// Fetch fake communities
+app.get("/get-fake-communities", async (req, res) => {
+  try {
+    const communities = await Community.find();
+    res.json({ communities });
+  } catch (err) {
+    console.error("Error fetching communities:", err);
+    res.status(500).json({ message: "Failed to fetch communities." });
+  }
+});
+
 //Orginaizer Routes
 app.post("/event-organizer/signup", async (req, res) => {
   const { name, email, password } = req.body;
@@ -279,11 +374,13 @@ app.post("/event-organizer/signup", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create a new user
     const newOrginaizer = new Orginaizer({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     await newOrginaizer.save(); // Save the new user to the database
@@ -309,11 +406,13 @@ app.post("/city-official/signup", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create a new User
     const newOfficial = new Official({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     await newOfficial.save(); // Save the new User to the database

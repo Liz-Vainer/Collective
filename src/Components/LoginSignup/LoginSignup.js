@@ -256,18 +256,6 @@ const LoginSignup = () => {
               className="age-input"
               placeholder="age"
             />
-            {isReligious && (
-              <select
-                className="religion-list"
-                value={religion}
-                onChange={handleReligionChange}
-              >
-                <option value="muslim">Muslim</option>
-                <option value="jewish">Jewish</option>
-                <option value="christian">Christian</option>
-                <option value="other">Other</option>
-              </select>
-            )}
           </div>
 
           {/* =================== Religious Question =================== */}

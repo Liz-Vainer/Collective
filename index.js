@@ -125,25 +125,6 @@ app.post("/login", async (req, res) => {
 
   await handleLogin(name, password, res);
 });
-// Route 5: Show User Profile
-// app.get("/users/:id", async (req, res) => {
-//   const { id } = req.params; // Get the user ID from the URL parameters
-//   const user = await User.findById(id);
-//   res.render("users/profile", { user }); // Render the user's profile page
-// });
-
-// Route 6: List All Users or Filtered by Category
-// app.get("/users", async (req, res) => {
-//   const { category } = req.query; // Get the category from the query string (e.g., /users?category=Gobnik)
-//   if (category) {
-//     const users = await User.find({ category }); // Find users by the selected category
-//     res.render("users/index", { users, category }); // Render the list of users filtered by category
-//   } else {
-//     // If no category is provided, show all users
-//     const users = await User.find({});
-//     res.render("users/index", { users, category: "All" }); // Show all users, and set category as "All"
-//   }
-// });
 
 // Create new user (SignUp)
 app.post("/citizen/signup", async (req, res) => {
@@ -169,47 +150,9 @@ app.post("/citizen/signup", async (req, res) => {
   }
 });
 
-// 6. Update user
-// app.put("/users/:id", async (req, res) => {
-//   const { id } = req.params;
-//   const { name, email, password } = req.body;
-
-//   try {
-//     const updatedUser = await User.findByIdAndUpdate(
-//       id,
-//       { name, email, password },
-//       { new: true, runValidators: true }
-//     );
-
-//     if (!updatedUser) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     res.json(updatedUser);
-//   } catch (err) {
-//     console.error("Error updating user:", err);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
-
-// 7. Delete user
-// app.delete("/users/:id", async (req, res) => {
-//   const { id } = req.params;
-
-//   try {
-//     const deletedUser = await User.findByIdAndDelete(id);
-//     if (!deletedUser) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-//     res.json({ message: "User deleted successfully" });
-//   } catch (err) {
-//     console.error("Error deleting user:", err);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
-
+//add community to favorite
 app.post("/users/add-to-fav", async (req, res) => {
-  const { id, community, userType } = req.body; // Get user id and community details
+  const { id, community, userType } = req.body;
 
   let Model;
   switch (userType) {
@@ -227,19 +170,18 @@ app.post("/users/add-to-fav", async (req, res) => {
   }
 
   try {
-    const existingUser = await Model.findById(id);
-    const isAlreadyFavorite = existingUser.favorites.includes(community);
-    if (isAlreadyFavorite) {
-      return res.status(400).json({
-        message: `${community.name} is already in your favorites.`,
-      });
+    // Check if the community is already in the user's favorites
+    const user = await Model.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    existingUser.favorites.push(community); // Add to favorites
-    await existingUser.save(); // Save changes to the database
-
+    // Add the community to the user's favorites
+    user.favorites.push(community);
+    await user.save();
     res.status(200).json({
-      message: `${community.name} has been added to your favorites.`,
+      message: "Community added to favorites",
+      favorites: user.favorites,
     });
   } catch (error) {
     console.error("Error updating favorites:", error);

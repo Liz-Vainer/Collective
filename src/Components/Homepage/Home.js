@@ -103,7 +103,8 @@ const Home = () => {
   const onUnmount = useCallback(() => setMap(null), []);
 
   const addToFavorites = async (community) => {
-    if (!favorites.some((fav) => fav.id === community.id)) {
+    console.log(favorites); // Check the current favorites before adding
+    if (!favorites.some((fav) => fav.name === community.name)) {
       try {
         const response = await fetch("http://localhost:3000/users/add-to-fav", {
           method: "POST",
@@ -118,6 +119,8 @@ const Home = () => {
         });
 
         const data = await response.json();
+        console.log(favorites); // Check the current favorites before adding
+        console.log(data); // Check what is returned by the backend
 
         if (response.ok) {
           setFavorites([...favorites, community]); // Add to local state
@@ -214,7 +217,7 @@ const Home = () => {
             {/* Markers for Filtered Communities */}
             {filteredCommunities.map((community) => (
               <Marker
-                key={community.id}
+                key={community._id}
                 position={{ lat: community.lat, lng: community.lng }}
                 onClick={() => setSelectedCommunity(community)}
               />

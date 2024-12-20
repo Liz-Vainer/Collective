@@ -42,10 +42,10 @@ const Home = () => {
 
   //===================== Fake Communities Data =====================
   const fakeCommunities = [
-    { id: 1, name: "Art Lovers", lat: 31.2561, lng: 34.7946 },
-    { id: 2, name: "Tech Enthusiasts", lat: 31.2543, lng: 34.7921 },
-    { id: 3, name: "Foodies Hub", lat: 31.2508, lng: 34.7905 },
-    { id: 4, name: "Fitness Freaks", lat: 31.2535, lng: 34.789 },
+    { id: 1, name: "Art Lovers", lat: 31.2561, lng: 34.7946,category: "Entertainment" },
+    { id: 2, name: "Tech Enthusiasts", lat: 31.2543, lng: 34.7921,category:"Entertainment" },
+    { id: 3, name: "Foodies Hub", lat: 31.2508, lng: 34.7905,category:"Sport"},
+    { id: 4, name: "Fitness Freaks", lat: 31.2535, lng: 34.789,category:"Religion"},
   ];
 
   //===================== State Management =====================
@@ -185,16 +185,14 @@ const Home = () => {
         <div className="center-main">
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
-          <GoogleMap
+          <GoogleMap className="google-map"
             mapContainerStyle={mapContainerStyle}
             center={center}
             zoom={15}
             onLoad={onLoad}
             onUnmount={onUnmount}
           >
-            {/* Central Marker */}
-            <Marker position={center} />
-
+            
             {/* Markers for Filtered Communities */}
             {filteredCommunities.map((community) => (
               <Marker
@@ -236,7 +234,7 @@ const Home = () => {
           <ul>
             {favorites.map((fav) => (
               <li key={fav.id}>
-                {fav.name} (Lat: {fav.lat}, Lng: {fav.lng})
+                {fav.name} 
               </li>
             ))}
           </ul>

@@ -6,7 +6,7 @@
   "main": "index.js",
   "description": "",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -16,17 +16,17 @@
   "license": "ISC",
   "dependencies": {
     "@react-google-maps/api": "^2.20.3",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "cra-template": "1.2.0",
-    "ejs": "^3.1.10",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "leaflet": "^1.9.4",
     "method-override": "^3.0.0",
-    "mongoose": "^8.8.4",
+    "mongoose": "^8.9.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
-    "react-leaflet": "^4.0.0",
     "react-router-dom": "^7.0.2",
     "react-scripts": "^5.0.1",
     "web-vitals": "^4.2.4"
@@ -52,7 +52,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
-    "nodemon": "^3.1.9",
+    "mocha": "^11.0.1",
     "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.0"

@@ -1,27 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './LoginSignup.css';
-import user_icon from '../Assets/person_icon.png';
-import email_icon from '../Assets/email_icon.png';
-import password_closed from '../Assets/password_closed_icon.png';
-import password_open from '../Assets/password_look_icon.png';
-import background_login from '../Assets/background_login.png';
-import art_community from '../Assets/art_community.jpg';
-import yoga_community from '../Assets/yoga_community.jpg';
-import sports_community from '../Assets/sports_community.jpg';
-import music_community from '../Assets/music_community.jpg';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import "./LoginSignup.css";
+import user_icon from "../Assets/person_icon.png";
+import email_icon from "../Assets/email_icon.png";
+import password_open from "../Assets/password_look_icon.png";
+import password_closed from "../Assets/password_closed_icon.png";
+import background_login from "../Assets/background_login.png";
+import { useUser } from "../UserContext";
+
+import art_community from "../Assets/art_community.jpg";
+import yoga_community from "../Assets/yoga_community.jpg";
+import sports_community from "../Assets/sports_community.jpg";
+import music_community from "../Assets/music_community.jpg";
 
 const LoginSignup = () => {
   const [action, setAction] = useState("Login");
-  const [showBody, setShowBody] = useState(false);
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [isReligious, setIsReligious] = useState(false);
-  const [religion, setReligion] = useState('');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const carouselRef = useRef(null);
+  const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
+  const [userType, setUserType] = useState("Citizen");
+  const [isReligious, setIsReligious] = useState(false); // Track if user is religious
+  const [religion, setReligion] = useState(""); // Track selected religion
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
+  const carouselRef = useRef(null);
 
   const images = [
     art_community,
@@ -36,22 +38,28 @@ const LoginSignup = () => {
         setIsAnimating(true);
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
       }
-    }, 2000);
+    }, 2000); // Change image every 2 seconds
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [isAnimating]);
 
   useEffect(() => {
     if (carouselRef.current) {
+      // Move the image left by applying a translateX on the wrapper
       const wrapper = carouselRef.current;
       wrapper.style.transform = `translateX(-${currentImageIndex * 300}px)`;
 
+      // Allow the animation to complete before switching isAnimating
       setTimeout(() => {
         setIsAnimating(false);
-      }, 1000);
+      }, 1000); // Match the transition duration
     }
   }, [currentImageIndex]);
 
+  const { setUser } = useUser();
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
@@ -66,7 +74,9 @@ const LoginSignup = () => {
         const data = await response.json();
 
         if (response.ok) {
+          setUser(data); // Make sure 'data' contains the user object
           alert("Login successful");
+
           navigate("/home");
         } else {
           alert(data.message || "Invalid credentials. Please try again.");
@@ -77,7 +87,38 @@ const LoginSignup = () => {
       }
     } else if (action === "Sign Up") {
       setShowBody(true);
+
+      try {
+        const response = await fetch(
+          `http://localhost:3000/${userType}/signup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, email, password }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("User created!");
+          setUser(data); // Make sure the data has user information
+        } else {
+          alert(data.message || "There was an issue signing up.");
+        }
+      } catch (error) {
+        console.error("Error during user creation:", error);
+        alert("An error occurred. Please try again.");
+      }
     }
+  };
+
+  // =================== Back to Login / Sign Up Functions ===================
+  const handleBackToLogin = () => {
+    setShowBody(false); // Hide the new body and return to the original one
+    setAction("Login"); // Switch action back to Login
   };
 
   const handleBackToSignup = () => {
@@ -86,16 +127,29 @@ const LoginSignup = () => {
   };
 
   const handleContinue = () => {
-    navigate("/home");
+    navigate("/home"); // Navigate to the main page (Home)
+  };
+
+  // =================== Handle Religious Checkbox ===================
+  const handleCheckboxChange = (event) => {
+    setIsReligious(event.target.checked); // Set if the user is religious
+    if (!event.target.checked) {
+      setReligion(""); // Reset religion selection if checkbox is unchecked
+    }
   };
 
   const handleReligionChange = (event) => {
-    setReligion(event.target.value);
+    setReligion(event.target.value); // Set selected religion
   };
 
+  // =================== Main Body (Rendering Logic) ===================
   return (
-    <div className="body" style={{ backgroundImage: `url(${background_login})` }}>
+    <div
+      className="body"
+      style={{ backgroundImage: `url(${background_login})` }}
+    >
       {!showBody ? (
+        // =================== Initial Body (Login/Signup) ===================
         <div className="container">
           <div className="welcome-message">
             <h1>Welcome to Collective!</h1>
@@ -119,7 +173,12 @@ const LoginSignup = () => {
             {action === "Sign Up" && (
               <div className="input">
                 <img src={email_icon} alt="email" className="image" />
-                <input type="email" placeholder="Email" />
+                <input
+                  name="email"
+                  type="text"
+                  placeholder="Email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
             )}
 
@@ -132,7 +191,21 @@ const LoginSignup = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-
+            {action === "Sign Up" && (
+              <div className="question">
+                <label htmlFor="user-type-select">Which user are you?</label>
+                <select
+                  id="user-type-select"
+                  className="religion-list"
+                  value={userType}
+                  onChange={(e) => setUserType(e.target.value)}
+                >
+                  <option value="citizen">Citizen</option>
+                  <option value="event-organizer">Event Organizer</option>
+                  <option value="city-official">City Official</option>
+                </select>
+              </div>
+            )}
             {action === "Login" && (
               <div className="forgotPassword">
                 Forgot Password? <span>Click Here!</span>
@@ -145,9 +218,9 @@ const LoginSignup = () => {
               className={action === "Sign Up" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Login") {
-                  handleSubmit();
+                  handleSubmit(); // If in Login, handle submission and navigate
                 } else {
-                  setAction("Login");
+                  setAction("Login"); // Switch to Login if in Sign Up
                 }
               }}
             >
@@ -158,9 +231,9 @@ const LoginSignup = () => {
               className={action === "Login" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Sign Up") {
-                  handleSubmit();
+                  handleSubmit(); // Show new body for Sign-Up
                 } else {
-                  setAction("Sign Up");
+                  setAction("Sign Up"); // Switch to Sign Up if in Login
                 }
               }}
             >
@@ -169,20 +242,19 @@ const LoginSignup = () => {
           </div>
         </div>
       ) : (
+        // =================== New Body (For Sign Up) ===================
         <div className="container">
           <h2>Can you tell us more about you?</h2>
           <h3>(Optional)</h3>
 
+          {/* =================== Age Question =================== */}
           <div className="question">
             <label htmlFor="age-input">What is your age?</label>
-            <input type="number" id="age-input" className="age-input" placeholder="age" />
-          </div>
-
-          <div className="question">
-            <label>Are you religious?</label>
             <input
-              type="checkbox"
-              onChange={(e) => setIsReligious(e.target.checked)}
+              type="number"
+              id="age-input"
+              className="age-input"
+              placeholder="age"
             />
             {isReligious && (
               <select
@@ -198,6 +270,30 @@ const LoginSignup = () => {
             )}
           </div>
 
+          {/* =================== Religious Question =================== */}
+          <div className="question">
+            <label>Are you religious?</label>
+            <label>
+              <input
+                type="checkbox"
+                onChange={(e) => setIsReligious(e.target.checked)}
+              />
+            </label>
+            {isReligious && (
+              <select
+                className="religion-list"
+                value={religion}
+                onChange={handleReligionChange}
+              >
+                <option value="muslim">Muslim</option>
+                <option value="jewish">Jewish</option>
+                <option value="christian">Christian</option>
+                <option value="other">Other</option>
+              </select>
+            )}
+          </div>
+
+          {/* =================== Ethnicity Question =================== */}
           <div className="question">
             <label htmlFor="ethnicity-select">What is your ethnicity?</label>
             <select id="ethnicity-select" className="religion-list">
@@ -208,9 +304,11 @@ const LoginSignup = () => {
               <option value="other">Other</option>
             </select>
           </div>
-
+          {/* =================== Interest Question =================== */}
           <div className="question">
-            <label htmlFor="interest-select">What is your preferred interest?</label>
+            <label htmlFor="interest-select">
+              What is your preferred interest?
+            </label>
             <select id="interest-select" className="religion-list">
               <option value="entertainment">Entertainment</option>
               <option value="sport">Sport</option>
@@ -218,7 +316,7 @@ const LoginSignup = () => {
               <option value="other">Other</option>
             </select>
           </div>
-
+          {/* =================== Image Carousel =================== */}
           <div className="carousel-container">
             <div ref={carouselRef} className="carousel-wrapper">
               {images.map((image, index) => (
@@ -232,6 +330,7 @@ const LoginSignup = () => {
             </div>
           </div>
 
+          {/* =================== Action Buttons (Back & Continue) =================== */}
           <div className="submit-container">
             <div className="submit" onClick={handleBackToSignup}>
               Back to Sign up

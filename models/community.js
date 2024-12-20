@@ -4,8 +4,8 @@ const communitySchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   category: { type: String, required: true, unique: false },
   population: { type: Number, required: false },
-  lan: { type: Number, required: true, unique: true },
-  lat: { type: Number, required: true, unique: true },
+  lng: { type: Number, required: true, unique: true }, // Unique longitude
+  lat: { type: Number, required: true, unique: true }, // Unique latitude
 });
 
 module.exports = communitySchema;

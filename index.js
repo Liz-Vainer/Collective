@@ -87,7 +87,9 @@ app.post("/users/login", async (req, res) => {
   const { name, password } = req.body;
 
   try {
+    // Correct the query to search by 'name', not '_id'
     const user = await User.findOne({ name });
+
     if (!user) {
       return res.status(400).json({ message: "Wrong name" });
     }
@@ -97,13 +99,13 @@ app.post("/users/login", async (req, res) => {
       return res.status(400).json({ message: "Wrong password" });
     }
 
-    res.json({ message: "Login successful", id: user.id });
+    // Send back user ID if login is successful
+    res.json({ message: "Login successful", id: user._id });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 // Route 5: Show User Profile
 // app.get("/users/:id", async (req, res) => {
 //   const { id } = req.params; // Get the user ID from the URL parameters
@@ -325,6 +327,30 @@ app.post("/city-official/signup", async (req, res) => {
   } catch (err) {
     console.error("Error creating Official:", err);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Route to fetch communities
+app.get("/communities", async (req, res) => {
+  try {
+    const { search, category } = req.query;
+
+    // Build the filter object dynamically based on the query params
+    const filter = {};
+
+    if (search) {
+      filter.name = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+    if (category && category !== "All") {
+      filter.category = category;
+    }
+    const communities = await Community.find(filter); // Find communities based on filter
+
+    res.json(communities); // Return the fetched communities
+  } catch (err) {
+    console.error("Error fetching communities:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

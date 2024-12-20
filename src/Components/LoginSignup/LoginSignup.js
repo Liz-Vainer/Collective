@@ -17,7 +17,7 @@ const LoginSignup = () => {
   const [action, setAction] = useState("Login");
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
-  const [userType, setUserType] = useState("Citizen");
+  const [userType, setUserType] = useState("citizen");
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
   const [religion, setReligion] = useState(""); // Track selected religion
 
@@ -89,16 +89,13 @@ const LoginSignup = () => {
       setShowBody(true);
 
       try {
-        const response = await fetch(
-          `http://localhost:3000/${userType}/signup`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ name, email, password }),
-          }
-        );
+        const response = await fetch(`http://localhost:3000/signup`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email, password, userType }),
+        });
 
         const data = await response.json();
 

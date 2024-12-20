@@ -126,28 +126,57 @@ app.post("/login", async (req, res) => {
   await handleLogin(name, password, res);
 });
 
-// Create new user (SignUp)
-app.post("/citizen/signup", async (req, res) => {
-  const { name, email, password } = req.body;
+//function for handle signup
+async function handleSignup(name, email, password, userType, res) {
+  let Model;
+  switch (userType) {
+    case "citizen":
+      userType = "User";
+      Model = User;
+      break;
+    case "event-organizer":
+      userType = "Orginaizer";
+      Model = Orginaizer;
+      break;
+    case "city-official":
+      userType = "Official";
+      Model = Official;
+      break;
+    default:
+      return res.status(400).json({ message: "Invalid user type" });
+  }
 
-  const existingUser = await User.findOne({ name });
+  const existingUser = await Model.findOne({ name });
   if (existingUser) {
     return res.status(400).json({ message: "User already exists" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = new User({ name, email, password: hashedPassword });
+  const newUser = new Model({ name, email, password: hashedPassword });
 
   try {
     await newUser.save();
-    res
-      .status(201)
-      .json({ message: "User created successfully", id: newUser.id });
+    res.status(201).json({
+      message: `${userType} Login successful`,
+      id: newUser.id,
+      userType,
+    });
   } catch (err) {
     console.error("Error creating user:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
+}
+
+// Create new user (SignUp)
+app.post("/signup", async (req, res) => {
+  const { name, email, password, userType } = req.body;
+
+  if (!name || !password || !email || !userType) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  await handleSignup(name, email, password, userType, res);
 });
 
 //add community to favorite

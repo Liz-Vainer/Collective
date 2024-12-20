@@ -8,7 +8,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "mocha",
     "eject": "react-scripts eject"
   },
   "keywords": [],
@@ -51,6 +51,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
+    "chai": "^5.1.2",
     "mocha": "^11.0.1",
     "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4",

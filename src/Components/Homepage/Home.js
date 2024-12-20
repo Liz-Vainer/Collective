@@ -1,11 +1,27 @@
-import React, { useState, useCallback } from 'react';
-import background_fornow from '../Assets/background_login.png';
-import { useNavigate } from 'react-router-dom';
-import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch } from 'react-icons/fa';
-import { GoogleMap, Marker, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
-import './Home.css';
+import React, { useState, useCallback, useEffect } from "react";
+import background_fornow from "../Assets/background_login.png";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch } from "react-icons/fa";
+import {
+  GoogleMap,
+  Marker,
+  useJsApiLoader,
+  InfoWindow,
+} from "@react-google-maps/api";
+import "./Home.css";
+import { useUser } from "../UserContext";
 
 const Home = () => {
+  const { user } = useUser(); // Destructure user from context
+
+  useEffect(() => {
+    if (!user) {
+      // Handle the case where there is no user (i.e., not logged in)
+      console.log("User is not logged in");
+    } else {
+      console.log("User:", user);
+    }
+  }, [user]);
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
@@ -15,8 +31,8 @@ const Home = () => {
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
-    height: '80%',
-    width: '100%',
+    height: "80%",
+    width: "100%",
   };
 
   const center = {
@@ -26,16 +42,15 @@ const Home = () => {
 
   //===================== Fake Communities Data =====================
   const fakeCommunities = [
-    { id: 1, name: "Art Lovers", lat: 31.2561, lng: 34.7946, category: "Entertainment" },
-    { id: 2, name: "Tech Enthusiasts", lat: 31.2543, lng: 34.7921, category: "Entertainment" },
-    { id: 3, name: "Foodies Hub", lat: 31.2508, lng: 34.7905, category: "Sport" },
-    { id: 4, name: "Fitness Freaks", lat: 31.2535, lng: 34.7890, category: "Sport" },
-    { id: 5, name: "Spiritual Circle", lat: 31.2520, lng: 34.7880, category: "Religion" },
+    { id: 1, name: "Art Lovers", lat: 31.2561, lng: 34.7946 },
+    { id: 2, name: "Tech Enthusiasts", lat: 31.2543, lng: 34.7921 },
+    { id: 3, name: "Foodies Hub", lat: 31.2508, lng: 34.7905 },
+    { id: 4, name: "Fitness Freaks", lat: 31.2535, lng: 34.789 },
   ];
 
   //===================== State Management =====================
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: 'AIzaSyDXrYi-yg0G4hUZ9_OLbuRC7Uzx_2zJI3c',
+    googleMapsApiKey: "AIzaSyDXrYi-yg0G4hUZ9_OLbuRC7Uzx_2zJI3c",
   });
 
   const [map, setMap] = useState(null);
@@ -44,12 +59,58 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 
+  // Fetch user's favorites from the backend
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/users/${user.id}/fav`
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setFavorites(data.favorites || []); // Set favorites to the state
+        } else {
+          alert(data.message || "Failed to fetch favorites.");
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+        alert("An error occurred. Please try again.");
+      }
+    };
+
+    fetchFavorites();
+  }, [user.id]);
+
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
 
   const addToFavorites = async (community) => {
     if (!favorites.some((fav) => fav.id === community.id)) {
-      setFavorites([...favorites, community]);
+      try {
+        const response = await fetch("http://localhost:3000/users/add-to-fav", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: user.id, // Pass the user's id from the logged-in user
+            community, // Send the community object directly
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setFavorites([...favorites, community]); // Add to local state
+          alert("Added to favorites");
+        } else {
+          alert(data.message || "Failed to add to favorites");
+        }
+      } catch (error) {
+        console.error("Error adding to favorites:", error);
+        alert("An error occurred. Please try again.");
+      }
     } else {
       alert(`${community.name} is already in your favorites.`);
     }
@@ -75,7 +136,7 @@ const Home = () => {
       className="mainbody"
       style={{
         backgroundImage: `url(${background_fornow})`,
-        backgroundColor: 'transparent',
+        backgroundColor: "transparent",
       }}
     >
       {/* Upper Tool Section */}
@@ -174,7 +235,9 @@ const Home = () => {
           <h3>Your Favorites</h3>
           <ul>
             {favorites.map((fav) => (
-              <li key={fav.id}>{fav.name}</li>
+              <li key={fav.id}>
+                {fav.name} (Lat: {fav.lat}, Lng: {fav.lng})
+              </li>
             ))}
           </ul>
         </div>

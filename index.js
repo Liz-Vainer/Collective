@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const methodOverride = require("method-override");
 const User = require("./models/user"); // Your user model
+const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 // Initialize Express
 const app = express();
@@ -12,12 +14,20 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method")); // For PUT and DELETE requests from forms
-app.use(cors()); // Enable Cross-Origin Resource Sharing for frontend
+app.use(
+  cors({
+    origin: "http://localhost:3001", // Adjust this to your frontend URL
+  })
+); // Enable Cross-Origin Resource Sharing for frontend
 
 // MongoDB connection setup
+const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/UsersDb";
 mongoose.set("strictQuery", true);
 mongoose
-  .connect("mongodb://127.0.0.1:27017/UsersDb")
+  .connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("Mongo connection open!");
   })
@@ -41,21 +51,22 @@ app.get("/login", (req, res) => {
 // 3. Handle Login POST request
 app.post("/users/login", async (req, res) => {
   const { name, password } = req.body;
+
   try {
     const user = await User.findOne({ name });
-
     if (!user) {
       return res.status(400).json({ message: "Wrong name" });
     }
 
-    if (user.password !== password) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.status(400).json({ message: "Wrong password" });
     }
 
-    return res.json({ message: "Login successful", id: user.id });
+    res.json({ message: "Login successful", id: user.id });
   } catch (err) {
     console.error("Login error:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -106,24 +117,20 @@ app.post("/users", async (req, res) => {
 app.post("/users/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
-  // Check if the user already exists
   const existingUser = await User.findOne({ name });
   if (existingUser) {
     return res.status(400).json({ message: "User already exists" });
   }
 
-  // Create new user
-  const newUser = new User({
-    name,
-    email,
-    password,
-  });
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = new User({ name, email, password: hashedPassword });
 
   try {
-    await newUser.save(); // Save user to MongoDB
+    await newUser.save();
     res
       .status(201)
-      .json({ message: "User created successfully", userId: newUser.id });
+      .json({ message: "User created successfully", id: newUser.id });
   } catch (err) {
     console.error("Error creating user:", err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -181,6 +188,42 @@ app.delete("/users/:id", async (req, res) => {
     res.json({ message: "User deleted successfully" });
   } catch (err) {
     console.error("Error deleting user:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.post("/users/add-to-fav", async (req, res) => {
+  const { id, community } = req.body; // Get user id and community details
+
+  try {
+    const existingUser = await User.findById(id);
+    const isAlreadyFavorite = existingUser.favorites.includes(community);
+    if (isAlreadyFavorite) {
+      return res.status(400).json({
+        message: `${community.name} is already in your favorites.`,
+      });
+    }
+
+    existingUser.favorites.push(community); // Add to favorites
+    await existingUser.save(); // Save changes to the database
+
+    res.status(200).json({
+      message: `${community.name} has been added to your favorites.`,
+    });
+  } catch (error) {
+    console.error("Error updating favorites:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//fetch users favorites
+app.get("/users/:id/fav", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    res.json({ favorites: user.favorites });
+  } catch (err) {
+    console.error("Error retrieving user favorites:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });

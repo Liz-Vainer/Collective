@@ -1,33 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import LoginSignup from "./Components/LoginSignup/LoginSignup";
 import Home from "./Components/Homepage/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { UserProvider } from "./Components/UserContext";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { apiResponse: "" };
-  }
-  callApi() {
-    fetch("http://localhost:3000")
-      .then((res) => res.text())
-      .then((res) => this.setState({ apiResponse: res }));
-  }
+const App = () => {
+  const [apiResponse, setApiResponse] = useState("");
 
-  componentWillUnmount() {
-    this.callApi();
-  }
+  useEffect(() => {
+    // Call API when component mounts
+    const callApi = async () => {
+      try {
+        const res = await fetch("http://localhost:3000");
+        const text = await res.text();
+        setApiResponse(text);
+      } catch (error) {
+        console.error("Error fetching API:", error);
+      }
+    };
 
-  render() {
-    return (
+    callApi();
+  }, []); // Empty dependency array ensures it runs only once when the component mounts
+
+  return (
+    <UserProvider>
       <Router>
         <Routes>
           <Route path="/" element={<LoginSignup />} />
           <Route path="/home" element={<Home />} />
         </Routes>
       </Router>
-    );
-  }
-}
+    </UserProvider>
+  );
+};
+
 export default App;

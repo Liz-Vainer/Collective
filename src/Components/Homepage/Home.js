@@ -141,44 +141,44 @@ const Home = () => {
     >
       {/* Upper Tool Section */}
       <div className="upper-tool">
-  <button className="exit-button" onClick={handleBackToLogin}>
-    <FaDoorOpen size={30} color="white" />
-  </button>
-  <button className="settings-button" onClick={handleSettings}>
-    <FaCog size={30} color="white" />
-  </button>
-  <button className="info-button" onClick={handleInfo}>
-    <FaInfoCircle size={30} color="white" />
-  </button>
+        <button className="exit-button" onClick={handleBackToLogin}>
+          <FaDoorOpen size={30} color="white" />
+        </button>
+        <button className="settings-button" onClick={handleSettings}>
+          <FaCog size={30} color="white" />
+        </button>
+        <button className="info-button" onClick={handleInfo}>
+          <FaInfoCircle size={30} color="white" />
+        </button>
 
-  <div className="search-bar">
-    <input
-      type="text"
-      placeholder="Search..."
-      className="search-input"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-    />
-    <button className="search-icon-button">
-      <FaSearch size={20} color="gray" />
-    </button>
-  </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+          />
+          <button className="search-icon-button">
+            <FaSearch size={20} color="gray" />
+          </button>
+        </div>
 
-  {/* Category Buttons */}
-  <div className="category-buttons">
-    {["All", "Sport", "Entertainment", "Religion"].map((category) => (
-      <button
-        key={category}
-        className={`category-button ${
-          activeCategory === category ? "active" : ""
-        }`}
-        onClick={() => setActiveCategory(category)}
-      >
-        {category}
-      </button>
-    ))}
-  </div>
-</div>
+        {/* Category Buttons */}
+        <div className="category-buttons">
+          {["All", "Sport", "Entertainment", "Religion"].map((category) => (
+            <button
+              key={category}
+              className={`category-button ${
+                activeCategory === category ? "active" : ""
+              }`}
+              onClick={() => setActiveCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Main Content Section */}
       <div className="main-container">

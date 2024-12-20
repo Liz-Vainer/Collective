@@ -76,7 +76,7 @@ const LoginSignup = () => {
         if (response.ok) {
           setUser(data); // Make sure 'data' contains the user object
           alert("Login successful");
-          
+
           navigate("/home");
         } else {
           alert(data.message || "Invalid credentials. Please try again.");
@@ -87,14 +87,18 @@ const LoginSignup = () => {
       }
     } else if (action === "Sign Up") {
       setShowBody(true);
+
       try {
-        const response = await fetch("http://localhost:3000/users/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, email, password }),
-        });
+        const response = await fetch(
+          `http://localhost:3000/${userType}/signup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, email, password }),
+          }
+        );
 
         const data = await response.json();
 
@@ -188,20 +192,20 @@ const LoginSignup = () => {
               />
             </div>
             {action === "Sign Up" && (
-  <div className="question">
-    <label htmlFor="user-type-select">Which user are you?</label>
-    <select
-      id="user-type-select"
-      className="religion-list"
-      value={userType}
-      onChange={(e) => setUserType(e.target.value)}
-    >
-      <option value="Citizen">Citizen</option>
-      <option value="Event Organizer">Event Organizer</option>
-      <option value="City Official">City Official</option>
-    </select>
-  </div>
-)}
+              <div className="question">
+                <label htmlFor="user-type-select">Which user are you?</label>
+                <select
+                  id="user-type-select"
+                  className="religion-list"
+                  value={userType}
+                  onChange={(e) => setUserType(e.target.value)}
+                >
+                  <option value="citizen">Citizen</option>
+                  <option value="event-organizer">Event Organizer</option>
+                  <option value="city-official">City Official</option>
+                </select>
+              </div>
+            )}
             {action === "Login" && (
               <div className="forgotPassword">
                 Forgot Password? <span>Click Here!</span>

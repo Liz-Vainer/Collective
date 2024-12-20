@@ -4,6 +4,7 @@ import './LoginSignup.css';
 import user_icon from '../Assets/person_icon.png';
 import email_icon from '../Assets/email_icon.png';
 import password_closed from '../Assets/password_closed_icon.png';
+import password_open from '../Assets/password_look_icon.png';
 import background_login from '../Assets/background_login.png';
 import art_community from '../Assets/art_community.jpg';
 import yoga_community from '../Assets/yoga_community.jpg';
@@ -13,12 +14,14 @@ import music_community from '../Assets/music_community.jpg';
 const LoginSignup = () => {
   const [action, setAction] = useState("Login");
   const [showBody, setShowBody] = useState(false);
-  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [isReligious, setIsReligious] = useState(false);
   const [religion, setReligion] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef(null);
+  const navigate = useNavigate();
 
   const images = [
     art_community,
@@ -49,9 +52,29 @@ const LoginSignup = () => {
     }
   }, [currentImageIndex]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (action === "Login") {
-      navigate("/home");
+      try {
+        const response = await fetch("http://localhost:3000/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Login successful");
+          navigate("/home");
+        } else {
+          alert(data.message || "Invalid credentials. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error during login:", error);
+        alert("An error occurred. Please try again.");
+      }
     } else if (action === "Sign Up") {
       setShowBody(true);
     }
@@ -85,7 +108,12 @@ const LoginSignup = () => {
           <div className="inputs">
             <div className="input">
               <img src={user_icon} alt="user" className="image" />
-              <input type="text" placeholder="Name" />
+              <input
+                name="name"
+                type="text"
+                placeholder="Name"
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
 
             {action === "Sign Up" && (
@@ -97,7 +125,12 @@ const LoginSignup = () => {
 
             <div className="input">
               <img src={password_closed} alt="password" className="image" />
-              <input type="password" placeholder="Password" />
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
 
             {action === "Login" && (

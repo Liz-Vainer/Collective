@@ -41,6 +41,30 @@ const Home = () => {
     lng: 34.791462, // Coordinates for Be'er Sheva, Israel
   };
 
+  //===================== Fake Communities Data =====================
+  const [fakeCommunities, setCommunities] = useState([]);
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setCommunities(data.communities || []);
+        } else {
+          alert(data.message || "Failed to fetch communities.");
+        }
+      } catch (error) {
+        console.error("Error fetching communities:", error);
+        alert("An error occurred. Please try again.");
+      }
+    };
+
+    fetchCommunities();
+  }, []);
+
   //===================== State Management =====================
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyDXrYi-yg0G4hUZ9_OLbuRC7Uzx_2zJI3c",
@@ -56,51 +80,26 @@ const Home = () => {
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/users/${user.id}/fav`
-        );
-        const data = await response.json();
+      if (user.userType !== "Official")
+        try {
+          const response = await fetch(
+            `http://localhost:3000/users/${user.id}/fav/${user.userType}`
+          );
+          const data = await response.json();
 
-        if (response.ok) {
-          setFavorites(data.favorites || []); // Set favorites to the state
-        } else {
-          alert(data.message || "Failed to fetch favorites.");
+          if (response.ok) {
+            setFavorites(data.favorites || []);
+          } else {
+            alert(data.message || "Failed to fetch favorites.");
+          }
+        } catch (error) {
+          console.error("Error fetching favorites:", error);
+          alert("An error occurred. Please try again.");
         }
-      } catch (error) {
-        console.error("Error fetching favorites:", error);
-        alert("An error occurred. Please try again.");
-      }
     };
 
     fetchFavorites();
-  }, [user.id]);
-
-  // Fetch communities from the backend
-  useEffect(() => {
-    const fetchCommunities = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/communities?search=${searchQuery}&category=${activeCategory}`
-        );
-        const data = await response.json();
-
-        console.log("Fetched data:", data); // Log the raw data
-
-        // If the data contains a property like 'data' that holds the array of communities
-        if (Array.isArray(data)) {
-          setCommunities(data); // Set the communities from the 'data' property
-        } else {
-          alert("Data fetched is not an array.");
-        }
-      } catch (error) {
-        console.error("Error fetching communities:", error);
-        alert("An error occurred. Please try again.");
-      }
-    };
-
-    fetchCommunities();
-  }, [searchQuery, activeCategory]);
+  }, [user.id, user.userType]);
 
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
@@ -116,6 +115,7 @@ const Home = () => {
           body: JSON.stringify({
             id: user.id, // Pass the user's id from the logged-in user
             community, // Send the community object directly
+            userType: user.userType,
           }),
         });
 

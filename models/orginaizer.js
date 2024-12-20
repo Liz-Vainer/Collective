@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const orginaizerSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   email: { type: String, required: false },
   password: { type: String, required: true },
-  category: { type: String, required: false, unique: false },
   favorites: [
     {
       id: String,
@@ -15,6 +14,6 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// const User = mongoose.model("User", userSchema);
+// const Orginaizer = mongoose.model("Orginaizer", orginaizerSchema);
 
-module.exports = userSchema;
+module.exports = orginaizerSchema;

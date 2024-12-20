@@ -22,6 +22,7 @@ const Home = () => {
       console.log("User:", user);
     }
   }, [user]);
+
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
@@ -74,6 +75,7 @@ const Home = () => {
   const [favorites, setFavorites] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [communities, setCommunities] = useState([]); // To hold the fetched communities
 
   // Fetch user's favorites from the backend
   useEffect(() => {
@@ -138,7 +140,7 @@ const Home = () => {
   };
 
   // Filtered Communities Based on Search Query and Category
-  const filteredCommunities = fakeCommunities.filter((community) => {
+  const filteredCommunities = communities.filter((community) => {
     const matchesCategory =
       activeCategory === "All" || community.category === activeCategory;
     const matchesSearch = community.name

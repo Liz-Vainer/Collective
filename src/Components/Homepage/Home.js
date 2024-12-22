@@ -44,6 +44,8 @@ const Home = () => {
 
   //===================== Fake Communities Data =====================
   const [fakeCommunities, setCommunities] = useState([]);
+  const [deletedCommunity, setDeltedCommunity] = useState(null);
+
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
@@ -64,7 +66,7 @@ const Home = () => {
     };
 
     fetchCommunities();
-  }, []);
+  }, [deletedCommunity]);
 
   //===================== State Management =====================
   const { isLoaded, loadError } = useJsApiLoader({
@@ -169,6 +171,29 @@ const Home = () => {
     }
   };
 
+  //deleting community by official user
+  const removeCommunity = async (community) => {
+    try {
+      const name = community.name;
+      const response = await fetch(`http://localhost:3000/remove-community`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Community deleted!");
+        setDeltedCommunity(true);
+      } else {
+        alert(data.message || "There was an issue deleting the community.");
+      }
+    } catch (err) {}
+  };
+
   // Filtered Communities Based on Search Query and Category
   const filteredCommunities = fakeCommunities.filter((community) => {
     const matchesCategory =
@@ -267,14 +292,27 @@ const Home = () => {
                 <div>
                   <h3>{selectedCommunity.name}</h3>
                   <p>Welcome to {selectedCommunity.name} community!</p>
-                  <button
-                    onClick={() => {
-                      addToFavorites(selectedCommunity);
-                      setSelectedCommunity(null);
-                    }}
-                  >
-                    Add to Favorites
-                  </button>
+                  {user.userType !== "Official" && (
+                    <button
+                      onClick={() => {
+                        addToFavorites(selectedCommunity);
+                        setSelectedCommunity(null);
+                      }}
+                    >
+                      Add to Favorites
+                    </button>
+                  )}
+
+                  {user.userType === "Official" && (
+                    <button
+                      onClick={() => {
+                        removeCommunity(selectedCommunity);
+                        setSelectedCommunity(false);
+                      }}
+                    >
+                      Remove Community
+                    </button>
+                  )}
                 </div>
               </InfoWindow>
             )}

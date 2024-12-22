@@ -243,6 +243,14 @@ app.get("/users/:id/fav/:userType", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    for (let i = user.favorites.length - 1; i >= 0; i--) {
+      const fav = user.favorites[i].name;
+      const existingCommunity = await Community.findOne({ name: fav }); // Correct query
+      if (!existingCommunity) {
+        user.favorites.splice(i, 1); // Remove the item safely
+      }
+    }
+
     res.json({ favorites: user.favorites });
   } catch (err) {
     console.error("Error retrieving user favorites:", err);
@@ -276,6 +284,26 @@ app.post("/add-community", async (req, res) => {
     });
   } catch (err) {
     console.error("Error creating community:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//deleting comminity
+app.post("/remove-community", async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    const result = await Community.deleteOne({ name }); // Specify the query object
+    if (result === 0) {
+      return res
+        .status(404)
+        .json({ message: `Community '${name}' not found.` });
+    }
+    res
+      .status(200)
+      .json({ message: `Community '${name}' deleted successfully!` });
+  } catch (err) {
+    console.error("Error deleting community:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });

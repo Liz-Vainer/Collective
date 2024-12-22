@@ -250,14 +250,16 @@ const Home = () => {
         </div>
 
         {/* Right Toolbox for Favorites */}
-        <div className="right-toolside">
-          <h3>Your Favorites</h3>
-          <ul>
-            {favorites.map((fav) => (
-              <li key={fav.id}>{fav.name}</li>
-            ))}
-          </ul>
-        </div>
+        {user.userType !== "Official" && (
+          <div className="right-toolside">
+            <h3>Your Favorites</h3>
+            <ul>
+              {favorites.map((fav) => (
+                <li key={fav.id}>{fav.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

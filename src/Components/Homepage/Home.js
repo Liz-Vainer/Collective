@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch } from "react-icons/fa";
 import {
   GoogleMap,
@@ -10,18 +10,20 @@ import {
 } from "@react-google-maps/api";
 import "./Home.css";
 import { useUser } from "../UserContext";
+import Popup from "../Popup/Popup";
+import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
 
 const Home = () => {
   const { user } = useUser(); // Destructure user from context
 
-  useEffect(() => {
-    if (!user) {
-      // Handle the case where there is no user (i.e., not logged in)
-      console.log("User is not logged in");
-    } else {
-      console.log("User:", user);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     // Handle the case where there is no user (i.e., not logged in)
+  //     console.log("User is not logged in");
+  //   } else {
+  //     console.log("User:", user);
+  //   }
+  // }, [user]);
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
@@ -74,6 +76,12 @@ const Home = () => {
   const [favorites, setFavorites] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [buttonPopup, setButtonPopup] = useState(false); //Popup for adding community
+  const [addAction, setAddAction] = useState("Add"); //action fo adding community
+  const [name, setCommunityName] = useState("");
+  const [category, setCommunityCategory] = useState("");
+  const [lng, setCommunityLng] = useState();
+  const [lat, setCommunityLat] = useState();
 
   // Fetch user's favorites from the backend
   useEffect(() => {
@@ -103,7 +111,6 @@ const Home = () => {
   const onUnmount = useCallback(() => setMap(null), []);
 
   const addToFavorites = async (community) => {
-    console.log(favorites); // Check the current favorites before adding
     if (!favorites.some((fav) => fav.name === community.name)) {
       try {
         const response = await fetch("http://localhost:3000/users/add-to-fav", {
@@ -134,6 +141,31 @@ const Home = () => {
       }
     } else {
       alert(`${community.name} is already in your favorites.`);
+    }
+  };
+
+  //adding communities for official user
+  const addCommunityPopup = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/add-community`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, category, lng, lat }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Community created!");
+        setCommunities((fakeCommunities) => [...fakeCommunities, data]);
+      } else {
+        alert(data.message || "There was an issue signing up.");
+      }
+    } catch (error) {
+      console.error("Error during user creation:", error);
+      alert("An error occurred. Please try again.");
     }
   };
 
@@ -249,15 +281,107 @@ const Home = () => {
           </GoogleMap>
         </div>
 
+        {/*Popup for adding communities */}
+        <Popup
+          className="popup"
+          trigger={buttonPopup}
+          setTrigger={setButtonPopup}
+        >
+          <div className="popup-container">
+            <div className="popup-message"></div>
+            <div className="popup-header">
+              <div className="text">Enter Community Details:</div>
+              <div className="underlane"></div>
+            </div>
+
+            <div className="inputs">
+              <div className="input">
+                <img src={user_icon} alt="user" className="image" />
+                <input
+                  name="name"
+                  type="text"
+                  placeholder="Community Name"
+                  onChange={(e) => setCommunityName(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="inputs">
+              <div className="input">
+                <img src={user_icon} alt="user" className="image" />
+                <input
+                  name="category"
+                  type="text"
+                  placeholder="Community Category"
+                  onChange={(e) => setCommunityCategory(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="inputs">
+              <div className="input">
+                <img src={user_icon} alt="user" className="image" />
+                <input
+                  name="lng"
+                  type="number"
+                  placeholder="Lng"
+                  onChange={(e) => setCommunityLng(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="inputs">
+              <div className="input">
+                <img src={user_icon} alt="user" className="image" />
+                <input
+                  name="lat"
+                  type="number"
+                  placeholder="Lan"
+                  onChange={(e) => setCommunityLat(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <button
+              className="add-comm-btn"
+              onClick={() => {
+                addCommunityPopup(addAction);
+                setAddAction(null);
+              }}
+            >
+              Add Community
+            </button>
+          </div>
+        </Popup>
+
         {/* Right Toolbox for Favorites */}
         {user.userType !== "Official" && (
           <div className="right-toolside">
             <h3>Your Favorites</h3>
             <ul>
               {favorites.map((fav) => (
-                <li key={fav.id}>{fav.name}</li>
+                <li key={fav._id}>{fav.name}</li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {/*Right toolbox for city official user*/}
+        {/* Right Toolbox for Favorites */}
+        {user.userType === "Official" && (
+          <div className="right-toolside">
+            <h3>Communities List</h3>
+            <ul>
+              {filteredCommunities.map((community) => (
+                <li key={community._id}>{community.name}</li>
+              ))}
+            </ul>
+            <button
+              className="add-comm-btn"
+              onClick={() => setButtonPopup(true)}
+            >
+              Add Community
+            </button>
           </div>
         )}
       </div>

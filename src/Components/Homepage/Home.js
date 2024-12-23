@@ -157,16 +157,15 @@ const Home = () => {
         body: JSON.stringify({ name, category, lng, lat }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-        setCommunities((prevCommunities) => [
-          ...prevCommunities,
-          data.newCommunity,
-        ]);
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
+        const data = await response.json();
+        setCommunities(data.communities); // Update with fresh data
         alert("Community created!");
       } else {
-        alert(data.message || "There was an issue signing up.");
+        alert("There was an issue signing up.");
       }
     } catch (error) {
       console.error("Error during user creation:", error);
@@ -189,6 +188,11 @@ const Home = () => {
       const data = await response.json();
 
       if (response.ok) {
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
+        const data = await response.json();
+        setCommunities(data.communities); // Update with fresh data
         alert("Community deleted!");
         setDeltedCommunity(true);
       } else {

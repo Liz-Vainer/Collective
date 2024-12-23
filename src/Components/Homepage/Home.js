@@ -160,8 +160,11 @@ const Home = () => {
       const data = await response.json();
 
       if (response.ok) {
+        setCommunities((prevCommunities) => [
+          ...prevCommunities,
+          data.newCommunity,
+        ]);
         alert("Community created!");
-        setCommunities((fakeCommunities) => [...fakeCommunities, data]);
       } else {
         alert(data.message || "There was an issue signing up.");
       }
@@ -385,6 +388,7 @@ const Home = () => {
               onClick={() => {
                 addCommunityPopup(addAction);
                 setAddAction(null);
+                setButtonPopup(false);
               }}
             >
               Add Community

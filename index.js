@@ -308,6 +308,52 @@ app.post("/community", async (req, res) => {
   }
 });
 
+//fake communities to the database
+// Automatically create fake communities when the server starts
+const createFakeCommunities = async () => {
+  await Community.deleteMany({ lan: null });
+
+  const fakeCommunities = [
+    {
+      name: "Art Lovers",
+      lat: 31.2561,
+      lng: 34.7946,
+      category: "Entertainment",
+    },
+    {
+      name: "Tech Enthusiasts",
+      lat: 31.2543,
+      lng: 34.7921,
+      category: "Entertainment",
+    },
+    { name: "Running club", lat: 31.2508, lng: 34.7905, category: "Sport" },
+    { name: "Local church", lat: 31.2535, lng: 34.789, category: "Religion" },
+    { name: "Swimming pool", lat: 31.2535, lng: 34.789, category: "Religion" },
+  ];
+
+  try {
+    for (let community of fakeCommunities) {
+      const existingCommunity = await Community.findOne({
+        lat: community.lat, // Check if community with same lat exists
+        lng: community.lng, // Check if community with same lng exists
+      });
+
+      if (!existingCommunity) {
+        const newCommunity = new Community(community);
+        await newCommunity.save();
+      }
+    }
+
+    console.log("Fake communities added successfully.");
+  } catch (err) {
+    console.error("Error adding fake communities:", err);
+    console.log("Failed to add fake communities.");
+  }
+};
+
+// Run the function to create fake communities when the server starts
+createFakeCommunities();
+
 // Fetch fake communities
 app.get("/get-fake-communities", async (req, res) => {
   try {
@@ -380,30 +426,6 @@ app.post("/city-official/signup", async (req, res) => {
   } catch (err) {
     console.error("Error creating Official:", err);
     res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-// Route to fetch communities
-app.get("/communities", async (req, res) => {
-  try {
-    const { search, category } = req.query;
-
-    // Build the filter object dynamically based on the query params
-    const filter = {};
-
-    if (search) {
-      filter.name = { $regex: search, $options: "i" }; // Case-insensitive search
-    }
-
-    if (category && category !== "All") {
-      filter.category = category;
-    }
-    const communities = await Community.find(filter); // Find communities based on filter
-
-    res.json(communities); // Return the fetched communities
-  } catch (err) {
-    console.error("Error fetching communities:", err);
-    res.status(500).json({ message: "Server error" });
   }
 });
 

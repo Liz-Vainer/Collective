@@ -151,12 +151,22 @@ const Home = () => {
       });
 
       if (response.ok) {
-        const response = await fetch(
-          "http://localhost:3000/get-fake-communities"
-        );
-        const data = await response.json();
-        setCommunities(data.communities); // Update with fresh data
-        alert("Community created!");
+        const newCommunity = { name, category, lng, lat }; // Optimistically update state with new community
+        setCommunities((prev) => [...prev, newCommunity]);
+
+        setTimeout(async () => {
+          // Wait for state update, then fetch updated communities
+          const communitiesResponse = await fetch(
+            "http://localhost:3000/get-fake-communities"
+          );
+          const communitiesData = await communitiesResponse.json();
+          if (communitiesResponse.ok) {
+            setCommunities(communitiesData.communities);
+            alert("Community created!");
+          } else {
+            alert("Failed to fetch updated communities.");
+          }
+        }, 100); // Adding a small delay for the UI update
       } else {
         alert("There was an issue signing up.");
       }

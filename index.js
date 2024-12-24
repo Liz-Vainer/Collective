@@ -306,6 +306,44 @@ app.post("/remove-community", async (req, res) => {
   }
 });
 
+//deleting comminity from favorites
+app.post("/remove-favorite", async (req, res) => {
+  const { id, community, userType } = req.body;
+
+  let Model;
+  switch (userType) {
+    case "User":
+      Model = User;
+      break;
+    case "Orginaizer":
+      Model = Orginaizer;
+      break;
+    case "Official":
+      Model = Official;
+      break;
+    default:
+      return res.status(400).json({ message: "Invalid user type" });
+  }
+
+  try {
+    const user = await Model.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    for (let i = user.favorites.length - 1; i >= 0; i--) {
+      if (user.favorites[i].name === community.name) {
+        user.favorites.splice(i, 1); // Remove the item safely
+      }
+    }
+    await user.save();
+    res.json({ favorites: user.favorites });
+  } catch (err) {
+    console.error("Error removing community:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 // Fetch fake communities
 app.get("/get-fake-communities", async (req, res) => {
   try {

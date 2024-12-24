@@ -16,14 +16,6 @@ import user_icon from "../Assets/person_icon.png"; //temporary until we make com
 const Home = () => {
   const { user } = useUser(); // Destructure user from context
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     // Handle the case where there is no user (i.e., not logged in)
-  //     console.log("User is not logged in");
-  //   } else {
-  //     console.log("User:", user);
-  //   }
-  // }, [user]);
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
@@ -44,7 +36,6 @@ const Home = () => {
 
   //===================== Fake Communities Data =====================
   const [fakeCommunities, setCommunities] = useState([]);
-  const [deletedCommunity, setDeltedCommunity] = useState(null);
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -66,7 +57,7 @@ const Home = () => {
     };
 
     fetchCommunities();
-  }, [deletedCommunity]);
+  }, []);
 
   //===================== State Management =====================
   const { isLoaded, loadError } = useJsApiLoader({
@@ -96,7 +87,8 @@ const Home = () => {
           const data = await response.json();
 
           if (response.ok) {
-            setFavorites(data.favorites || []);
+            setFavorites(data.favorites);
+            user.favorites = data.favorites;
           } else {
             alert(data.message || "Failed to fetch favorites.");
           }
@@ -132,7 +124,8 @@ const Home = () => {
         console.log(data); // Check what is returned by the backend
 
         if (response.ok) {
-          setFavorites([...favorites, community]); // Add to local state
+          user.favorites = data.favorites;
+          setFavorites(user.favorites);
           alert("Added to favorites");
         } else {
           alert(data.message || "Failed to add to favorites");
@@ -194,7 +187,33 @@ const Home = () => {
         const data = await response.json();
         setCommunities(data.communities); // Update with fresh data
         alert("Community deleted!");
-        setDeltedCommunity(true);
+      } else {
+        alert(data.message || "There was an issue deleting the community.");
+      }
+    } catch (err) {}
+  };
+
+  //deleting community from favotites
+  const removeFavorite = async (community) => {
+    try {
+      const response = await fetch(`http://localhost:3000/remove-favorite`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: user.id,
+          community,
+          userType: user.userType,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        user.favorites = data.favorites;
+        setFavorites(user.favorites);
+        alert("Community removed from favorites!");
       } else {
         alert(data.message || "There was an issue deleting the community.");
       }
@@ -299,16 +318,33 @@ const Home = () => {
                 <div>
                   <h3>{selectedCommunity.name}</h3>
                   <p>Welcome to {selectedCommunity.name} community!</p>
-                  {user.userType !== "Official" && (
-                    <button
-                      onClick={() => {
-                        addToFavorites(selectedCommunity);
-                        setSelectedCommunity(null);
-                      }}
-                    >
-                      Add to Favorites
-                    </button>
-                  )}
+                  {user.userType !== "Official" &&
+                    !user.favorites.some(
+                      (fav) => fav.name === selectedCommunity.name
+                    ) && (
+                      <button
+                        onClick={() => {
+                          addToFavorites(selectedCommunity);
+                          setSelectedCommunity(null);
+                        }}
+                      >
+                        Add to Favorites
+                      </button>
+                    )}
+
+                  {user.userType !== "Official" &&
+                    user.favorites.some(
+                      (fav) => fav.name === selectedCommunity.name
+                    ) && (
+                      <button
+                        onClick={() => {
+                          removeFavorite(selectedCommunity);
+                          setSelectedCommunity(false);
+                        }}
+                      >
+                        Remove from favorites
+                      </button>
+                    )}
 
                   {user.userType === "Official" && (
                     <button

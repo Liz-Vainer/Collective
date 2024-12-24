@@ -157,7 +157,6 @@ const Home = () => {
         const data = await response.json();
         setCommunities(data.communities); // Update with fresh data
         alert("Community created!");
-        setCommunities((fakeCommunities) => [...fakeCommunities, data]);
       } else {
         alert("There was an issue signing up.");
       }
@@ -429,6 +428,7 @@ const Home = () => {
               onClick={() => {
                 addCommunityPopup(addAction);
                 setAddAction(null);
+                setButtonPopup(false);
               }}
             >
               Add Community

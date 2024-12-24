@@ -286,7 +286,7 @@ app.post("/add-community", async (req, res) => {
 
     await newCommunity.save(); // Save the new community to the database
 
-    res.status(201).json(newCommunity);
+    res.status(201).json({ newCommunity });
   } catch (err) {
     console.error("Error creating community:", err);
     res.status(500).json({ message: "Internal Server Error" });

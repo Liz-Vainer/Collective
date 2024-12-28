@@ -40,9 +40,7 @@ const Home = () => {
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/get-fake-communities"
-        );
+        const response = await fetch("/get-fake-communities");
         const data = await response.json();
 
         if (response.ok) {
@@ -82,7 +80,7 @@ const Home = () => {
       if (user.userType !== "Official")
         try {
           const response = await fetch(
-            `http://localhost:3000/users/${user.id}/fav/${user.userType}`
+            `/users/${user.id}/fav/${user.userType}`
           );
           const data = await response.json();
 
@@ -107,7 +105,7 @@ const Home = () => {
   const addToFavorites = async (community) => {
     if (!favorites.some((fav) => fav.name === community.name)) {
       try {
-        const response = await fetch("http://localhost:3000/users/add-to-fav", {
+        const response = await fetch("/users/add-to-fav", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -142,7 +140,7 @@ const Home = () => {
   //adding communities for official user
   const addCommunityPopup = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/add-community`, {
+      const response = await fetch(`/add-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,12 +149,20 @@ const Home = () => {
       });
 
       if (response.ok) {
-        const response = await fetch(
-          "http://localhost:3000/get-fake-communities"
-        );
-        const data = await response.json();
-        setCommunities(data.communities); // Update with fresh data
-        alert("Community created!");
+        const newCommunity = { name, category, lng, lat }; // Optimistically update state with new community
+        setCommunities((prev) => [...prev, newCommunity]);
+
+        setTimeout(async () => {
+          // Wait for state update, then fetch updated communities
+          const communitiesResponse = await fetch("/get-fake-communities");
+          const communitiesData = await communitiesResponse.json();
+          if (communitiesResponse.ok) {
+            setCommunities(communitiesData.communities);
+            alert("Community created!");
+          } else {
+            alert("Failed to fetch updated communities.");
+          }
+        }, 100); // Adding a small delay for the UI update
       } else {
         alert("There was an issue signing up.");
       }
@@ -170,7 +176,7 @@ const Home = () => {
   const removeCommunity = async (community) => {
     try {
       const name = community.name;
-      const response = await fetch(`http://localhost:3000/remove-community`, {
+      const response = await fetch(`/remove-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -181,9 +187,7 @@ const Home = () => {
       const data = await response.json();
 
       if (response.ok) {
-        const response = await fetch(
-          "http://localhost:3000/get-fake-communities"
-        );
+        const response = await fetch("/get-fake-communities");
         const data = await response.json();
         setCommunities(data.communities); // Update with fresh data
         alert("Community deleted!");
@@ -196,7 +200,7 @@ const Home = () => {
   //deleting community from favotites
   const removeFavorite = async (community) => {
     try {
-      const response = await fetch(`http://localhost:3000/remove-favorite`, {
+      const response = await fetch(`/remove-favorite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

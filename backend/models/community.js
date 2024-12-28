@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const communitySchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
@@ -8,5 +8,6 @@ const communitySchema = new mongoose.Schema({
   lat: { type: Number, required: true, unique: true },
 });
 
-// const Community = mongoose.model("Community", communitySchema);
-module.exports = communitySchema;
+const Community = mongoose.model("Community", communitySchema);
+
+export default Community;

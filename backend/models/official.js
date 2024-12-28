@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const officialSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
@@ -6,6 +6,6 @@ const officialSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-// const Official = mongoose.model("Official", officialSchema);
+const Official = mongoose.model("Official", officialSchema);
 
-module.exports = officialSchema;
+export default Official;

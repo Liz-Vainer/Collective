@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orginaizerSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
@@ -14,6 +14,6 @@ const orginaizerSchema = new mongoose.Schema({
   ],
 });
 
-// const Orginaizer = mongoose.model("Orginaizer", orginaizerSchema);
+const Orginaizer = mongoose.model("Orginaizer", orginaizerSchema);
 
-module.exports = orginaizerSchema;
+export default Orginaizer;

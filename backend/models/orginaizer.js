@@ -12,6 +12,11 @@ const orginaizerSchema = new mongoose.Schema({
       lng: Number,
     },
   ],
+  age: { type: Number, min: 10, max: 100, required: false },
+  religion: { type: String, required: false },
+  ethnicity: { type: String, required: false },
+  interest: { type: String, required: false },
+  gender: { type: String, required: false },
 });
 
 const Orginaizer = mongoose.model("Orginaizer", orginaizerSchema);

@@ -50,7 +50,18 @@ const handleLogin = async (name, password, res) => {
 };
 
 //function for handle signup
-const handleSignup = async (name, email, password, userType, res) => {
+const handleSignup = async (
+  name,
+  email,
+  password,
+  userType,
+  res,
+  age,
+  religion,
+  ethnicity,
+  interest,
+  gender
+) => {
   let Model;
   switch (userType) {
     case "citizen":
@@ -76,7 +87,16 @@ const handleSignup = async (name, email, password, userType, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = new Model({ name, email, password: hashedPassword });
+  const newUser = new Model({
+    name,
+    email,
+    password: hashedPassword,
+    age: age,
+    religion: religion,
+    ethnicity: ethnicity,
+    interest: interest,
+    gender: gender,
+  });
 
   try {
     await newUser.save();
@@ -93,13 +113,34 @@ const handleSignup = async (name, email, password, userType, res) => {
 
 //signup
 export const signup = async (req, res) => {
-  const { name, email, password, userType } = req.body;
+  const {
+    name,
+    email,
+    password,
+    userType,
+    age,
+    religion,
+    ethnicity,
+    interest,
+    gender,
+  } = req.body;
 
   if (!name || !password || !email || !userType) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  await handleSignup(name, email, password, userType, res);
+  await handleSignup(
+    name,
+    email,
+    password,
+    userType,
+    res,
+    age,
+    religion,
+    ethnicity,
+    interest,
+    gender
+  );
 };
 
 //add to favorites

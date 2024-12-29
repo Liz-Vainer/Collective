@@ -1,5 +1,5 @@
 {
-  "proxy":"http://localhost:3000",
+  "proxy": "http://localhost:3000",
   "name": "login-signup",
   "version": "1.0.0",
   "private": true,

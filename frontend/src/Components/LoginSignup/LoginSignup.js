@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginSignup.css";
 import user_icon from "../Assets/person_icon.png";
@@ -19,7 +19,7 @@ const LoginSignup = () => {
   const navigate = useNavigate();
   const [userType, setUserType] = useState("citizen");
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
-  const [religion, setReligion] = useState(""); // Track selected religion
+  const [religion, setReligion] = useState("no"); // Track selected religion
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
@@ -60,10 +60,14 @@ const LoginSignup = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("other");
+  const [age, setAge] = useState(null);
+  const [ethnicity, setEthnicity] = useState("other");
+  const [interest, setInterest] = useState("other");
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
-        const response = await fetch(`http://localhost:3000/login`, {
+        const response = await fetch("/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -88,27 +92,37 @@ const LoginSignup = () => {
     } else if (action === "Sign Up") {
       setShowBody(true);
 
-      try {
-        const response = await fetch(`http://localhost:3000/signup`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, email, password, userType }),
-        });
+      // try {
+      //   const response = await fetch("/signup", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       name,
+      //       email,
+      //       password,
+      //       userType,
+      //       gender,
+      //       age,
+      //       religion,
+      //       ethnicity,
+      //       interest,
+      //     }),
+      //   });
 
-        const data = await response.json();
+      //   const data = await response.json();
 
-        if (response.ok) {
-          alert("User created!");
-          setUser(data); // Make sure the data has user information
-        } else {
-          alert(data.message || "There was an issue signing up.");
-        }
-      } catch (error) {
-        console.error("Error during user creation:", error);
-        alert("An error occurred. Please try again.");
-      }
+      //   if (response.ok) {
+      //     alert("User created!");
+      //     setUser(data); // Make sure the data has user information
+      //   } else {
+      //     alert(data.message || "There was an issue signing up.");
+      //   }
+      // } catch (error) {
+      //   console.error("Error during user creation:", error);
+      //   alert("An error occurred. Please try again.");
+      // }
     }
   };
 
@@ -123,7 +137,39 @@ const LoginSignup = () => {
     setAction("Sign Up");
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    try {
+      const response = await fetch("/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          userType,
+          age,
+          religion,
+          ethnicity,
+          interest,
+          gender,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("User created!");
+        setUser(data); // Make sure the data has user information
+      } else {
+        alert(data.message || "There was an issue signing up.");
+      }
+    } catch (error) {
+      console.error("Error during user creation:", error);
+      alert("An error occurred. Please try again.");
+    }
+
     navigate("/home"); // Navigate to the main page (Home)
   };
 
@@ -243,6 +289,21 @@ const LoginSignup = () => {
         <div className="container">
           <h2>Can you tell us more about you?</h2>
           <h3>(Optional)</h3>
+          {/* =================== Gender Question =================== */}
+          <div className="question">
+            <label htmlFor="gender-select">What is your gender?</label>
+            <select
+              id="gender-select"
+              className="gender-list"
+              onChange={(e) => {
+                setGender(e.target.value);
+              }}
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
 
           {/* =================== Age Question =================== */}
           <div className="question">
@@ -252,6 +313,11 @@ const LoginSignup = () => {
               id="age-input"
               className="age-input"
               placeholder="age"
+              min="18"
+              max="100"
+              onChange={(e) => {
+                setAge(e.target.value);
+              }}
             />
           </div>
 
@@ -281,7 +347,13 @@ const LoginSignup = () => {
           {/* =================== Ethnicity Question =================== */}
           <div className="question">
             <label htmlFor="ethnicity-select">What is your ethnicity?</label>
-            <select id="ethnicity-select" className="religion-list">
+            <select
+              id="ethnicity-select"
+              className="religion-list"
+              onChange={(e) => {
+                setEthnicity(e.target.value);
+              }}
+            >
               <option value="caucasian">Caucasian</option>
               <option value="black">Black</option>
               <option value="middle-eastern">Middle Eastern</option>
@@ -294,7 +366,13 @@ const LoginSignup = () => {
             <label htmlFor="interest-select">
               What is your preferred interest?
             </label>
-            <select id="interest-select" className="religion-list">
+            <select
+              id="interest-select"
+              className="religion-list"
+              onChange={(e) => {
+                setInterest(e.target.value);
+              }}
+            >
               <option value="entertainment">Entertainment</option>
               <option value="sport">Sport</option>
               <option value="religion">Religion</option>

@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
 import { useNavigate } from "react-router-dom";
-import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch } from "react-icons/fa";
+import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch, FaBars,FaCamera } from "react-icons/fa";
+import Drawer from "@mui/material/Drawer";
 import {
   GoogleMap,
   Marker,
@@ -13,8 +14,11 @@ import { useUser } from "../UserContext";
 import Popup from "../Popup/Popup";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
 
+
+
 const Home = () => {
   const { user } = useUser(); // Destructure user from context
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
@@ -34,6 +38,8 @@ const Home = () => {
     lng: 34.791462, // Coordinates for Be'er Sheva, Israel
   };
 
+
+  
   //===================== Fake Communities Data =====================
   const [fakeCommunities, setCommunities] = useState([]);
 
@@ -75,7 +81,22 @@ const Home = () => {
   const [category, setCommunityCategory] = useState("");
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
+  const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
+  const profilePicture= user.profilePicture || user_icon; // Default profile picture
 
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => setNewPfp(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    document.getElementById('fileInput').click();
+  };
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -253,6 +274,7 @@ const Home = () => {
         backgroundColor: "transparent",
       }}
     >
+     
       {/* Upper Tool Section */}
       <div className="upper-tool">
         <button className="exit-button" onClick={handleBackToLogin}>
@@ -293,7 +315,7 @@ const Home = () => {
           ))}
         </div>
       </div>
-
+      
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
@@ -457,7 +479,52 @@ const Home = () => {
             </ul>
           </div>
         )}
+<button
+        className="drawer-toggle-button"
+        onClick={() => setDrawerOpen(true)}
+        onMouseEnter={() => setDrawerOpen(true)} // Open on hover
+         // Open the drawer on button click
+      >
+        <FaBars size={30} color="white" />
+      </button>
 
+      {/* Drawer Component */}
+      <Drawer
+      anchor="right"
+      open={drawerOpen}
+      onClose={() => setDrawerOpen(false)}
+    >
+      <div className="drawer-content" onMouseLeave={() => setDrawerOpen(false)}>
+        {/* Profile Section */}
+        <div className="profile-section">
+          <img
+            
+            alt="Profile"
+            className="profile-pic"
+          />
+          <FaCamera size={50} color="gray" className="change-pfp-icon" />
+          <button 
+            onClick={triggerFileInput} 
+            className="change-profile-btn"
+          >
+            Change Profile
+          </button>
+          {/* Hidden File Input */}
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+        </div>
+
+        {/* Other Drawer Buttons */}
+        <button onClick={handleBackToLogin}>Back to Login</button>
+        <button onClick={handleSettings}>Settings</button>
+        <button onClick={handleInfo}>Info</button>
+      </div>
+    </Drawer>
         {/*Right toolbox for city official user*/}
         {/* Right Toolbox for Favorites */}
         {user.userType === "Official" && (

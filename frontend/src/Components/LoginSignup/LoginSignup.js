@@ -20,7 +20,7 @@ const LoginSignup = () => {
   const [userType, setUserType] = useState("citizen");
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
   const [religion, setReligion] = useState(""); // Track selected religion
-
+  const [showPassword, setShowPassword] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
   const carouselRef = useRef(null);
@@ -31,6 +31,7 @@ const LoginSignup = () => {
     sports_community,
     music_community,
   ];
+  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -139,6 +140,12 @@ const LoginSignup = () => {
     setReligion(event.target.value); // Set selected religion
   };
 
+  // =================== Password Visibility Toggle ===================
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev); // Toggle password visibility
+  };
+
+
   // =================== Main Body (Rendering Logic) ===================
   return (
     <div
@@ -168,24 +175,45 @@ const LoginSignup = () => {
             </div>
 
             {action === "Sign Up" && (
-              <div className="input">
-                <img src={email_icon} alt="email" className="image" />
-                <input
-                  name="email"
-                  type="text"
-                  placeholder="Email"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+              <>
+                <div className="input">
+                  <img src={email_icon} alt="email" className="image" />
+                  <input
+                    name="email"
+                    type="text"
+                    placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                 <div className="input">
+                  <input
+                    name="confirm-password"
+                    type={showPassword ? "text" : "password"} // Toggle password type
+                    placeholder="Confirm password"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <img
+                    src={showPassword ? password_open : password_closed} // Toggle icon
+                    alt="password visibility"
+                    className="password-icon"
+                    onClick={togglePasswordVisibility} // Toggle password visibility on click
+                  />
+                </div>
+              </>
             )}
 
-            <div className="input">
-              <img src={password_closed} alt="password" className="image" />
+              <div className="input">
               <input
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"} // Toggle password type
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
+              />
+              <img
+                src={showPassword ? password_open : password_closed} // Toggle icon
+                alt="password visibility"
+                className="password-icon"
+                onClick={togglePasswordVisibility} // Toggle password visibility on click
               />
             </div>
             {action === "Sign Up" && (

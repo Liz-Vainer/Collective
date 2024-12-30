@@ -164,7 +164,8 @@ const Home = () => {
           }
         }, 100); // Adding a small delay for the UI update
       } else {
-        alert("There was an issue signing up.");
+        const errorData = await response.json();
+        alert(errorData.message);
       }
     } catch (error) {
       console.error("Error during user creation:", error);

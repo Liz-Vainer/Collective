@@ -56,6 +56,12 @@ const LoginSignup = () => {
     }
   }, [currentImageIndex]);
 
+  useEffect(() => {
+    if (action === "Continue") {
+      handleSubmit();
+    }
+  }, [action]);
+
   const { setUser } = useUser();
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -64,6 +70,9 @@ const LoginSignup = () => {
   const [age, setAge] = useState(null);
   const [ethnicity, setEthnicity] = useState("other");
   const [interest, setInterest] = useState("other");
+  const [formValidationName, setFormValidationName] = useState(true);
+  const [formValidationEmail, setFormValidationEmail] = useState(true);
+  const [formValidationPassword, setFormValidationPassword] = useState(true);
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
@@ -89,8 +98,6 @@ const LoginSignup = () => {
         console.error("Error during login:", error);
         alert("An error occurred. Please try again.");
       }
-    } else if (action === "Sign Up") {
-      setShowBody(true);
     }
     if (action === "Continue") {
       try {
@@ -126,6 +133,51 @@ const LoginSignup = () => {
       }
 
       navigate("/home"); // Navigate to the main page (Home)
+    }
+  };
+
+  //=================== Name and email and password validation ===============
+  const validation1 = () => {
+    const regex = /^(?=.*[A-Z]).{8,}$/;
+    let flag = true;
+
+    if (name === "") {
+      console.log("Name is required");
+      setFormValidationName(false);
+      flag = false;
+    } else {
+      setFormValidationName(true);
+    }
+    if (email === "") {
+      console.log("Email is required");
+      setFormValidationEmail(false);
+      flag = false;
+    } else {
+      setFormValidationEmail(true);
+    }
+    if (password === "") {
+      console.log("Password is required");
+      setFormValidationPassword(false);
+      flag = false;
+    } else {
+      setFormValidationPassword(true);
+    }
+    if (password) {
+      if (regex.test(password)) {
+        console.log("Valid passowrd");
+        setFormValidationPassword(true);
+      } else {
+        console.log(
+          "Password must be at least 8 characters long and contain at least one uppercase letter."
+        );
+        flag = false;
+        setFormValidationPassword(false);
+      }
+    }
+    if (!flag) {
+      return false;
+    } else {
+      return true;
     }
   };
 
@@ -178,6 +230,9 @@ const LoginSignup = () => {
                 placeholder="Name"
                 onChange={(e) => setName(e.target.value)}
               />
+              {!formValidationName && (
+                <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+              )}
             </div>
 
             {action === "Sign Up" && (
@@ -189,6 +244,9 @@ const LoginSignup = () => {
                   placeholder="Email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {!formValidationEmail && (
+                  <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+                )}
               </div>
             )}
 
@@ -200,6 +258,9 @@ const LoginSignup = () => {
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {!formValidationPassword && (
+                <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+              )}
             </div>
             {action === "Sign Up" && (
               <div className="question">
@@ -241,7 +302,9 @@ const LoginSignup = () => {
               className={action === "Login" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Sign Up") {
-                  handleSubmit(); // Show new body for Sign-Up
+                  if (validation1()) {
+                    setShowBody(true);
+                  }
                 } else {
                   setAction("Sign Up"); // Switch to Sign Up if in Login
                 }
@@ -371,7 +434,6 @@ const LoginSignup = () => {
               className="submit"
               onClick={() => {
                 setAction("Continue");
-                handleSubmit();
               }}
             >
               Continue

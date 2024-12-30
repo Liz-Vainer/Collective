@@ -19,8 +19,10 @@ const LoginSignup = () => {
   const navigate = useNavigate();
   const [userType, setUserType] = useState("citizen");
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
-  const [religion, setReligion] = useState(""); // Track selected religion
+  
   const [showPassword, setShowPassword] = useState(false);
+  const [religion, setReligion] = useState("no"); // Track selected religion
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
   const carouselRef = useRef(null);
@@ -245,7 +247,7 @@ const LoginSignup = () => {
                 if (action === "Login") {
                   handleSubmit(); // If in Login, handle submission and navigate
                 } else {
-                  setAction("Login"); // Switch to Login if in Sign Up
+                  setAction("Login"); //Switch to Login if in Sign Up
                 }
               }}
             >

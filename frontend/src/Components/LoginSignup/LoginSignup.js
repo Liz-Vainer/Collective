@@ -91,38 +91,41 @@ const LoginSignup = () => {
       }
     } else if (action === "Sign Up") {
       setShowBody(true);
+    }
+    if (action === "Continue") {
+      try {
+        const response = await fetch("/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            userType,
+            age,
+            religion,
+            ethnicity,
+            interest,
+            gender,
+          }),
+        });
 
-      // try {
-      //   const response = await fetch("/signup", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       name,
-      //       email,
-      //       password,
-      //       userType,
-      //       gender,
-      //       age,
-      //       religion,
-      //       ethnicity,
-      //       interest,
-      //     }),
-      //   });
+        const data = await response.json();
 
-      //   const data = await response.json();
+        if (response.ok) {
+          alert("User created!");
+          setUser(data); // Make sure the data has user information
+        } else {
+          alert(data.message || "There was an issue signing up.");
+        }
+      } catch (error) {
+        console.error("Error during user creation:", error);
+        alert("An error occurred. Please try again.");
+      }
 
-      //   if (response.ok) {
-      //     alert("User created!");
-      //     setUser(data); // Make sure the data has user information
-      //   } else {
-      //     alert(data.message || "There was an issue signing up.");
-      //   }
-      // } catch (error) {
-      //   console.error("Error during user creation:", error);
-      //   alert("An error occurred. Please try again.");
-      // }
+      navigate("/home"); // Navigate to the main page (Home)
     }
   };
 
@@ -135,42 +138,6 @@ const LoginSignup = () => {
   const handleBackToSignup = () => {
     setShowBody(false);
     setAction("Sign Up");
-  };
-
-  const handleContinue = async () => {
-    try {
-      const response = await fetch("/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          userType,
-          age,
-          religion,
-          ethnicity,
-          interest,
-          gender,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("User created!");
-        setUser(data); // Make sure the data has user information
-      } else {
-        alert(data.message || "There was an issue signing up.");
-      }
-    } catch (error) {
-      console.error("Error during user creation:", error);
-      alert("An error occurred. Please try again.");
-    }
-
-    navigate("/home"); // Navigate to the main page (Home)
   };
 
   // =================== Handle Religious Checkbox ===================
@@ -286,6 +253,7 @@ const LoginSignup = () => {
         </div>
       ) : (
         // =================== New Body (For Sign Up) ===================
+
         <div className="container">
           <h2>Can you tell us more about you?</h2>
           <h3>(Optional)</h3>
@@ -399,7 +367,13 @@ const LoginSignup = () => {
               Back to Sign up
             </div>
 
-            <div className="submit" onClick={handleContinue}>
+            <div
+              className="submit"
+              onClick={() => {
+                setAction("Continue");
+                handleSubmit();
+              }}
+            >
               Continue
             </div>
           </div>

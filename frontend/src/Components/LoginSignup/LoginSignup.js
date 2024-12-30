@@ -64,6 +64,13 @@ const LoginSignup = () => {
   const [age, setAge] = useState(null);
   const [ethnicity, setEthnicity] = useState("other");
   const [interest, setInterest] = useState("other");
+
+  useEffect(() => {
+    if (action === "Continue") {
+      handleSubmit();
+    }
+  }, [action]);
+
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
@@ -89,10 +96,7 @@ const LoginSignup = () => {
         console.error("Error during login:", error);
         alert("An error occurred. Please try again.");
       }
-    } else if (action === "Sign Up") {
-      setShowBody(true);
-    }
-    if (action === "Continue") {
+    } else if (action === "Continue") {
       try {
         const response = await fetch("/signup", {
           method: "POST",
@@ -241,7 +245,7 @@ const LoginSignup = () => {
               className={action === "Login" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Sign Up") {
-                  handleSubmit(); // Show new body for Sign-Up
+                  setShowBody(true); // Show new body for Sign-Up
                 } else {
                   setAction("Sign Up"); // Switch to Sign Up if in Login
                 }
@@ -371,7 +375,6 @@ const LoginSignup = () => {
               className="submit"
               onClick={() => {
                 setAction("Continue");
-                handleSubmit();
               }}
             >
               Continue

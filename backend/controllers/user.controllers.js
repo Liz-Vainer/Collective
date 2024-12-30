@@ -3,6 +3,7 @@ import User from "../models/user.js"; // Your user model
 import Organizer from "../models/orginaizer.js"; // Organizer model
 import Official from "../models/official.js"; // Official model
 import Community from "../models/community.js"; // Adjust the import path as needed
+import generateTokenAndSetCookie from "../utils/generateToken.js";
 
 // Function to try to log in by checking each model (User, Organizer, Official)
 const handleLogin = async (name, password, res) => {
@@ -37,6 +38,8 @@ const handleLogin = async (name, password, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+
+    generateTokenAndSetCookie(user._id, res);
 
     res.json({
       message: `${userType} Login successful`,
@@ -86,7 +89,6 @@ const handleSignup = async (
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-
   const newUser = new Model({
     name,
     email,
@@ -100,6 +102,7 @@ const handleSignup = async (
 
   try {
     await newUser.save();
+    generateTokenAndSetCookie(newUser._id, res);
     res.status(201).json({
       message: `${userType} Login successful`,
       id: newUser.id,

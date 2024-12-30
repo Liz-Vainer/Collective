@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import methodOverride from "method-override";
 import connectToMongoDB from "./db/connectToMongoDb.js";
+import dotenv from "dotenv";
 
 // Initialize Express
 const app = express();

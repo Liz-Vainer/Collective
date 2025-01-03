@@ -70,6 +70,13 @@ const LoginSignup = () => {
   const [age, setAge] = useState(null);
   const [ethnicity, setEthnicity] = useState("other");
   const [interest, setInterest] = useState("other");
+
+  useEffect(() => {
+    if (action === "Continue") {
+      handleSubmit();
+    }
+  }, [action]);
+
   const [formValidationName, setFormValidationName] = useState(true);
   const [formValidationEmail, setFormValidationEmail] = useState(true);
   const [formValidationPassword, setFormValidationPassword] = useState(true);
@@ -98,8 +105,7 @@ const LoginSignup = () => {
         console.error("Error during login:", error);
         alert("An error occurred. Please try again.");
       }
-    }
-    if (action === "Continue") {
+    } else if (action === "Continue") {
       try {
         const response = await fetch("/signup", {
           method: "POST",
@@ -302,9 +308,7 @@ const LoginSignup = () => {
               className={action === "Login" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Sign Up") {
-                  if (validation1()) {
-                    setShowBody(true);
-                  }
+                  setShowBody(true); // Show new body for Sign-Up
                 } else {
                   setAction("Sign Up"); // Switch to Sign Up if in Login
                 }

@@ -28,8 +28,6 @@ const handleLogin = async (name, password, res) => {
       }
     }
 
-    console.log(user);
-
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -45,6 +43,12 @@ const handleLogin = async (name, password, res) => {
       message: `${userType} Login successful`,
       id: user.id,
       userType,
+      age: user.age,
+      gender: user.gender,
+      isReligious: user.isReligious,
+      religioun: user.religion,
+      ethnicity: user.ethnicity,
+      interest: user.interest,
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -271,5 +275,101 @@ export const remove_fav = async (req, res) => {
   } catch (err) {
     console.error("Error removing community:", err);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const settings = async (req, res) => {
+  const { userID, gender, age, isReligious, religion, ethnicity, interest } =
+    req.body;
+  console.log("THIS IS IN /SETTINGS : ", gender, userID);
+  try {
+    // Find the user by ID in the User collection
+    let updatedUser;
+
+    // If user is in the User collection
+    updatedUser = await User.findByIdAndUpdate(
+      userID,
+      {
+        gender,
+        age,
+        isReligious,
+        religion,
+        ethnicity,
+        interest,
+      },
+      { new: true }
+    );
+
+    if (updatedUser) {
+      return res.status(200).json({
+        message: "User settings updated successfully",
+        user: updatedUser,
+      });
+    }
+
+    // If not in the User collection, check the Organizer collection
+    updatedUser = await Organizer.findByIdAndUpdate(
+      userID,
+      {
+        gender,
+        age,
+        isReligious,
+        religion,
+        ethnicity,
+        interest,
+      },
+      { new: true }
+    );
+
+    if (updatedUser) {
+      return res.status(200).json({
+        message: "teOrganizer settings updated successfully",
+        user: updadUser,
+      });
+    }
+
+    // If not in the Organizer collection, check the Official collection
+    updatedUser = await Official.findByIdAndUpdate(
+      userID,
+      {
+        gender,
+        age,
+        isReligious,
+        religion,
+        ethnicity,
+        interest,
+      },
+      { new: true }
+    );
+
+    if (updatedUser) {
+      return res.status(200).json({
+        message: "Official settings updated successfully",
+        user: updatedUser,
+      });
+    }
+
+    updatedUser = await Official.findByIdAndUpdate(
+      userID,
+      {
+        gender,
+        age,
+        isReligious,
+        religion,
+        ethnicity,
+        interest,
+      },
+      { new: true }
+    );
+
+    // If the user is not found in any collection
+    return res.status(404).json({
+      message: "User not found in any collection",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "An error occurred while updating user settings",
+    });
   }
 };

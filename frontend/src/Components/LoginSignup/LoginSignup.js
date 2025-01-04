@@ -71,15 +71,10 @@ const LoginSignup = () => {
   const [ethnicity, setEthnicity] = useState("other");
   const [interest, setInterest] = useState("other");
 
-  useEffect(() => {
-    if (action === "Continue") {
-      handleSubmit();
-    }
-  }, [action]);
-
   const [formValidationName, setFormValidationName] = useState(true);
   const [formValidationEmail, setFormValidationEmail] = useState(true);
   const [formValidationPassword, setFormValidationPassword] = useState(true);
+
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
@@ -308,7 +303,9 @@ const LoginSignup = () => {
               className={action === "Login" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Sign Up") {
-                  setShowBody(true); // Show new body for Sign-Up
+                  if (validation1()) {
+                    setShowBody(true); // Show new body for Sign-Up
+                  }
                 } else {
                   setAction("Sign Up"); // Switch to Sign Up if in Login
                 }

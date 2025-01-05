@@ -28,10 +28,12 @@ const SettingsPage = () => {
   } = useUser();
 
   useEffect(() => {
-    if (isReligious === false) {
+    if (!isReligious) {
       setReligion("no");
+    } else if (religion === "no") {
+      setReligion("muslim");
     }
-  }, [isReligious]);
+  }, [isReligious, religion]);
   // Handle form submission (save to MongoDB here)
   const handleSubmit = async () => {
     console.log(religion);
@@ -118,6 +120,7 @@ const SettingsPage = () => {
           checked={isReligious}
           onChange={(e) => setIsReligious(e.target.checked)}
         />
+        {console.log("SETTINGS PAGE RELIUGION:", religion)}
         {isReligious && (
           <select
             className="religion-list"

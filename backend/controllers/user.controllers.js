@@ -39,6 +39,10 @@ const handleLogin = async (name, password, res) => {
 
     generateTokenAndSetCookie(user._id, res);
     console.log("THIS IS AGE FROM USER CONTROLLES (BAACKENMD): ", user);
+    console.log(
+      "THIS IS RELIGIOUN FROM USER CONTROLLES (BAACKENMD): ",
+      user.religion
+    );
     let isReligious;
     if (user.religion !== "no") {
       isReligious = true;

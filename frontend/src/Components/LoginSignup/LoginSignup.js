@@ -98,9 +98,15 @@ const LoginSignup = () => {
           body: JSON.stringify({ name, password }),
         });
         const data = await response.json();
-
+        console.log("THHIS IS DATA:", data);
         if (response.ok) {
           setUser(data); // Store user info (including userType) in the context
+          setAge(data.age);
+          setGender(data.gender);
+          setIsReligious(data.isReligious);
+          setReligion(data.religioun);
+          setInterest(data.interest);
+          setEthnicity(data.ethnicity);
           alert("Login successful");
 
           navigate("/home");

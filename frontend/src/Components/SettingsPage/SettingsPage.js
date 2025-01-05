@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../UserContext";
 import { useNavigate } from "react-router-dom";
 
@@ -27,9 +27,14 @@ const SettingsPage = () => {
     setGender,
   } = useUser();
 
+  useEffect(() => {
+    if (isReligious === false) {
+      setReligion("no");
+    }
+  }, [isReligious]);
   // Handle form submission (save to MongoDB here)
   const handleSubmit = async () => {
-    console.log(gender);
+    console.log(religion);
     try {
       const userData = {
         userID: user.id,

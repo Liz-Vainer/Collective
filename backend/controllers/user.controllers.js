@@ -38,6 +38,13 @@ const handleLogin = async (name, password, res) => {
     }
 
     generateTokenAndSetCookie(user._id, res);
+    console.log("THIS IS AGE FROM USER CONTROLLES (BAACKENMD): ", user);
+    let isReligious;
+    if (user.religion !== "no") {
+      isReligious = true;
+    } else {
+      isReligious = false;
+    }
 
     res.json({
       message: `${userType} Login successful`,
@@ -45,7 +52,7 @@ const handleLogin = async (name, password, res) => {
       userType,
       age: user.age,
       gender: user.gender,
-      isReligious: user.isReligious,
+      isReligious: isReligious,
       religioun: user.religion,
       ethnicity: user.ethnicity,
       interest: user.interest,
@@ -281,7 +288,7 @@ export const remove_fav = async (req, res) => {
 export const settings = async (req, res) => {
   const { userID, gender, age, isReligious, religion, ethnicity, interest } =
     req.body;
-  console.log("THIS IS IN /SETTINGS : ", gender, userID);
+
   try {
     // Find the user by ID in the User collection
     let updatedUser;
@@ -324,7 +331,7 @@ export const settings = async (req, res) => {
     if (updatedUser) {
       return res.status(200).json({
         message: "teOrganizer settings updated successfully",
-        user: updadUser,
+        user: updatedUser,
       });
     }
 

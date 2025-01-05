@@ -4,38 +4,65 @@ import { useNavigate } from "react-router-dom";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
-  console.log("USER: ", user);
-  // Define the state variables locally in SettingsPage
-  const [gender, setGender] = useState(user.gender);
-  const [age, setAge] = useState(user.age);
-  console.log("THIS IS USER.AGE ", user.age);
-  const [isReligious, setIsReligious] = useState(user.isReligious);
-  const [religion, setReligion] = useState(user.religion);
-  const [ethnicity, setEthnicity] = useState(user.ethnicity);
-  const [interest, setInterest] = useState(user.interest);
+  const {
+    user,
+    setUser,
+    name,
+    setName,
+    password,
+    setPasswor,
+    email,
+    setEmail,
+    age,
+    setAge,
+    ethnicity,
+    setEthnicity,
+    interest,
+    setInterest,
+    isReligious,
+    setIsReligious,
+    religion,
+    setReligion,
+    gender,
+    setGender,
+  } = useUser();
 
   // Handle form submission (save to MongoDB here)
   const handleSubmit = async () => {
-    const userData = {
-      userID: user.id,
-      gender,
-      age,
-      isReligious,
-      religion,
-      ethnicity,
-      interest,
-    };
+    console.log(gender);
+    try {
+      const userData = {
+        userID: user.id,
+        gender,
+        age,
+        isReligious,
+        religion,
+        ethnicity,
+        interest,
+      };
 
-    // Send the data to the backend (MongoDB)
-    await fetch("/settings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
+      // Send the data to the backend (MongoDB)
+      const response = await fetch("/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
 
+      if (!response.ok) {
+        // If the response status is not in the range 200–299, throw an error
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update settings.");
+      }
+
+      const resData = await response.json();
+      console.log("Settings updated successfully:", resData);
+    } catch (error) {
+      console.error("Error while updating user settings:", error.message);
+      alert(`Error: ${error.message}`); // Display an error message to the user
+    }
+    // Navigate to home on success
     navigate("/home");
   };
 
@@ -77,6 +104,10 @@ const SettingsPage = () => {
       {/* Religious Question */}
       <div className="question">
         <label>Are you religious?</label>
+        {console.log("IS RELIGIOUS?: ", isReligious)}
+        {console.log("RELIGIOUS?: ", religion)}
+        {console.log("AGE?: ", age)}
+
         <input
           type="checkbox"
           checked={isReligious}
@@ -121,7 +152,7 @@ const SettingsPage = () => {
         <select
           id="interest-select"
           className="religion-list"
-          value={interest}
+          value={user.interest}
           onChange={(e) => setInterest(e.target.value)}
         >
           <option value="entertainment">Entertainment</option>

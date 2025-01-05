@@ -18,8 +18,6 @@ const LoginSignup = () => {
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
   const [userType, setUserType] = useState("citizen");
-  const [isReligious, setIsReligious] = useState(false); // Track if user is religious
-  const [religion, setReligion] = useState("no"); // Track selected religion
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
@@ -62,14 +60,28 @@ const LoginSignup = () => {
     }
   }, [action]);
 
-  const { setUser } = useUser();
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("other");
-  const [age, setAge] = useState(null);
-  const [ethnicity, setEthnicity] = useState("other");
-  const [interest, setInterest] = useState("other");
+  const {
+    user,
+    setUser,
+    name,
+    setName,
+    password,
+    setPassword,
+    email,
+    setEmail,
+    age,
+    setAge,
+    ethnicity,
+    setEthnicity,
+    interest,
+    setInterest,
+    isReligious,
+    setIsReligious,
+    religion,
+    setReligion,
+    gender,
+    setGender,
+  } = useUser();
 
   const [formValidationName, setFormValidationName] = useState(true);
   const [formValidationEmail, setFormValidationEmail] = useState(true);
@@ -85,7 +97,6 @@ const LoginSignup = () => {
           },
           body: JSON.stringify({ name, password }),
         });
-
         const data = await response.json();
 
         if (response.ok) {
@@ -113,6 +124,7 @@ const LoginSignup = () => {
             password,
             userType,
             age,
+            isReligious,
             religion,
             ethnicity,
             interest,
@@ -143,21 +155,18 @@ const LoginSignup = () => {
     let flag = true;
 
     if (name === "") {
-      console.log("Name is required");
       setFormValidationName(false);
       flag = false;
     } else {
       setFormValidationName(true);
     }
     if (email === "") {
-      console.log("Email is required");
       setFormValidationEmail(false);
       flag = false;
     } else {
       setFormValidationEmail(true);
     }
     if (password === "") {
-      console.log("Password is required");
       setFormValidationPassword(false);
       flag = false;
     } else {
@@ -165,12 +174,8 @@ const LoginSignup = () => {
     }
     if (password) {
       if (regex.test(password)) {
-        console.log("Valid passowrd");
         setFormValidationPassword(true);
       } else {
-        console.log(
-          "Password must be at least 8 characters long and contain at least one uppercase letter."
-        );
         flag = false;
         setFormValidationPassword(false);
       }

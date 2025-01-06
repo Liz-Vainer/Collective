@@ -18,6 +18,7 @@ const LoginSignup = () => {
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
   const [userType, setUserType] = useState("citizen");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations

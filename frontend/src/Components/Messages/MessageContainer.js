@@ -3,6 +3,7 @@ import "./MessageContainer.css";
 import MessageInput from "./MessageInput";
 
 const MessageContainer = () => {
+  const NoChatSelected = false;
   return (
     <div className="message-container">
       {NoChatSelected ? (

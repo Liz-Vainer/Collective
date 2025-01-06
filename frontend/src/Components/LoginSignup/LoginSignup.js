@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginSignup.css";
 import user_icon from "../Assets/person_icon.png";
 import email_icon from "../Assets/email_icon.png";
-import password_open from "../Assets/password_look_icon.png";
+import password_open from "../Assets/password_look_icon.png ";
 import password_closed from "../Assets/password_closed_icon.png";
 import background_login from "../Assets/background_login.png";
 import { useUser } from "../UserContext";
@@ -17,7 +17,6 @@ const LoginSignup = () => {
   const [action, setAction] = useState("Login");
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
-  const [userType, setUserType] = useState("citizen");
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
@@ -60,28 +59,7 @@ const LoginSignup = () => {
     }
   }, [action]);
 
-  const {
-    user,
-    setUser,
-    name,
-    setName,
-    password,
-    setPassword,
-    email,
-    setEmail,
-    age,
-    setAge,
-    ethnicity,
-    setEthnicity,
-    interest,
-    setInterest,
-    isReligious,
-    setIsReligious,
-    religion,
-    setReligion,
-    gender,
-    setGender,
-  } = useUser();
+  const loggedUser = useUser();
 
   const [formValidationName, setFormValidationName] = useState(true);
   const [formValidationEmail, setFormValidationEmail] = useState(true);
@@ -95,18 +73,21 @@ const LoginSignup = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name, password }),
+          body: JSON.stringify({
+            name: loggedUser.name,
+            password: loggedUser.password,
+          }),
         });
         const data = await response.json();
         console.log("THHIS IS DATA:", data);
         if (response.ok) {
-          setUser(data); // Store user info (including userType) in the context
-          setAge(data.age);
-          setGender(data.gender);
-          setIsReligious(data.isReligious);
-          setReligion(data.religioun);
-          setInterest(data.interest);
-          setEthnicity(data.ethnicity);
+          loggedUser.setUser(data); // Store user info (including userType) in the context
+          loggedUser.setAge(data.age);
+          loggedUser.setGender(data.gender);
+          loggedUser.setIsReligious(data.isReligious);
+          loggedUser.setReligion(data.religioun);
+          loggedUser.setInterest(data.interest);
+          loggedUser.setEthnicity(data.ethnicity);
           alert("Login successful");
 
           navigate("/home");
@@ -125,16 +106,16 @@ const LoginSignup = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name,
-            email,
-            password,
-            userType,
-            age,
-            isReligious,
-            religion,
-            ethnicity,
-            interest,
-            gender,
+            name: loggedUser.name,
+            email: loggedUser.email,
+            password: loggedUser.password,
+            userType: loggedUser.userType,
+            age: loggedUser.age,
+            isReligious: loggedUser.isReligious,
+            religion: loggedUser.religion,
+            ethnicity: loggedUser.ethnicity,
+            interest: loggedUser.interest,
+            gender: loggedUser.gender,
           }),
         });
 
@@ -142,7 +123,7 @@ const LoginSignup = () => {
 
         if (response.ok) {
           alert("User created!");
-          setUser(data); // Make sure the data has user information
+          loggedUser.setUser(data); // Make sure the data has user information
         } else {
           alert(data.message || "There was an issue signing up.");
         }
@@ -160,26 +141,26 @@ const LoginSignup = () => {
     const regex = /^(?=.*[A-Z]).{8,}$/;
     let flag = true;
 
-    if (name === "") {
+    if (loggedUser.name === "") {
       setFormValidationName(false);
       flag = false;
     } else {
       setFormValidationName(true);
     }
-    if (email === "") {
+    if (loggedUser.email === "") {
       setFormValidationEmail(false);
       flag = false;
     } else {
       setFormValidationEmail(true);
     }
-    if (password === "") {
+    if (loggedUser.password === "") {
       setFormValidationPassword(false);
       flag = false;
     } else {
       setFormValidationPassword(true);
     }
-    if (password) {
-      if (regex.test(password)) {
+    if (loggedUser.password) {
+      if (regex.test(loggedUser.password)) {
         setFormValidationPassword(true);
       } else {
         flag = false;
@@ -206,14 +187,14 @@ const LoginSignup = () => {
 
   // =================== Handle Religious Checkbox ===================
   const handleCheckboxChange = (event) => {
-    setIsReligious(event.target.checked); // Set if the user is religious
+    loggedUser.setIsReligious(event.target.checked); // Set if the user is religious
     if (!event.target.checked) {
-      setReligion(""); // Reset religion selection if checkbox is unchecked
+      loggedUser.setReligion(""); // Reset religion selection if checkbox is unchecked
     }
   };
 
   const handleReligionChange = (event) => {
-    setReligion(event.target.value); // Set selected religion
+    loggedUser.setReligion(event.target.value); // Set selected religion
   };
 
   // =================== Main Body (Rendering Logic) ===================
@@ -240,7 +221,7 @@ const LoginSignup = () => {
                 name="name"
                 type="text"
                 placeholder="Name"
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => loggedUser.setName(e.target.value)}
               />
               {!formValidationName && (
                 <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
@@ -254,7 +235,7 @@ const LoginSignup = () => {
                   name="email"
                   type="text"
                   placeholder="Email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => loggedUser.setEmail(e.target.value)}
                 />
                 {!formValidationEmail && (
                   <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
@@ -268,7 +249,7 @@ const LoginSignup = () => {
                 name="password"
                 type="password"
                 placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => loggedUser.setPassword(e.target.value)}
               />
               {!formValidationPassword && (
                 <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
@@ -280,8 +261,8 @@ const LoginSignup = () => {
                 <select
                   id="user-type-select"
                   className="religion-list"
-                  value={userType}
-                  onChange={(e) => setUserType(e.target.value)}
+                  value={loggedUser.userType}
+                  onChange={(e) => loggedUser.setUserType(e.target.value)}
                 >
                   <option value="citizen">Citizen</option>
                   <option value="event-organizer">Event Organizer</option>
@@ -339,7 +320,7 @@ const LoginSignup = () => {
               id="gender-select"
               className="gender-list"
               onChange={(e) => {
-                setGender(e.target.value);
+                loggedUser.setGender(e.target.value);
               }}
             >
               <option value="male">Male</option>
@@ -359,7 +340,7 @@ const LoginSignup = () => {
               min="18"
               max="100"
               onChange={(e) => {
-                setAge(e.target.value);
+                loggedUser.setAge(e.target.value);
               }}
             />
           </div>
@@ -370,13 +351,13 @@ const LoginSignup = () => {
             <label>
               <input
                 type="checkbox"
-                onChange={(e) => setIsReligious(e.target.checked)}
+                onChange={(e) => loggedUser.setIsReligious(e.target.checked)}
               />
             </label>
-            {isReligious && (
+            {loggedUser.isReligious && (
               <select
                 className="religion-list"
-                value={religion}
+                value={loggedUser.religion}
                 onChange={handleReligionChange}
               >
                 <option value="muslim">Muslim</option>
@@ -394,7 +375,7 @@ const LoginSignup = () => {
               id="ethnicity-select"
               className="religion-list"
               onChange={(e) => {
-                setEthnicity(e.target.value);
+                loggedUser.setEthnicity(e.target.value);
               }}
             >
               <option value="caucasian">Caucasian</option>
@@ -413,7 +394,7 @@ const LoginSignup = () => {
               id="interest-select"
               className="religion-list"
               onChange={(e) => {
-                setInterest(e.target.value);
+                loggedUser.setInterest(e.target.value);
               }}
             >
               <option value="entertainment">Entertainment</option>

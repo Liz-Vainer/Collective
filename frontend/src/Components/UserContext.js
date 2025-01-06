@@ -15,6 +15,7 @@ export const UserProvider = ({ children }) => {
   const [interest, setInterest] = useState("other");
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
   const [religion, setReligion] = useState("no"); // Track selected religion
+  const [userType, setUserType] = useState("citizen");
 
   return (
     <UserContext.Provider
@@ -39,6 +40,8 @@ export const UserProvider = ({ children }) => {
         setReligion,
         gender,
         setGender,
+        userType,
+        setUserType,
       }}
     >
       {children}

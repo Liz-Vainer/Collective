@@ -394,3 +394,19 @@ export const settings = async (req, res) => {
     });
   }
 };
+
+export const getUsersForSideBar = async (req, res) => {
+  try {
+    const loggedUserId = req.user._id;
+
+    const filteredUsers = await User.find({
+      //getting all users exept the logged user
+      _id: { $ne: loggedUserId },
+    }).select("-password");
+
+    res.status(200).json(filteredUsers);
+  } catch (err) {
+    console.error("Error in getUsersSideBar: ", err.message);
+    res.status(500).json({ err: "Internal server error" });
+  }
+};

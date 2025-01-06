@@ -1,51 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useUser } from "../UserContext";
 import { useNavigate } from "react-router-dom";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
-  const {
-    user,
-    setUser,
-    name,
-    setName,
-    password,
-    setPasswor,
-    email,
-    setEmail,
-    age,
-    setAge,
-    ethnicity,
-    setEthnicity,
-    interest,
-    setInterest,
-    isReligious,
-    setIsReligious,
-    religion,
-    setReligion,
-    gender,
-    setGender,
-  } = useUser();
+  const loggedUser = useUser();
 
   useEffect(() => {
-    if (!isReligious) {
-      setReligion("no");
-    } else if (religion === "no") {
-      setReligion("muslim");
+    if (!loggedUser.isReligious) {
+      loggedUser.setReligion("no");
+    } else if (loggedUser.religion === "no") {
+      loggedUser.setReligion("muslim");
     }
-  }, [isReligious, religion]);
+  }, [loggedUser.isReligious, loggedUser.religion]);
+
   // Handle form submission (save to MongoDB here)
   const handleSubmit = async () => {
-    console.log(religion);
+    console.log(loggedUser.religion);
     try {
       const userData = {
-        userID: user.id,
-        gender,
-        age,
-        isReligious,
-        religion,
-        ethnicity,
-        interest,
+        userID: loggedUser.user?.id,
+        gender: loggedUser.gender,
+        age: loggedUser.age,
+        isReligious: loggedUser.isReligious,
+        religion: loggedUser.religion,
+        ethnicity: loggedUser.ethnicity,
+        interest: loggedUser.interest,
       };
 
       // Send the data to the backend (MongoDB)
@@ -84,8 +64,8 @@ const SettingsPage = () => {
         <select
           id="gender-select"
           className="gender-list"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
+          value={loggedUser.gender}
+          onChange={(e) => loggedUser.setGender(e.target.value)}
         >
           <option value="male">Male</option>
           <option value="female">Female</option>
@@ -103,29 +83,24 @@ const SettingsPage = () => {
           placeholder="age"
           min="18"
           max="100"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
+          value={loggedUser.age}
+          onChange={(e) => loggedUser.setAge(e.target.value)}
         />
       </div>
 
       {/* Religious Question */}
       <div className="question">
         <label>Are you religious?</label>
-        {console.log("IS RELIGIOUS?: ", isReligious)}
-        {console.log("RELIGIOUS?: ", religion)}
-        {console.log("AGE?: ", age)}
-
         <input
           type="checkbox"
-          checked={isReligious}
-          onChange={(e) => setIsReligious(e.target.checked)}
+          checked={loggedUser.isReligious}
+          onChange={(e) => loggedUser.setIsReligious(e.target.checked)}
         />
-        {console.log("SETTINGS PAGE RELIUGION:", religion)}
-        {isReligious && (
+        {loggedUser.isReligious && (
           <select
             className="religion-list"
-            value={religion}
-            onChange={(e) => setReligion(e.target.value)}
+            value={loggedUser.religion}
+            onChange={(e) => loggedUser.setReligion(e.target.value)}
           >
             <option value="muslim">Muslim</option>
             <option value="jewish">Jewish</option>
@@ -141,8 +116,8 @@ const SettingsPage = () => {
         <select
           id="ethnicity-select"
           className="religion-list"
-          value={ethnicity}
-          onChange={(e) => setEthnicity(e.target.value)}
+          value={loggedUser.ethnicity}
+          onChange={(e) => loggedUser.setEthnicity(e.target.value)}
         >
           <option value="caucasian">Caucasian</option>
           <option value="black">Black</option>
@@ -160,8 +135,8 @@ const SettingsPage = () => {
         <select
           id="interest-select"
           className="religion-list"
-          value={user.interest}
-          onChange={(e) => setInterest(e.target.value)}
+          value={loggedUser.interest}
+          onChange={(e) => loggedUser.setInterest(e.target.value)}
         >
           <option value="entertainment">Entertainment</option>
           <option value="sport">Sport</option>

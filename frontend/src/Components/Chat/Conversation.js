@@ -1,0 +1,19 @@
+import "./Conversation.css";
+const Conversation = () => {
+  return (
+    <>
+      <div>
+        <div className="logged-in"></div>
+        <div>
+          <div>
+            <p>Name</p>
+            <span>Icon</span>
+          </div>
+        </div>
+      </div>
+      <break></break>
+    </>
+  );
+};
+
+export default Conversation;

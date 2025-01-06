@@ -11,6 +11,7 @@ import {
 import "./Home.css";
 import { useUser } from "../UserContext";
 import Popup from "../Popup/Popup";
+import Sidebar from "../Chat/Sidebar";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
 
 const Home = () => {
@@ -73,6 +74,11 @@ const Home = () => {
   const [category, setCommunityCategory] = useState("");
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
 
   // Fetch user's favorites from the backend
   useEffect(() => {
@@ -440,6 +446,16 @@ const Home = () => {
           </div>
         </Popup>
 
+        <Popup
+          trigger={isChatOpen}
+          setTrigger={toggleChat}
+          position="bottom-right"
+        >
+          <div>
+            <Sidebar />
+          </div>
+        </Popup>
+
         {/* Right Toolbox for Favorites */}
         {user.userType !== "Official" && (
           <div className="right-toolside">
@@ -470,6 +486,13 @@ const Home = () => {
             </button>
           </div>
         )}
+
+        <button
+          className={`chat-button ${isChatOpen ? "hidden" : ""}`}
+          onClick={toggleChat}
+        >
+          Chat
+        </button>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginSignup.css";
 import user_icon from "../Assets/person_icon.png";
@@ -69,7 +69,7 @@ const LoginSignup = () => {
   const handleSubmit = async () => {
     if (action === "Login") {
       try {
-        const response = await fetch("/login", {
+        const response = await fetch(`http://localhost:3000/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -107,7 +107,7 @@ const LoginSignup = () => {
           loggedUser.userType,
           loggedUser.email
         );
-        const response = await fetch("/signup", {
+        const response = await fetch(`http://localhost:3000/signup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -191,6 +191,10 @@ const LoginSignup = () => {
     setAction("Sign Up");
   };
 
+  const handleContinue = () => {
+    navigate("/home"); // Navigate to the main page (Home)
+  };
+
   // =================== Handle Religious Checkbox ===================
   const handleCheckboxChange = (event) => {
     loggedUser.setIsReligious(event.target.checked); // Set if the user is religious
@@ -253,7 +257,7 @@ const LoginSignup = () => {
               <img src={password_closed} alt="password" className="image" />
               <input
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"} // Toggle password type
                 placeholder="Password"
                 onChange={(e) => loggedUser.setPassword(e.target.value)}
               />
@@ -290,7 +294,7 @@ const LoginSignup = () => {
                 if (action === "Login") {
                   handleSubmit(); // If in Login, handle submission and navigate
                 } else {
-                  setAction("Login"); // Switch to Login if in Sign Up
+                  setAction("Login"); //Switch to Login if in Sign Up
                 }
               }}
             >
@@ -315,7 +319,6 @@ const LoginSignup = () => {
         </div>
       ) : (
         // =================== New Body (For Sign Up) ===================
-
         <div className="container">
           <h2>Can you tell us more about you?</h2>
           <h3>(Optional)</h3>

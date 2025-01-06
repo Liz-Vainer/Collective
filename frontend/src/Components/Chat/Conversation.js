@@ -2,7 +2,7 @@ import "./Conversation.css";
 const Conversation = () => {
   return (
     <>
-      <div>
+      <div className="conversation">
         <div className="logged-in"></div>
         <div>
           <div>

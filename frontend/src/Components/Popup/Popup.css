@@ -5,7 +5,7 @@
 }
 
 .popup.bottom-right {
-  top: 510px;   /* Position it from the bottom */
+  top: 420px;   /* Position it from the bottom */
   right: -200px;    /* Position it from the right */
   transform: none;  /* No transform needed */
 }

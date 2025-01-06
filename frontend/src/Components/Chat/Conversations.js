@@ -2,7 +2,8 @@ import Conversation from "./Conversation";
 
 const Conversations = () => {
   return (
-    <div>
+    <div className="convs">
+      <Conversation />
       <Conversation />
       <Conversation />
       <Conversation />

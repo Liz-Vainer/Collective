@@ -13,6 +13,7 @@ import { useUser } from "../UserContext";
 import Popup from "../Popup/Popup";
 import Sidebar from "../Chat/Sidebar";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
+import MessageContainer from "../Messages/MessageContainer";
 
 const Home = () => {
   const { user } = useUser(); // Destructure user from context
@@ -451,8 +452,9 @@ const Home = () => {
           setTrigger={toggleChat}
           position="bottom-right"
         >
-          <div>
+          <div className="chat">
             <Sidebar />
+            <MessageContainer />
           </div>
         </Popup>
 

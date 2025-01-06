@@ -18,6 +18,7 @@
     border-color: #55906d; /* Highlight border on focus */
     box-shadow: 0 0 5px rgba(85, 144, 109, 0.5); /* Subtle glow effect */
   }
+
   .search-button {
     background-color: #55906d; /* Button background color */
     color: white;

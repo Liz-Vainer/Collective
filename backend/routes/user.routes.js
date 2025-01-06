@@ -6,6 +6,7 @@ import {
   login,
   remove_fav,
   signup,
+  settings,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -36,5 +37,8 @@ router.get("/get-fake-communities", fetch_communities);
 
 // Login route for any user
 router.post("/login", login);
+
+// Setting route for user
+router.post("/settings", settings);
 
 export default router;

@@ -18,8 +18,6 @@ const LoginSignup = () => {
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
   const [userType, setUserType] = useState("citizen");
-  const [isReligious, setIsReligious] = useState(false); // Track if user is religious
-  const [religion, setReligion] = useState("no"); // Track selected religion
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
@@ -56,20 +54,38 @@ const LoginSignup = () => {
     }
   }, [currentImageIndex]);
 
-  const { setUser } = useUser();
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("other");
-  const [age, setAge] = useState(null);
-  const [ethnicity, setEthnicity] = useState("other");
-  const [interest, setInterest] = useState("other");
-
   useEffect(() => {
     if (action === "Continue") {
       handleSubmit();
     }
   }, [action]);
+
+  const {
+    user,
+    setUser,
+    name,
+    setName,
+    password,
+    setPassword,
+    email,
+    setEmail,
+    age,
+    setAge,
+    ethnicity,
+    setEthnicity,
+    interest,
+    setInterest,
+    isReligious,
+    setIsReligious,
+    religion,
+    setReligion,
+    gender,
+    setGender,
+  } = useUser();
+
+  const [formValidationName, setFormValidationName] = useState(true);
+  const [formValidationEmail, setFormValidationEmail] = useState(true);
+  const [formValidationPassword, setFormValidationPassword] = useState(true);
 
   const handleSubmit = async () => {
     if (action === "Login") {
@@ -81,11 +97,16 @@ const LoginSignup = () => {
           },
           body: JSON.stringify({ name, password }),
         });
-
         const data = await response.json();
-
+        console.log("THHIS IS DATA:", data);
         if (response.ok) {
           setUser(data); // Store user info (including userType) in the context
+          setAge(data.age);
+          setGender(data.gender);
+          setIsReligious(data.isReligious);
+          setReligion(data.religioun);
+          setInterest(data.interest);
+          setEthnicity(data.ethnicity);
           alert("Login successful");
 
           navigate("/home");
@@ -109,6 +130,7 @@ const LoginSignup = () => {
             password,
             userType,
             age,
+            isReligious,
             religion,
             ethnicity,
             interest,
@@ -130,6 +152,44 @@ const LoginSignup = () => {
       }
 
       navigate("/home"); // Navigate to the main page (Home)
+    }
+  };
+
+  //=================== Name and email and password validation ===============
+  const validation1 = () => {
+    const regex = /^(?=.*[A-Z]).{8,}$/;
+    let flag = true;
+
+    if (name === "") {
+      setFormValidationName(false);
+      flag = false;
+    } else {
+      setFormValidationName(true);
+    }
+    if (email === "") {
+      setFormValidationEmail(false);
+      flag = false;
+    } else {
+      setFormValidationEmail(true);
+    }
+    if (password === "") {
+      setFormValidationPassword(false);
+      flag = false;
+    } else {
+      setFormValidationPassword(true);
+    }
+    if (password) {
+      if (regex.test(password)) {
+        setFormValidationPassword(true);
+      } else {
+        flag = false;
+        setFormValidationPassword(false);
+      }
+    }
+    if (!flag) {
+      return false;
+    } else {
+      return true;
     }
   };
 
@@ -182,6 +242,9 @@ const LoginSignup = () => {
                 placeholder="Name"
                 onChange={(e) => setName(e.target.value)}
               />
+              {!formValidationName && (
+                <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+              )}
             </div>
 
             {action === "Sign Up" && (
@@ -193,6 +256,9 @@ const LoginSignup = () => {
                   placeholder="Email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {!formValidationEmail && (
+                  <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+                )}
               </div>
             )}
 
@@ -204,6 +270,9 @@ const LoginSignup = () => {
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {!formValidationPassword && (
+                <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+              )}
             </div>
             {action === "Sign Up" && (
               <div className="question">
@@ -245,7 +314,9 @@ const LoginSignup = () => {
               className={action === "Login" ? "submit gray" : "submit"}
               onClick={() => {
                 if (action === "Sign Up") {
-                  setShowBody(true); // Show new body for Sign-Up
+                  if (validation1()) {
+                    setShowBody(true); // Show new body for Sign-Up
+                  }
                 } else {
                   setAction("Sign Up"); // Switch to Sign Up if in Login
                 }

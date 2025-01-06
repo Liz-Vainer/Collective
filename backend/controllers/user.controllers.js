@@ -273,3 +273,13 @@ export const remove_fav = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const logout = async (req, res) => {
+  try {
+    res.cookie("jwt", "", { maxAge: 0 });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error("Error logging out:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

@@ -11,6 +11,14 @@ export const add_community = async (req, res) => {
       return res.status(400).json({ message: "Community already exists" });
     }
 
+    const sameCord = await Community.findOne({ lng, lat });
+    if (sameCord) {
+      console.log("BAS");
+      return res
+        .status(400)
+        .json({ message: "Community with the same cors already exists" });
+    }
+
     // Create a new community
     const newCommunity = new Community({
       name,

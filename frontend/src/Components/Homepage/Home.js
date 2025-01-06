@@ -164,7 +164,7 @@ const Home = () => {
           }
         }, 100); // Adding a small delay for the UI update
       } else {
-        alert("There was an issue signing up.");
+        alert("There was an issue creating a community.");
       }
     } catch (error) {
       console.error("Error during user creation:", error);
@@ -421,7 +421,7 @@ const Home = () => {
                 <input
                   name="lat"
                   type="number"
-                  placeholder="Lan"
+                  placeholder="Lat"
                   onChange={(e) => setCommunityLat(e.target.value)}
                 />
               </div>

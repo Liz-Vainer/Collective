@@ -5,7 +5,6 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <SearchInput />
-      <break></break>
       <Conversations />
     </div>
   );

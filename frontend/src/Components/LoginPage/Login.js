@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../UserContext";
+import { useUser } from "../../context/UserContext";
 import useLogin from "./useLogin";
 
 import user_icon from "../Assets/person_icon.png";

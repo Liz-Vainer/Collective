@@ -11,7 +11,6 @@ const Conversation = () => {
           </div>
         </div>
       </div>
-      <break></break>
     </>
   );
 };

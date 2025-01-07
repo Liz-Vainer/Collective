@@ -1,4 +1,4 @@
-import { useUser } from "../UserContext";
+import { useUser } from "../../context/UserContext";
 
 const useSignup = () => {
   const loggedUser = useUser(); // Access the user context
@@ -28,6 +28,7 @@ const useSignup = () => {
 
       if (response.ok) {
         alert("User created!");
+        localStorage.setItem("user-info", JSON.stringify(data));
         loggedUser.setUser(data); // Store user information in context
         return true;
       } else {

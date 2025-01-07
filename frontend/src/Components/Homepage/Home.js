@@ -17,20 +17,23 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 import "./Home.css";
-import { useUser } from "../UserContext";
 import Popup from "../Popup/Popup";
 import Sidebar from "../Chat/Sidebar";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
 import MessageContainer from "../Messages/MessageContainer";
+import { useUser } from "../../context/UserContext";
+import useLogout from "../../hooks/useLogout";
 
 const Home = () => {
   const { user } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { loading, logout } = useLogout();
 
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
   const handleBackToLogin = () => {
+    logout();
     navigate("/");
   };
   const handleSettings = () => navigate("/settings");
@@ -92,7 +95,7 @@ const Home = () => {
     setIsChatOpen(!isChatOpen);
   };
   const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
-  const profilePicture = user.profilePicture || user_icon || null; // Default profile picture
+  //const profilePicture = user.profilePicture || user_icon || null; // Default profile picture
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -494,6 +497,26 @@ const Home = () => {
             </ul>
           </div>
         )}
+
+        {/*Right toolbox for city official user*/}
+        {/* Right Toolbox for Favorites */}
+        {user.userType === "Official" && (
+          <div className="right-toolside">
+            <h3>Communities List</h3>
+            <ul>
+              {filteredCommunities.map((community) => (
+                <li key={community._id}>{community.name}</li>
+              ))}
+            </ul>
+            <button
+              className="add-comm-btn"
+              onClick={() => setButtonPopup(true)}
+            >
+              Add Community
+            </button>
+          </div>
+        )}
+
         <button
           className="drawer-toggle-button"
           onClick={() => setDrawerOpen(true)}
@@ -536,24 +559,6 @@ const Home = () => {
             <button onClick={handleInfo}>Info</button>
           </div>
         </Drawer>
-        {/*Right toolbox for city official user*/}
-        {/* Right Toolbox for Favorites */}
-        {user.userType === "Official" && (
-          <div className="right-toolside">
-            <h3>Communities List</h3>
-            <ul>
-              {filteredCommunities.map((community) => (
-                <li key={community._id}>{community.name}</li>
-              ))}
-            </ul>
-            <button
-              className="add-comm-btn"
-              onClick={() => setButtonPopup(true)}
-            >
-              Add Community
-            </button>
-          </div>
-        )}
 
         <button
           className={`chat-button ${isChatOpen ? "hidden" : ""}`}

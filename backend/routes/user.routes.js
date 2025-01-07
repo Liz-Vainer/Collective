@@ -8,6 +8,7 @@ import {
   signup,
   settings,
   getUsersForSideBar,
+  logout,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -45,5 +46,7 @@ router.post("/settings", settings);
 
 //get users for side bar for chat
 router.get("/side-bar", protectRoute, getUsersForSideBar);
+
+router.post("/logut", logout);
 
 export default router;

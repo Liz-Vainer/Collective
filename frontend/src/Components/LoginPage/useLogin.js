@@ -1,4 +1,4 @@
-import { useUser } from "../UserContext";
+import { useUser } from "../../context/UserContext";
 
 const useLogin = () => {
   const loggedUser = useUser();
@@ -27,6 +27,7 @@ const useLogin = () => {
         loggedUser.setInterest(data.interest);
         loggedUser.setEthnicity(data.ethnicity);
         alert("Login successful");
+        localStorage.setItem("user-info", JSON.stringify(data));
         return true;
       } else {
         alert(data.message || "Invalid credentials. Please try again.");

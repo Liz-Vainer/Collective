@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../UserContext";
+import { useUser } from "../../context/UserContext";
 import useSignup from "./useSignup";
 import email_icon from "../Assets/email_icon.png";
 import user_icon from "../Assets/person_icon.png";

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useUser } from "../UserContext";
+import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const SettingsPage = () => {

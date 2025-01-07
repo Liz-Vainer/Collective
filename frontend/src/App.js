@@ -15,17 +15,12 @@ function App() {
       <Router>
         <AuthContextProvider>
           <Routes>
-            <Route path="/" element={<LoginSignup />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/home" element={<Home />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </AuthContextProvider>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Routes>
       </Router>
     </UserProvider>
   );

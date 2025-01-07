@@ -92,7 +92,7 @@ const Home = () => {
     setIsChatOpen(!isChatOpen);
   };
   const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
-  const profilePicture = user.profilePicture || user_icon; // Default profile picture
+  const profilePicture = user.profilePicture || user_icon || null; // Default profile picture
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -109,16 +109,16 @@ const Home = () => {
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (user.user.userType !== "Official")
+      if (user.userType !== "Official")
         try {
           const response = await fetch(
-            `/users/${user.user.id}/fav/${user.user.userType}`
+            `/users/${user.id}/fav/${user.userType}`
           );
           const data = await response.json();
 
           if (response.ok) {
             setFavorites(data.favorites);
-            user.user.favorites = data.favorites;
+            user.favorites = data.favorites;
           } else {
             alert(data.message || "Failed to fetch favorites.");
           }
@@ -129,7 +129,7 @@ const Home = () => {
     };
 
     fetchFavorites();
-  }, [user.user.id, user.user.userType]);
+  }, [user.id, user.userType]);
 
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
@@ -143,9 +143,9 @@ const Home = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            id: user.user.id, // Pass the user's id from the logged-in user
+            id: user.id, // Pass the user's id from the logged-in user
             community, // Send the community object directly
-            userType: user.user.userType,
+            userType: user.userType,
           }),
         });
 
@@ -154,8 +154,8 @@ const Home = () => {
         console.log(data); // Check what is returned by the backend
 
         if (response.ok) {
-          user.user.favorites = data.favorites;
-          setFavorites(user.user.favorites);
+          user.favorites = data.favorites;
+          setFavorites(user.favorites);
           alert("Added to favorites");
         } else {
           alert(data.message || "Failed to add to favorites");
@@ -238,17 +238,17 @@ const Home = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.user.id,
+          id: user.id,
           community,
-          userType: user.user.userType,
+          userType: user.userType,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        user.user.favorites = data.favorites;
-        setFavorites(user.user.favorites);
+        user.favorites = data.favorites;
+        setFavorites(user.favorites);
         alert("Community removed from favorites!");
       } else {
         alert(data.message || "There was an issue deleting the community.");
@@ -368,8 +368,8 @@ const Home = () => {
                       </button>
                     )}
 
-                  {user.user.userType !== "Official" &&
-                    user.user.favorites.some(
+                  {user.userType !== "Official" &&
+                    user.favorites.some(
                       (fav) => fav.name === selectedCommunity.name
                     ) && (
                       <button
@@ -382,7 +382,7 @@ const Home = () => {
                       </button>
                     )}
 
-                  {user.user.userType === "Official" && (
+                  {user.userType === "Official" && (
                     <button
                       onClick={() => {
                         removeCommunity(selectedCommunity);
@@ -484,7 +484,7 @@ const Home = () => {
         </Popup>
 
         {/* Right Toolbox for Favorites */}
-        {user.user.userType !== "Official" && (
+        {user.userType !== "Official" && (
           <div className="right-toolside">
             <h3>Your Favorites</h3>
             <ul>
@@ -538,7 +538,7 @@ const Home = () => {
         </Drawer>
         {/*Right toolbox for city official user*/}
         {/* Right Toolbox for Favorites */}
-        {user.user.userType === "Official" && (
+        {user.userType === "Official" && (
           <div className="right-toolside">
             <h3>Communities List</h3>
             <ul>

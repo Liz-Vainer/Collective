@@ -123,7 +123,6 @@ const Signup = () => {
       className="body"
       style={{ backgroundImage: `url(${background_login})` }}
     >
-      // =================== Initial Body (Signup) ===================
       <div className="container">
         <div className="welcome-message">
           <h1>Welcome to Collective!</h1>

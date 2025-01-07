@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
 import { useNavigate } from "react-router-dom";
-import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch, FaBars,FaCamera } from "react-icons/fa";
+import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch, FaBars} from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
+import '../drawerstyle.css';
 import {
   GoogleMap,
   Marker,
@@ -16,6 +17,7 @@ import user_icon from "../Assets/person_icon.png"; //temporary until we make com
 
 
 
+
 const Home = () => {
   const { user } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -26,6 +28,7 @@ const Home = () => {
   const handleBackToLogin = () => navigate("/");
   const handleSettings = () => navigate("/settings");
   const handleInfo = () => alert("Info Button Clicked");
+  const handleMoreInfo = () => navigate("/moreinfo");
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -41,12 +44,25 @@ const Home = () => {
 
   
   //===================== Fake Communities Data =====================
-  const [fakeCommunities, setCommunities] = useState([]);
+  const [fakeCommunities, setCommunities] = useState([
+    {
+      _id: "1",
+      name: "Sports Hub",
+      category: "Sport",
+      lat: 31.253,
+      lng: 34.792,
+      openingHours: "08:00-18:00",
+      contactinfo:"08-1234567",
+      contactEmail:"Nathan@nathaniel.com"
+    }
+  ]);
 
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const response = await fetch("/get-fake-communities");
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
         const data = await response.json();
 
         if (response.ok) {
@@ -79,29 +95,31 @@ const Home = () => {
   const [category, setCommunityCategory] = useState("");
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
-  const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
-  const profilePicture= user.profilePicture || user_icon; // Default profile picture
+  const [profilePic, setProfilePic] = useState(null);
 
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => setNewPfp(reader.result);
-      reader.readAsDataURL(file);
-    }
+  const handleChangeProfilePic = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => setProfilePic(reader.result);
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
   };
-
-  const triggerFileInput = () => {
-    document.getElementById('fileInput').click();
-  };
+  
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
       if (user.userType !== "Official")
         try {
           const response = await fetch(
-            `/users/${user.id}/fav/${user.userType}`
+            `http://localhost:3000/users/${user.id}/fav/${user.userType}`
           );
           const data = await response.json();
 
@@ -126,7 +144,7 @@ const Home = () => {
   const addToFavorites = async (community) => {
     if (!favorites.some((fav) => fav.name === community.name)) {
       try {
-        const response = await fetch("/users/add-to-fav", {
+        const response = await fetch("http://localhost:3000/users/add-to-fav", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -161,7 +179,7 @@ const Home = () => {
   //adding communities for official user
   const addCommunityPopup = async () => {
     try {
-      const response = await fetch(`/add-community`, {
+      const response = await fetch(`http://localhost:3000/add-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +193,9 @@ const Home = () => {
 
         setTimeout(async () => {
           // Wait for state update, then fetch updated communities
-          const communitiesResponse = await fetch("/get-fake-communities");
+          const communitiesResponse = await fetch(
+            "http://localhost:3000/get-fake-communities"
+          );
           const communitiesData = await communitiesResponse.json();
           if (communitiesResponse.ok) {
             setCommunities(communitiesData.communities);
@@ -197,7 +217,7 @@ const Home = () => {
   const removeCommunity = async (community) => {
     try {
       const name = community.name;
-      const response = await fetch(`/remove-community`, {
+      const response = await fetch(`http://localhost:3000/remove-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -208,7 +228,9 @@ const Home = () => {
       const data = await response.json();
 
       if (response.ok) {
-        const response = await fetch("/get-fake-communities");
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
         const data = await response.json();
         setCommunities(data.communities); // Update with fresh data
         alert("Community deleted!");
@@ -221,7 +243,7 @@ const Home = () => {
   //deleting community from favotites
   const removeFavorite = async (community) => {
     try {
-      const response = await fetch(`/remove-favorite`, {
+      const response = await fetch(`http://localhost:3000/remove-favorite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -271,6 +293,7 @@ const Home = () => {
      
       {/* Upper Tool Section */}
       <div className="upper-tool">
+      
         <button className="exit-button" onClick={handleBackToLogin}>
           <FaDoorOpen size={30} color="white" />
         </button>
@@ -334,28 +357,33 @@ const Home = () => {
 
             {/* InfoWindow for Selected Community */}
             {selectedCommunity && (
-              <InfoWindow
+              <InfoWindow className="info-window"
                 position={{
                   lat: selectedCommunity.lat,
                   lng: selectedCommunity.lng,
                 }}
                 onCloseClick={() => setSelectedCommunity(null)}
               >
-                <div>
+                <div className="info-window-content">
                   <h3>{selectedCommunity.name}</h3>
                   <p>Welcome to {selectedCommunity.name} community!</p>
+                  <p>Open Hours: {selectedCommunity.openingHours}</p>
+                  <p>Mobile Contact: {selectedCommunity.contactinfo}</p>
+                  <p>Email Contact: {selectedCommunity.contactEmail}</p>
                   {user.userType !== "Official" &&
                     !user.favorites.some(
                       (fav) => fav.name === selectedCommunity.name
                     ) && (
-                      <button
-                        onClick={() => {
-                          addToFavorites(selectedCommunity);
-                          setSelectedCommunity(null);
-                        }}
-                      >
-                        Add to Favorites
-                      </button>
+                      <div>
+                        <button
+                          onClick={() => {
+                            addToFavorites(selectedCommunity);
+                            setSelectedCommunity(null);
+                          }}
+                        >
+                          Add to Favorites
+                        </button>
+                      </div>
                     )}
 
                   {user.userType !== "Official" &&
@@ -382,6 +410,14 @@ const Home = () => {
                       Remove Community
                     </button>
                   )}
+                  <button
+                          onClick={() => {
+                            
+                            handleMoreInfo();
+                          }}
+                        >
+                          More info
+                        </button>
                 </div>
               </InfoWindow>
             )}
@@ -412,18 +448,24 @@ const Home = () => {
                 />
               </div>
             </div>
-
             <div className="inputs">
-              <div className="input">
-                <img src={user_icon} alt="user" className="image" />
-                <input
-                  name="category"
-                  type="text"
-                  placeholder="Community Category"
-                  onChange={(e) => setCommunityCategory(e.target.value)}
-                />
-              </div>
-            </div>
+  <div className="input">  
+    <img src={user_icon} alt="user" className="image" />
+    <select
+      name="category"
+      className="dropdown"
+      onChange={(e) => setCommunityCategory(e.target.value)}
+      defaultValue="">
+      <option value="" disabled>
+        Select Category
+      </option>
+      <option value="Sport">Sport</option>
+      <option value="Entertainment">Entertainment</option>
+      <option value="Religon">Religon</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</div>
 
             <div className="inputs">
               <div className="input">
@@ -473,52 +515,42 @@ const Home = () => {
             </ul>
           </div>
         )}
+
 <button
-        className="drawer-toggle-button"
+        className="drawer-trigger"
+        anchor="right"
         onClick={() => setDrawerOpen(true)}
         onMouseEnter={() => setDrawerOpen(true)} // Open on hover
          // Open the drawer on button click
       >
         <FaBars size={30} color="white" />
       </button>
-
       {/* Drawer Component */}
       <Drawer
-      anchor="right"
-      open={drawerOpen}
-      onClose={() => setDrawerOpen(false)}
-    >
-      <div className="drawer-content" onMouseLeave={() => setDrawerOpen(false)}>
-        {/* Profile Section */}
-        <div className="profile-section">
-          <img
-            
-            alt="Profile"
-            className="profile-pic"
-          />
-          <FaCamera size={50} color="gray" className="change-pfp-icon" />
-          <button 
-            onClick={triggerFileInput} 
-            className="change-profile-btn"
-          >
-            Change Profile
-          </button>
-          {/* Hidden File Input */}
-          <input
-            id="fileInput"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-        </div>
-
-        {/* Other Drawer Buttons */}
-        <button onClick={handleBackToLogin}>Back to Login</button>
-        <button onClick={handleSettings}>Settings</button>
-        <button onClick={handleInfo}>Info</button>
+  anchor="right"
+  open={drawerOpen}
+  onClose={() => setDrawerOpen(false)}
+  classes={{
+    paper: 'custom-drawer-paper',
+  }}
+>
+  <div className="drawer-content" onMouseLeave={() => setDrawerOpen(false)}>
+    {/* Profile Section */}
+    <div className="profile-section">
+      <div className="profile-pic-container">
+        <img
+          src={profilePic || "/default-profile.png"}
+          alt="Profile"
+          className="profile-pic"
+        />
       </div>
-    </Drawer>
+      <button className="drawer-button"onClick={handleChangeProfilePic}>Change Profile Picture</button>
+    </div>
+    <button className="drawer-button" onClick={handleBackToLogin}>Back to Login</button>
+    <button className="drawer-button" onClick={handleInfo}>Info</button>
+    <button className="drawer-button" onClick={handleSettings}>Go to Settings</button>
+  </div>
+</Drawer>
         {/*Right toolbox for city official user*/}
         {/* Right Toolbox for Favorites */}
         {user.userType === "Official" && (

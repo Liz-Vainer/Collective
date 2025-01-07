@@ -47,7 +47,6 @@ const SettingsPage = () => {
       console.log("Settings updated successfully:", resData);
     } catch (error) {
       console.error("Error while updating user settings:", error.message);
-      alert(`Error: ${error.message}`); // Display an error message to the user
     }
     // Navigate to home on success
     navigate("/home");

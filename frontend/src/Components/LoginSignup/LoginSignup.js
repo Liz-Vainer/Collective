@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginSignup.css";
 import user_icon from "../Assets/person_icon.png";
 import email_icon from "../Assets/email_icon.png";
-import password_open from "../Assets/password_look_icon.png";
+import password_open from "../Assets/password_look_icon.png ";
 import password_closed from "../Assets/password_closed_icon.png";
 import background_login from "../Assets/background_login.png";
 import { useUser } from "../UserContext";
@@ -17,8 +17,6 @@ const LoginSignup = () => {
   const [action, setAction] = useState("Login");
   const [showBody, setShowBody] = useState(false); // Tracks if the new body should be displayed
   const navigate = useNavigate();
-  const [userType, setUserType] = useState("citizen");
-  const [showPassword, setShowPassword] = useState(false);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
@@ -119,6 +117,7 @@ const LoginSignup = () => {
             password: loggedUser.password,
             userType: loggedUser.userType,
             age: loggedUser.age,
+            isReligious: loggedUser.isReligious,
             religion: loggedUser.religion,
             ethnicity: loggedUser.ethnicity,
             interest: loggedUser.interest,
@@ -272,7 +271,7 @@ const LoginSignup = () => {
                 <select
                   id="user-type-select"
                   className="religion-list"
-                  value={userType}
+                  value={loggedUser.userType}
                   onChange={(e) => loggedUser.setUserType(e.target.value)}
                 >
                   <option value="citizen">Citizen</option>

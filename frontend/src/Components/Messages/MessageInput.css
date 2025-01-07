@@ -1,0 +1,53 @@
+/* Main container for the input field and button */
+.message-input-container {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between input and button */
+    padding: 5px;
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: 100%;
+  }
+  
+  /* Input field styling */
+  .message-input-field {
+    flex: 1; /* Take up available space */
+    height: 40px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none; /* Remove blue outline on focus */
+    transition: border-color 0.3s ease;
+  }
+  
+  /* Input field focus effect */
+  .message-input-field:focus {
+    border-color: #19984e; /* Green border on focus */
+  }
+  
+  /* Send button styling */
+  .message-send-button {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 14px;
+    background-color: #19984e; /* Green background */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transition */
+  }
+  
+  /* Hover effect for send button */
+  .message-send-button:hover {
+    background-color: #10783c; /* Darker green on hover */
+  }
+  
+  /* Active (pressed) effect for send button */
+  .message-send-button:active {
+    background-color: #0b5e2e; /* Even darker green on press */
+    transform: scale(0.98); /* Slightly shrink on press */
+  }
+  

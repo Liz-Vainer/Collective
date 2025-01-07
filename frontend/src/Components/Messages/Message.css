@@ -1,0 +1,41 @@
+/* Single message container */
+.message {
+    display: flex; /* Align items horizontally */
+    align-items: center; /* Center vertically */
+    gap: 10px; /* Space between icon, text, and time */
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border: 1px solid #ddd;
+  }
+  
+  /* Icon container */
+  .message-icon {
+    width: 30px;
+    height: 30px;
+    background-color: #19984e; /* Placeholder background color */
+    border-radius: 50%; /* Circular icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  /* Message text */
+  .message-text {
+    flex: 1; /* Take up remaining space */
+    font-size: 16px;
+    color: #333;
+    word-wrap: break-word; /* Wrap long text */
+  }
+  
+  /* Timestamp */
+  .message-time {
+    font-size: 14px;
+    color: #888;
+    white-space: nowrap; /* Prevent wrapping */
+  }
+  

@@ -1,0 +1,13 @@
+/* Container for all messages */
+.messages {
+    display: flex;
+    flex-direction: column; /* Stack messages vertically */
+    gap: 10px; /* Space between messages */
+    max-height: 250px; /* Limit the height of the messages container */
+    overflow-y: auto; /* Add scroll if messages exceed container height */
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  

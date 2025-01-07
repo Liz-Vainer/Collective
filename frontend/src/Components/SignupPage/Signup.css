@@ -1,0 +1,270 @@
+/*==== BODY STYLES ====*/
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 20px;
+  color: white;
+}
+
+/*==== IMAGE STYLES ====*/
+.image {
+  width: 20px;
+  height: 20px;
+}
+
+/*==== CONTAINER STYLES ====*/
+.container {
+  flex-direction: column;
+  margin: auto;
+  margin-top: 20px;
+  background: #ffff;
+  padding-bottom: 30px;
+  width: 600px;
+  border-radius: 20px;
+  margin-bottom: 200px;
+}
+
+/*==== HEADER STYLES ====*/
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.text {
+  color: #4a7652;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.undrline {
+  width: 61px;
+  height: 6px;
+  background: #4a7652;
+  border-radius: 9px;
+}
+
+/*==== INPUT FIELDS STYLES ====*/
+.inputs {
+  margin-top: 55px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  width: 480px;
+  height: 80px;
+  background: #eaeaea;
+  border-radius: 6px;
+}
+
+.input img {
+  margin: 0px 30px;
+}
+
+.input input {
+  height: 50px;
+  width: 400px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #797979;
+  font-size: 19px;
+}
+
+/*==== FORGOT PASSWORD STYLES ====*/
+.forgotPassword {
+  padding-left: 62px;
+  margin-top: 7px;
+  color: #797979;
+  font-size: 18px;
+}
+
+.forgotPassword span {
+  color: #4a7652;
+  cursor: pointer;
+}
+
+/*==== BUTTON CONTAINER STYLES ====*/
+.submit-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 60px auto;
+}
+
+.submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  height: 59px;
+  color: #fff;
+  background: #4a7652;
+  border-radius: 50px;
+  font-size: 19px;
+  font-weight: 70;
+  cursor: pointer;
+}
+
+.gray {
+  background: #eaeaea;
+  color: #676767;
+}
+
+.submit:hover {
+  background-color: #96ca98;
+}
+
+/*==== NEW BODY STYLES ====*/
+
+.container h2,
+h3 {
+  color: #4a7652;
+  font-size: 35px;
+  font-weight: 800;
+  align-items: center;
+  margin: 0px;
+  margin-left: 20px;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+/*==== CAROUSEL STYLES ====*/
+.carousel-container {
+  width: 300px; /* Fixed width of the carousel */
+  height: 200px; /* Fixed height of the carousel */
+  margin: 30px auto;
+  overflow: hidden; /* Hide images that overflow */
+  position: relative;
+}
+
+.carousel-wrapper {
+  display: flex; /* Align images horizontally */
+  transition: transform 1s ease-in-out; /* Smooth transition */
+  width: 1500px; /* 5 images, each 300px wide */
+}
+
+.carousel-image {
+  width: 300px;
+  height: 200px;
+  object-fit: cover; /* Ensures the image covers the area */
+}
+
+/*==== AGE INPUT STYLES ====*/
+.age-input {
+  border: 3px solid #4a7652;
+  border-radius: 5px;
+  padding: 5px;
+  width: 60px; /* Adjust width for the input */
+  font-size: 14px;
+  color: #000; /* Text color */
+  margin-left: 10px;
+}
+
+/*==== RELIGION LIST STYLES ====*/
+.religion-list {
+  background-color: rgba(255, 255, 255, 0.5); /* Transparent white background */
+  border: 3px solid #4a7652; /* Colored border (blue in this case) */
+  border-radius: 5px; /* Rounded corners */
+  margin-left: 10px;
+  padding: 5px; /* Adds padding inside the dropdown */
+  width: 150px; /* Adjust the width of the dropdown */
+  color: #000; /* Text color */
+}
+
+.religion-list option {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* Transparent option background */
+  color: #000;
+}
+
+/*==== QUESTION STYLES ====*/
+.question {
+  color: #4a7652;
+  margin-top: 20px;
+  font-size: 25px;
+  margin-bottom: 3px;
+  margin-left: 20px;
+  text-align: left;
+}
+
+/*==== BUTTON STYLES ====*/
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.continue-btn {
+  background-color: #4caf50;
+}
+
+.back-btn {
+  background-color: #f44336;
+}
+
+/*==== BACK BUTTON STYLES ====*/
+.back-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  height: 59px;
+  color: #fff;
+  background: #4a7652;
+  border-radius: 50px;
+  font-size: 19px;
+  font-weight: 70;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #96ca98;
+}
+
+/*==== WELCOME MESSAGE STYLES ====*/
+.welcome-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.welcome-message h1 {
+  font-size: 40px;
+  font-weight: bold;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  color: #18392b;
+  margin: 0;
+}

@@ -1,7 +1,14 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
 import { useNavigate } from "react-router-dom";
-import { FaDoorOpen, FaCog, FaInfoCircle, FaSearch, FaBars} from "react-icons/fa";
+import {
+  FaDoorOpen,
+  FaCog,
+  FaInfoCircle,
+  FaSearch,
+  FaBars,
+  FaCamera,
+} from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
 import '../drawerstyle.css';
 import {
@@ -11,21 +18,26 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 import "./Home.css";
-import { useUser } from "../UserContext";
 import Popup from "../Popup/Popup";
+import Sidebar from "../Chat/Sidebar";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
-
-
+import MessageContainer from "../Messages/MessageContainer";
+import { useUser } from "../../context/UserContext";
+import useLogout from "../../hooks/useLogout";
 
 
 const Home = () => {
   const { user } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { loading, logout } = useLogout();
 
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
-  const handleBackToLogin = () => navigate("/");
+  const handleBackToLogin = () => {
+    logout();
+    navigate("/");
+  };
   const handleSettings = () => navigate("/settings");
   const handleInfo = () => alert("Info Button Clicked");
   const handleMoreInfo = () => navigate("/moreinfo");
@@ -41,8 +53,6 @@ const Home = () => {
     lng: 34.791462, // Coordinates for Be'er Sheva, Israel
   };
 
-
-  
   //===================== Fake Communities Data =====================
   const [fakeCommunities, setCommunities] = useState([
     {
@@ -95,22 +105,25 @@ const Home = () => {
   const [category, setCommunityCategory] = useState("");
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
-  const [profilePic, setProfilePic] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+  const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
+  //const profilePicture = user.profilePicture || user_icon || null; // Default profile picture
 
-  const handleChangeProfilePic = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => setProfilePic(reader.result);
-        reader.readAsDataURL(file);
-      }
-    };
-    input.click();
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => setNewPfp(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    document.getElementById("fileInput").click();
   };
   
   // Fetch user's favorites from the backend
@@ -205,7 +218,7 @@ const Home = () => {
           }
         }, 100); // Adding a small delay for the UI update
       } else {
-        alert("There was an issue signing up.");
+        alert("There was an issue creating a community.");
       }
     } catch (error) {
       console.error("Error during user creation:", error);
@@ -290,7 +303,6 @@ const Home = () => {
         backgroundColor: "transparent",
       }}
     >
-     
       {/* Upper Tool Section */}
       <div className="upper-tool">
       
@@ -332,7 +344,7 @@ const Home = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
@@ -485,7 +497,7 @@ const Home = () => {
                 <input
                   name="lat"
                   type="number"
-                  placeholder="Lan"
+                  placeholder="Lat"
                   onChange={(e) => setCommunityLat(e.target.value)}
                 />
               </div>
@@ -504,6 +516,17 @@ const Home = () => {
           </div>
         </Popup>
 
+        <Popup
+          trigger={isChatOpen}
+          setTrigger={toggleChat}
+          position="bottom-right"
+        >
+          <div className="chat">
+            <Sidebar />
+            <MessageContainer />
+          </div>
+        </Popup>
+
         {/* Right Toolbox for Favorites */}
         {user.userType !== "Official" && (
           <div className="right-toolside">
@@ -516,41 +539,6 @@ const Home = () => {
           </div>
         )}
 
-<button
-        className="drawer-trigger"
-        anchor="right"
-        onClick={() => setDrawerOpen(true)}
-        onMouseEnter={() => setDrawerOpen(true)} // Open on hover
-         // Open the drawer on button click
-      >
-        <FaBars size={30} color="white" />
-      </button>
-      {/* Drawer Component */}
-      <Drawer
-  anchor="right"
-  open={drawerOpen}
-  onClose={() => setDrawerOpen(false)}
-  classes={{
-    paper: 'custom-drawer-paper',
-  }}
->
-  <div className="drawer-content" onMouseLeave={() => setDrawerOpen(false)}>
-    {/* Profile Section */}
-    <div className="profile-section">
-      <div className="profile-pic-container">
-        <img
-          src={profilePic || "/default-profile.png"}
-          alt="Profile"
-          className="profile-pic"
-        />
-      </div>
-      <button className="drawer-button"onClick={handleChangeProfilePic}>Change Profile Picture</button>
-    </div>
-    <button className="drawer-button" onClick={handleBackToLogin}>Back to Login</button>
-    <button className="drawer-button" onClick={handleInfo}>Info</button>
-    <button className="drawer-button" onClick={handleSettings}>Go to Settings</button>
-  </div>
-</Drawer>
         {/*Right toolbox for city official user*/}
         {/* Right Toolbox for Favorites */}
         {user.userType === "Official" && (
@@ -569,6 +557,56 @@ const Home = () => {
             </button>
           </div>
         )}
+
+        <button
+          className="drawer-toggle-button"
+          onClick={() => setDrawerOpen(true)}
+          onMouseEnter={() => setDrawerOpen(true)} // Open on hover
+          // Open the drawer on button click
+        >
+          <FaBars size={30} color="white" />
+        </button>
+
+        {/* Drawer Component */}
+        <Drawer
+          anchor="right"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        >
+          <div
+            className="drawer-content"
+            onMouseLeave={() => setDrawerOpen(false)}
+          >
+            {/* Profile Section */}
+            <div className="profile-section">
+              <img alt="Profile" className="profile-pic" />
+              <FaCamera size={50} color="gray" className="change-pfp-icon" />
+              <button onClick={triggerFileInput} className="change-profile-btn">
+                Change Profile
+              </button>
+              {/* Hidden File Input */}
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
+            </div>
+
+            {/* Other Drawer Buttons */}
+            <button onClick={handleBackToLogin}>Back to Login</button>
+            <button onClick={handleSettings}>Settings</button>
+            <button onClick={handleInfo}>Info</button>
+          </div>
+        </Drawer>
+
+        <button
+          className={`chat-button ${isChatOpen ? "hidden" : ""}`}
+          onClick={toggleChat}
+        >
+          Chat
+        </button>
       </div>
     </div>
   );

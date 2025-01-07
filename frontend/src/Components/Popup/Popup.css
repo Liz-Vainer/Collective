@@ -1,40 +1,76 @@
+/* Popup.css */
+.popup {
+  position: fixed;
+  z-index: 1000;
+}
+
+.popup.bottom-right {
+  top: 420px;   /* Position it from the bottom */
+  right: -200px;    /* Position it from the right */
+  transform: none;  /* No transform needed */
+}
+
+.popup.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  justify-content: center;
+  align-items: center;
+}
+
+.inner-popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.btn-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-close:hover {
+  background-color: darkred;
+}
+
+/* Button styling */
 .button {
-  margin:auto;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
   display: flex;
   gap: 10px;
   border: 1px solid #ccc;
   color: white;
   cursor: pointer;
-  }
-  
-  .button:after {
-    content: "";
-    background: #f1f1f1;
-    display: block;
-    position: absolute;
-    padding-top: 300%;
-    padding-left: 350%;
-    margin-left: -20px !important;
-    margin-top: -120%;
-    opacity: 0;
-    transition: all 0.8s
-  }
-  
-  .button:active:after {
-    padding: 0;
-    margin: 0;
-    opacity: 1;
-    transition: 0s
-  }
+  position: relative; /* Ensure proper layout for the button */
+}
 
-  .btn-close{
+.button:after {
+  content: "";
+  background: #f1f1f1;
+  display: block;
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 30px;
-  background: none;
-  border: none;
-  color: #333;
-  cursor: pointer;
-  font-weight: bold;
-  }
+  padding-top: 300%;
+  padding-left: 350%;
+  margin-left: -20px !important;
+  margin-top: -120%;
+  opacity: 0;
+  transition: all 0.8s;
+}
+
+.button:active:after {
+  padding: 0;
+  margin: 0;
+  opacity: 1;
+  transition: 0s;
+}

@@ -4,7 +4,11 @@ import {AiOutlineClose} from "react-icons/ai"
 
 function Popup(props) {
   return props.trigger ? (
-    <div className="popup">
+    <div
+      className={`popup ${
+        props.position === "bottom-right" ? "bottom-right" : ""
+      }`}
+    >
       <div className="inner-popup">
         
         {props.children}

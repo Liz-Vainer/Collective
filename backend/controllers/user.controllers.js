@@ -419,7 +419,7 @@ export const settings = async (req, res) => {
 
 export const getUsersForSideBar = async (req, res) => {
   try {
-    const loggedUserId = req.user._id;
+    const loggedUserId = req.user.id;
 
     const filteredUsers = await User.find({
       //getting all users exept the logged user

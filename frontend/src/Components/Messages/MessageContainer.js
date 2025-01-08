@@ -1,12 +1,13 @@
 import Messages from "./Messages";
 import "./MessageContainer.css";
 import MessageInput from "./MessageInput";
+import useConversation from "../../zustand/useConversation";
 
 const MessageContainer = () => {
-  const NoChatSelected = false;
+  const { selectedConversation, setSelectedConversation } = useConversation();
   return (
     <div className="message-container">
-      {NoChatSelected ? (
+      {!selectedConversation ? (
         <NoChatSelected />
       ) : (
         <>

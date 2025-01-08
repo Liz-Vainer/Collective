@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken"; // Import the JSON Web Token library for token handling
 import User from "../models/user.js"; // Import the User model to interact with the database
+import Orginaizer from "../models/orginaizer.js"; // Import the User model to interact with the database
+import Official from "../models/official.js"; // Import the User model to interact with the database
 
 // Middleware function to protect routes by verifying user authentication
 const protectRoute = async (req, res, next) => {
@@ -25,9 +27,17 @@ const protectRoute = async (req, res, next) => {
     }
 
     // Find the user in the database using the ID from the decoded token
-    const user = await User.findById(decoded.userId).select("-password");
     // Exclude the password field from the retrieved user data for security
+    let user = await User.findById(decoded.userId).select("-password");
+    if (!user) {
+      // Check Organizer model if not found in User model
+      user = await Orginaizer.findById(decoded.userId).select("-password");
+      if (!user)
+        // Check Official model if not found in Organizer model
+        user = await Official.findById(decoded.userId).select("-password");
+    }
 
+    console.log(user);
     if (!user) {
       // If the user is not found, send a 404 Not Found response
       return res.status(404).json({ error: "User not found" });

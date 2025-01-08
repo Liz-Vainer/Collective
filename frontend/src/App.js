@@ -11,15 +11,31 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { useUser } from "./context/UserContext";
 
 function App() {
+  const { authUser } = useUser();
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        {/* Redirect to /home if user is logged in */}
+        <Route
+          path="/"
+          element={authUser ? <Navigate to="/home" /> : <Login />}
+        />
+        <Route
+          path="/signup"
+          element={authUser ? <Navigate to="/home" /> : <Signup />}
+        />
+        {/* Protected routes */}
+        <Route
+          path="/home"
+          element={authUser ? <Home /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/settings"
+          element={authUser ? <SettingsPage /> : <Navigate to="/" />}
+        />
       </Routes>
     </Router>
   );

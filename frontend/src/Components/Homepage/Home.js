@@ -27,7 +27,7 @@ import useLogout from "../../hooks/useLogout";
 
 
 const Home = () => {
-  const { user } = useUser(); // Destructure user from context
+  const { authUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
 
@@ -111,7 +111,7 @@ const Home = () => {
     setIsChatOpen(!isChatOpen);
   };
   const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
-  //const profilePicture = user.profilePicture || user_icon || null; // Default profile picture
+  //const profilePicture = authUser.profilePicture || user_icon || null; // Default profile picture
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -129,16 +129,16 @@ const Home = () => {
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (user.userType !== "Official")
+      if (authUser.userType !== "Official")
         try {
           const response = await fetch(
-            `http://localhost:3000/users/${user.id}/fav/${user.userType}`
+            `/users/${authUser.id}/fav/${authUser.userType}`
           );
           const data = await response.json();
 
           if (response.ok) {
             setFavorites(data.favorites);
-            user.favorites = data.favorites;
+            authUser.favorites = data.favorites;
           } else {
             alert(data.message || "Failed to fetch favorites.");
           }
@@ -149,7 +149,7 @@ const Home = () => {
     };
 
     fetchFavorites();
-  }, [user.id, user.userType]);
+  }, [authUser.id, authUser.userType]);
 
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
@@ -163,9 +163,9 @@ const Home = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            id: user.id, // Pass the user's id from the logged-in user
+            id: authUser.id, // Pass the user's id from the logged-in user
             community, // Send the community object directly
-            userType: user.userType,
+            userType: authUser.userType,
           }),
         });
 
@@ -174,8 +174,8 @@ const Home = () => {
         console.log(data); // Check what is returned by the backend
 
         if (response.ok) {
-          user.favorites = data.favorites;
-          setFavorites(user.favorites);
+          authUser.favorites = data.favorites;
+          setFavorites(authUser.favorites);
           alert("Added to favorites");
         } else {
           alert(data.message || "Failed to add to favorites");
@@ -262,17 +262,17 @@ const Home = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.id,
+          id: authUser.id,
           community,
-          userType: user.userType,
+          userType: authUser.userType,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        user.favorites = data.favorites;
-        setFavorites(user.favorites);
+        authUser.favorites = data.favorites;
+        setFavorites(authUser.favorites);
         alert("Community removed from favorites!");
       } else {
         alert(data.message || "There was an issue deleting the community.");
@@ -379,11 +379,8 @@ const Home = () => {
                 <div className="info-window-content">
                   <h3>{selectedCommunity.name}</h3>
                   <p>Welcome to {selectedCommunity.name} community!</p>
-                  <p>Open Hours: {selectedCommunity.openingHours}</p>
-                  <p>Mobile Contact: {selectedCommunity.contactinfo}</p>
-                  <p>Email Contact: {selectedCommunity.contactEmail}</p>
-                  {user.userType !== "Official" &&
-                    !user.favorites.some(
+                  {authUser.userType !== "Official" &&
+                    !authUser.favorites.some(
                       (fav) => fav.name === selectedCommunity.name
                     ) && (
                       <div>
@@ -398,8 +395,8 @@ const Home = () => {
                       </div>
                     )}
 
-                  {user.userType !== "Official" &&
-                    user.favorites.some(
+                  {authUser.userType !== "Official" &&
+                    authUser.favorites.some(
                       (fav) => fav.name === selectedCommunity.name
                     ) && (
                       <button
@@ -412,7 +409,7 @@ const Home = () => {
                       </button>
                     )}
 
-                  {user.userType === "Official" && (
+                  {authUser.userType === "Official" && (
                     <button
                       onClick={() => {
                         removeCommunity(selectedCommunity);
@@ -528,7 +525,7 @@ const Home = () => {
         </Popup>
 
         {/* Right Toolbox for Favorites */}
-        {user.userType !== "Official" && (
+        {authUser.userType !== "Official" && (
           <div className="right-toolside">
             <h3>Your Favorites</h3>
             <ul>
@@ -541,7 +538,7 @@ const Home = () => {
 
         {/*Right toolbox for city official user*/}
         {/* Right Toolbox for Favorites */}
-        {user.userType === "Official" && (
+        {authUser.userType === "Official" && (
           <div className="right-toolside">
             <h3>Communities List</h3>
             <ul>

@@ -9,10 +9,11 @@ const generateTokenAndSetCookie = (userId, res) => {
   );
 
   res.cookie("jwt", token, {
-    masAge: 15 * 24 * 60 * 1000, //MS
+    maxAge: 15 * 24 * 60 * 1000, //MS
     httpOnly: true, //prevent XSS attacks cross-sitescripting attacks
     sameSite: "strict", //CSRF attacks cross-site request forgery attacks
   });
+  console.log("JWT Token set in cookies");
 };
 
 export default generateTokenAndSetCookie;

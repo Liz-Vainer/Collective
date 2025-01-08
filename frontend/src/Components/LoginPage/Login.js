@@ -14,12 +14,14 @@ import music_community from "../Assets/music_community.jpg";
 import "./Login.css";
 
 const Login = () => {
-  const loggedUser = useUser();
+  const { authUser } = useUser();
   const login = useLogin(); // Use the custom hook
   const navigate = useNavigate();
   const carouselRef = useRef(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
 
   const images = [
     art_community,
@@ -53,7 +55,7 @@ const Login = () => {
   }, [currentImageIndex]);
 
   const handleSubmit = async () => {
-    const success = await login(); // Call the login function
+    const success = await login(name, password); // Call the login function
     if (success) {
       navigate("/home"); // Navigate to the home page
     } else {
@@ -82,7 +84,7 @@ const Login = () => {
               name="name"
               type="text"
               placeholder="Name"
-              onChange={(e) => loggedUser.setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
@@ -92,7 +94,7 @@ const Login = () => {
               name="password"
               type="password"
               placeholder="Password"
-              onChange={(e) => loggedUser.setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
         </div>

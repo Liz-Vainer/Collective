@@ -118,10 +118,21 @@ const handleSignup = async (
   try {
     await newUser.save();
     generateTokenAndSetCookie(newUser._id, res);
+    let isReligious;
+    if (newUser.religion !== "no") {
+      isReligious = true;
+    } else {
+      isReligious = false;
+    }
     res.status(201).json({
       message: `${userType} Login successful`,
       id: newUser.id,
       userType,
+      age: newUser.age,
+      gender: newUser.gender,
+      religioun: newUser.religion,
+      ethnicity: newUser.ethnicity,
+      interest: newUser.interest,
     });
   } catch (err) {
     console.error("Error creating user:", err);
@@ -300,11 +311,17 @@ export const logout = async (req, res) => {
 };
 
 export const settings = async (req, res) => {
-  const { userID, gender, age, isReligious, religion, ethnicity, interest } =
+  const { userID, gender, age, religion, ethnicity, interest, userType } =
     req.body;
 
   try {
     // Find the user by ID in the User collection
+    let isReligious;
+    if (religion !== "no") {
+      isReligious = true;
+    } else {
+      isReligious = false;
+    }
     let updatedUser;
 
     // If user is in the User collection
@@ -313,7 +330,6 @@ export const settings = async (req, res) => {
       {
         gender,
         age,
-        isReligious,
         religion,
         ethnicity,
         interest,
@@ -324,7 +340,14 @@ export const settings = async (req, res) => {
     if (updatedUser) {
       return res.status(200).json({
         message: "User settings updated successfully",
-        user: updatedUser,
+        id: updatedUser.id,
+        userType,
+        age: updatedUser.age,
+        gender: updatedUser.gender,
+        isReligious: isReligious,
+        religioun: updatedUser.religion,
+        ethnicity: updatedUser.ethnicity,
+        interest: updatedUser.interest,
       });
     }
 
@@ -334,7 +357,6 @@ export const settings = async (req, res) => {
       {
         gender,
         age,
-        isReligious,
         religion,
         ethnicity,
         interest,
@@ -345,7 +367,14 @@ export const settings = async (req, res) => {
     if (updatedUser) {
       return res.status(200).json({
         message: "teOrganizer settings updated successfully",
-        user: updatedUser,
+        id: updatedUser.id,
+        userType,
+        age: updatedUser.age,
+        gender: updatedUser.gender,
+        isReligious: isReligious,
+        religioun: updatedUser.religion,
+        ethnicity: updatedUser.ethnicity,
+        interest: updatedUser.interest,
       });
     }
 
@@ -355,7 +384,6 @@ export const settings = async (req, res) => {
       {
         gender,
         age,
-        isReligious,
         religion,
         ethnicity,
         interest,
@@ -366,22 +394,16 @@ export const settings = async (req, res) => {
     if (updatedUser) {
       return res.status(200).json({
         message: "Official settings updated successfully",
-        user: updatedUser,
+        id: updatedUser.id,
+        userType,
+        age: updatedUser.age,
+        gender: updatedUser.gender,
+        isReligious: isReligious,
+        religioun: updatedUser.religion,
+        ethnicity: updatedUser.ethnicity,
+        interest: updatedUser.interest,
       });
     }
-
-    updatedUser = await Official.findByIdAndUpdate(
-      userID,
-      {
-        gender,
-        age,
-        isReligious,
-        religion,
-        ethnicity,
-        interest,
-      },
-      { new: true }
-    );
 
     // If the user is not found in any collection
     return res.status(404).json({

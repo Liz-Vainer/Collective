@@ -1,31 +1,46 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
-  const loggedUser = useUser();
+  const { authUser, setAuthUser } = useUser();
+  const [isReligious, setIsReligious] = useState(false); // Track if user is religious
+  const [religion, setReligion] = useState(authUser.religioun); // Track selected religion
 
   useEffect(() => {
-    if (!loggedUser.isReligious) {
-      loggedUser.setReligion("no");
-    } else if (loggedUser.religion === "no") {
-      loggedUser.setReligion("muslim");
+    if (authUser.religioun === "no") {
+      setIsReligious(false);
+    } else if (authUser.religioun !== "no") {
+      setIsReligious(true);
     }
-  }, [loggedUser.isReligious, loggedUser.religion]);
+  }, [authUser.religioun]);
+
+  useEffect(() => {
+    if (!isReligious) {
+      setReligion("no");
+    } else if (authUser.religioun !== "no") {
+      setReligion(authUser.religioun);
+    } else {
+      setReligion("muslim");
+    }
+  }, [isReligious, authUser.religioun]);
+  const [gender, setGender] = useState(authUser.gender);
+  const [age, setAge] = useState(authUser.age);
+  const [ethnicity, setEthnicity] = useState(authUser.ethnicity);
+  const [interest, setInterest] = useState(authUser.interest);
 
   // Handle form submission (save to MongoDB here)
   const handleSubmit = async () => {
-    console.log(loggedUser.religion);
     try {
       const userData = {
-        userID: loggedUser.user?.id,
-        gender: loggedUser.gender,
-        age: loggedUser.age,
-        isReligious: loggedUser.isReligious,
-        religion: loggedUser.religion,
-        ethnicity: loggedUser.ethnicity,
-        interest: loggedUser.interest,
+        userID: authUser.id,
+        gender: gender,
+        age: age,
+        religion: religion,
+        ethnicity: ethnicity,
+        interest: interest,
+        userType: authUser.userType,
       };
 
       // Send the data to the backend (MongoDB)
@@ -42,9 +57,10 @@ const SettingsPage = () => {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update settings.");
       }
-
       const resData = await response.json();
       console.log("Settings updated successfully:", resData);
+      setAuthUser(resData);
+      localStorage.setItem("user-info", JSON.stringify(resData));
     } catch (error) {
       console.error("Error while updating user settings:", error.message);
     }
@@ -63,8 +79,8 @@ const SettingsPage = () => {
         <select
           id="gender-select"
           className="gender-list"
-          value={loggedUser.gender}
-          onChange={(e) => loggedUser.setGender(e.target.value)}
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
         >
           <option value="male">Male</option>
           <option value="female">Female</option>
@@ -82,8 +98,8 @@ const SettingsPage = () => {
           placeholder="age"
           min="18"
           max="100"
-          value={loggedUser.age}
-          onChange={(e) => loggedUser.setAge(e.target.value)}
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
         />
       </div>
 
@@ -92,14 +108,14 @@ const SettingsPage = () => {
         <label>Are you religious?</label>
         <input
           type="checkbox"
-          checked={loggedUser.isReligious}
-          onChange={(e) => loggedUser.setIsReligious(e.target.checked)}
+          checked={isReligious}
+          onChange={(e) => setIsReligious(e.target.checked)}
         />
-        {loggedUser.isReligious && (
+        {isReligious && (
           <select
             className="religion-list"
-            value={loggedUser.religion}
-            onChange={(e) => loggedUser.setReligion(e.target.value)}
+            value={religion}
+            onChange={(e) => setReligion(e.target.value)}
           >
             <option value="muslim">Muslim</option>
             <option value="jewish">Jewish</option>
@@ -115,8 +131,8 @@ const SettingsPage = () => {
         <select
           id="ethnicity-select"
           className="religion-list"
-          value={loggedUser.ethnicity}
-          onChange={(e) => loggedUser.setEthnicity(e.target.value)}
+          value={ethnicity}
+          onChange={(e) => setEthnicity(e.target.value)}
         >
           <option value="caucasian">Caucasian</option>
           <option value="black">Black</option>
@@ -134,8 +150,8 @@ const SettingsPage = () => {
         <select
           id="interest-select"
           className="religion-list"
-          value={loggedUser.interest}
-          onChange={(e) => loggedUser.setInterest(e.target.value)}
+          value={interest}
+          onChange={(e) => setInterest(e.target.value)}
         >
           <option value="entertainment">Entertainment</option>
           <option value="sport">Sport</option>

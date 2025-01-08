@@ -1,9 +1,9 @@
 import { useUser } from "../../context/UserContext";
 
 const useLogin = () => {
-  const loggedUser = useUser();
+  const { authUser, setAuthUser } = useUser();
 
-  const login = async () => {
+  const login = async (name, password) => {
     try {
       const response = await fetch("/login", {
         method: "POST",
@@ -11,21 +11,17 @@ const useLogin = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: loggedUser.name,
-          password: loggedUser.password,
+          name: name,
+          password: password,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        loggedUser.setUser(data); // Store user info in the context
-        loggedUser.setAge(data.age);
-        loggedUser.setGender(data.gender);
-        loggedUser.setIsReligious(data.isReligious);
-        loggedUser.setReligion(data.religion); // Fixed typo: `religioun` -> `religion`
-        loggedUser.setInterest(data.interest);
-        loggedUser.setEthnicity(data.ethnicity);
+        console.log(data);
+        setAuthUser(data);
+        console.log(authUser);
         alert("Login successful");
         localStorage.setItem("user-info", JSON.stringify(data));
         return true;

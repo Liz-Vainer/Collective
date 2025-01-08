@@ -14,7 +14,6 @@ import music_community from "../Assets/music_community.jpg";
 import "./Signup.css";
 
 const Signup = () => {
-  const loggedUser = useUser();
   const navigate = useNavigate();
   const signup = useSignup();
   const [formValidationName, setFormValidationName] = useState(true);
@@ -23,26 +22,22 @@ const Signup = () => {
   const carouselRef = useRef(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
-
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("male");
+  const [age, setAge] = useState(null);
+  const [ethnicity, setEthnicity] = useState("other");
+  const [interest, setInterest] = useState("other");
+  const [isReligious, setIsReligious] = useState(false); // Track if user is religious
+  const [religion, setReligion] = useState("no"); // Track selected religion
+  const [userType, setUserType] = useState("citizen"); //
   const images = [
     art_community,
     yoga_community,
     sports_community,
     music_community,
   ];
-  //In order to reset data for signup
-  useEffect(() => {
-    loggedUser.setUser(null);
-    loggedUser.setName("");
-    loggedUser.setPassword("");
-    loggedUser.setEmail("");
-    loggedUser.setGender("other");
-    loggedUser.setAge(null);
-    loggedUser.setEthnicity("other");
-    loggedUser.setInterest("other");
-    loggedUser.setIsReligious(false);
-    loggedUser.setReligion("no");
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -69,7 +64,7 @@ const Signup = () => {
   }, [currentImageIndex]);
 
   const handleReligionChange = (event) => {
-    loggedUser.setReligion(event.target.value); // Set selected religion
+    setReligion(event.target.value); // Set selected religion
   };
 
   //=================== Name and email and password validation ===============
@@ -77,26 +72,26 @@ const Signup = () => {
     const regex = /^(?=.*[A-Z]).{8,}$/;
     let flag = true;
 
-    if (loggedUser.name === "") {
+    if (name === "") {
       setFormValidationName(false);
       flag = false;
     } else {
       setFormValidationName(true);
     }
-    if (loggedUser.email === "") {
+    if (email === "") {
       setFormValidationEmail(false);
       flag = false;
     } else {
       setFormValidationEmail(true);
     }
-    if (loggedUser.password === "") {
+    if (password === "") {
       setFormValidationPassword(false);
       flag = false;
     } else {
       setFormValidationPassword(true);
     }
-    if (loggedUser.password) {
-      if (regex.test(loggedUser.password)) {
+    if (password) {
+      if (regex.test(password)) {
         setFormValidationPassword(true);
       } else {
         flag = false;
@@ -111,7 +106,18 @@ const Signup = () => {
   };
 
   const handleSignup = async () => {
-    const succes = await signup();
+    const succes = await signup(
+      name,
+      email,
+      password,
+      userType,
+      age,
+      isReligious,
+      religion,
+      ethnicity,
+      interest,
+      gender
+    );
     if (succes) {
       navigate("/home");
     } else {
@@ -139,7 +145,7 @@ const Signup = () => {
               name="name"
               type="text"
               placeholder="Name"
-              onChange={(e) => loggedUser.setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
             {!formValidationName && <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>}
           </div>
@@ -149,7 +155,7 @@ const Signup = () => {
               name="email"
               type="text"
               placeholder="Email"
-              onChange={(e) => loggedUser.setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
             {!formValidationEmail && (
               <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
@@ -162,7 +168,7 @@ const Signup = () => {
               name="password"
               type="password"
               placeholder="Password"
-              onChange={(e) => loggedUser.setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
             {!formValidationPassword && (
               <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
@@ -174,8 +180,8 @@ const Signup = () => {
             <select
               id="user-type-select"
               className="religion-list"
-              value={loggedUser.userType}
-              onChange={(e) => loggedUser.setUserType(e.target.value)}
+              value={userType}
+              onChange={(e) => setUserType(e.target.value)}
             >
               <option value="citizen">Citizen</option>
               <option value="event-organizer">Event Organizer</option>
@@ -194,7 +200,7 @@ const Signup = () => {
             id="gender-select"
             className="gender-list"
             onChange={(e) => {
-              loggedUser.setGender(e.target.value);
+              setGender(e.target.value);
             }}
           >
             <option value="male">Male</option>
@@ -214,7 +220,7 @@ const Signup = () => {
             min="18"
             max="100"
             onChange={(e) => {
-              loggedUser.setAge(e.target.value);
+              setAge(e.target.value);
             }}
           />
         </div>
@@ -225,14 +231,14 @@ const Signup = () => {
           <label>
             <input
               type="checkbox"
-              checked={loggedUser.isReligious}
-              onChange={(e) => loggedUser.setIsReligious(e.target.checked)}
+              checked={isReligious}
+              onChange={(e) => setIsReligious(e.target.checked)}
             />
           </label>
-          {loggedUser.isReligious && (
+          {isReligious && (
             <select
               className="religion-list"
-              value={loggedUser.religion}
+              value={religion}
               onChange={handleReligionChange}
             >
               <option value="muslim">Muslim</option>
@@ -249,7 +255,7 @@ const Signup = () => {
             id="ethnicity-select"
             className="religion-list"
             onChange={(e) => {
-              loggedUser.setEthnicity(e.target.value);
+              setEthnicity(e.target.value);
             }}
           >
             <option value="other">Other</option>
@@ -268,7 +274,7 @@ const Signup = () => {
             id="interest-select"
             className="religion-list"
             onChange={(e) => {
-              loggedUser.setInterest(e.target.value);
+              setInterest(e.target.value);
             }}
           >
             <option value="other">Other</option>

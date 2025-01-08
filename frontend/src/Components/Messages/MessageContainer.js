@@ -2,9 +2,15 @@ import Messages from "./Messages";
 import "./MessageContainer.css";
 import MessageInput from "./MessageInput";
 import useConversation from "../../zustand/useConversation";
+import { useEffect } from "react";
 
 const MessageContainer = () => {
   const { selectedConversation, setSelectedConversation } = useConversation();
+
+  useEffect(() => {
+    return () => setSelectedConversation(null);
+  }, [setSelectedConversation]);
+
   return (
     <div className="message-container">
       {!selectedConversation ? (
@@ -13,7 +19,7 @@ const MessageContainer = () => {
         <>
           <div className="message-header">
             <span>To:</span>
-            <span>Name</span>
+            <span>{selectedConversation.name}</span>
           </div>
           <Messages />
           <MessageInput />

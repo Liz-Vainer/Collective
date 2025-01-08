@@ -4,7 +4,7 @@ export const sendMessage = async (req, res) => {
   try {
     const { message } = req.body;
     const { id: receiverId } = req.params;
-    const senderId = req.userId;
+    const senderId = req.user.id;
 
     let conversation = await Conversation.findOne({
       //searching for the chat between the sender and receiver
@@ -31,8 +31,11 @@ export const sendMessage = async (req, res) => {
     }
     //Socket io func will go here
 
+    await conversation.save();
+    await newMessage.save();
+
     //this will run at the same time
-    await Promise.all([conversation.save(), newMessage.save()]); //saving the chat and the message
+    // await Promise.all([conversation.save(), newMessage.save()]); //saving the chat and the message
 
     res.status(201).json(newMessage);
   } catch (err) {

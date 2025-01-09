@@ -60,6 +60,7 @@ const handleLogin = async (name, password, res) => {
       religioun: user.religion,
       ethnicity: user.ethnicity,
       interest: user.interest,
+      profilePic: user.profilePic,
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -104,6 +105,10 @@ const handleSignup = async (
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  const boyPic = `https://avatar.iran.liara.run/public/boy?username=${name}`;
+  const girlPic = `https://avatar.iran.liara.run/public/girl?username=${name}`;
+
   const newUser = new Model({
     name,
     email,
@@ -113,6 +118,7 @@ const handleSignup = async (
     ethnicity: ethnicity,
     interest: interest,
     gender: gender,
+    profilePic: gender === "male" ? boyPic : girlPic,
   });
 
   try {
@@ -133,6 +139,7 @@ const handleSignup = async (
       religioun: newUser.religion,
       ethnicity: newUser.ethnicity,
       interest: newUser.interest,
+      profilePic: newUser.profilePic,
     });
   } catch (err) {
     console.error("Error creating user:", err);
@@ -300,6 +307,7 @@ export const remove_fav = async (req, res) => {
   }
 };
 
+//logout functionallity
 export const logout = async (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
@@ -310,6 +318,7 @@ export const logout = async (req, res) => {
   }
 };
 
+//settings change
 export const settings = async (req, res) => {
   const { userID, gender, age, religion, ethnicity, interest, userType } =
     req.body;
@@ -417,6 +426,7 @@ export const settings = async (req, res) => {
   }
 };
 
+//users for chat
 export const getUsersForSideBar = async (req, res) => {
   try {
     const loggedUserId = req.user.id;
@@ -430,5 +440,63 @@ export const getUsersForSideBar = async (req, res) => {
   } catch (err) {
     console.error("Error in getUsersSideBar: ", err.message);
     res.status(500).json({ err: "Internal server error" });
+  }
+};
+
+//updating profile pic
+export const updateProfilePicture = async (req, res) => {
+  try {
+    const { profilePic, userType } = req.body;
+    const userId = req.user._id; // Assuming user ID is in the request
+
+    console.log(userType);
+
+    let Model;
+    switch (userType) {
+      case "User":
+        Model = User;
+        break;
+      case "event-organizer":
+        Model = Organizer;
+        break;
+      case "city-official":
+        Model = Official;
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid user type" });
+    }
+    // Update user profile picture in the database
+    const updatedUser = await Model.findByIdAndUpdate(
+      userId,
+      { profilePic },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    let isReligious;
+    if (updatedUser.religion !== "no") {
+      isReligious = true;
+    } else {
+      isReligious = false;
+    }
+
+    res.status(200).json({
+      message: "Profile picture updated",
+      id: updatedUser.id,
+      userType,
+      age: updatedUser.age,
+      gender: updatedUser.gender,
+      isReligious: isReligious,
+      religioun: updatedUser.religion,
+      ethnicity: updatedUser.ethnicity,
+      interest: updatedUser.interest,
+      profilePic: updatedUser.profilePic,
+    });
+  } catch (err) {
+    console.error("Error updating profile picture:", err.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

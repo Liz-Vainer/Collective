@@ -37,7 +37,6 @@ const protectRoute = async (req, res, next) => {
         user = await Official.findById(decoded.userId).select("-password");
     }
 
-    console.log(user);
     if (!user) {
       // If the user is not found, send a 404 Not Found response
       return res.status(404).json({ error: "User not found" });
@@ -45,7 +44,6 @@ const protectRoute = async (req, res, next) => {
 
     // Attach the authenticated user to the `req` object for downstream handlers
     req.user = user;
-
     // Proceed to the next middleware or route handler
     next();
   } catch (error) {

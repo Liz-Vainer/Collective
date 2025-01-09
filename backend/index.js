@@ -8,6 +8,8 @@ import connectToMongoDB from "./db/connectToMongoDb.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
+dotenv.config();
+
 // Initialize Express
 const app = express();
 

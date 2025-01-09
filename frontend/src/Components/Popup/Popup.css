@@ -11,6 +11,7 @@
 .popup.bottom-right {
   top: 420px;
   right: -200px;
+  width: 600px;
   transform: none;
 }
 
@@ -27,8 +28,10 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
+  position: fixed;
   user-select: none; /* Disable selection in the content area */
+  max-width: 700px;
+  max-height: 420px;
 }
 
 .btn-close {

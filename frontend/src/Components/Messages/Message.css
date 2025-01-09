@@ -1,41 +1,75 @@
 /* Single message container */
-.message {
-    display: flex; /* Align items horizontally */
-    align-items: center; /* Center vertically */
-    gap: 10px; /* Space between icon, text, and time */
-    padding: 5px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    border: 1px solid #ddd;
-  }
-  
-  /* Icon container */
-  .message-icon {
-    width: 30px;
-    height: 30px;
-    background-color: #19984e; /* Placeholder background color */
-    border-radius: 50%; /* Circular icon */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgb(0, 0, 0);
-    font-weight: bold;
-    font-size: 16px;
-  }
-  
-  /* Message text */
-  .message-text {
-    flex: 1; /* Take up remaining space */
-    font-size: 16px;
-    color: #333;
-    word-wrap: break-word; /* Wrap long text */
-  }
-  
-  /* Timestamp */
-  .message-time {
-    font-size: 14px;
-    color: #888;
-    white-space: nowrap; /* Prevent wrapping */
-  }
-  
+.chat {
+  display: flex; /* Align items horizontally */
+  align-items: center; /* Center vertically */
+  gap: 10px; /* Space between icon, text, and time */
+  padding: 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  border: 1px solid #ddd;
+  margin-bottom: 10px; /* Adds spacing between messages */
+  justify-content: flex-start; /* Align messages to the left by default */
+}
+
+/* For messages sent by the current user (move to the left) */
+.chat-end {
+  justify-content: flex-start; /* Move chat bubbles to the left */
+}
+
+/* For messages received from others (move to the right) */
+.chat-start {
+  justify-content: flex-end; /* Move chat bubbles to the right */
+}
+
+/* For messages sent by the current user */
+.chat-end .chat-bubble {
+  background-color: #00d099; /* Background color for outgoing messages */
+  color: white; /* White text for outgoing messages */
+}
+
+/* For messages received from others */
+.chat-start .chat-bubble {
+  background-color: #f1f1f1; /* Light grey for received messages */
+  color: #333; /* Dark text for received messages */
+}
+
+/* Icon container */
+.message-icon {
+  width: 30px;
+  height: 30px;
+  background-color: #19984e; /* Placeholder background color */
+  border-radius: 50%; /* Circular icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+/* Profile image inside the icon */
+.message-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the circle */
+}
+
+/* Message text */
+.chat-bubble {
+  flex: 1; /* Take up remaining space */
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 10px;
+  word-wrap: break-word; /* Wrap long text */
+  max-width: 80%; /* Limit bubble width */
+}
+
+/* Timestamp */
+.message-time {
+  font-size: 14px;
+  color: #888;
+  white-space: nowrap; /* Prevent wrapping */
+  margin-left: 10px; /* Space between time and message */
+}

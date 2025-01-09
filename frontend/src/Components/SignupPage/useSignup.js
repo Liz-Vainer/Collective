@@ -49,7 +49,7 @@ const useSignup = () => {
     } catch (error) {
       console.error("Error during user creation:", error);
       alert("An error occurred. Please try again.");
-      return true;
+      return false;
     }
   };
 

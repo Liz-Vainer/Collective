@@ -1,6 +1,5 @@
 import React from "react";
 import "./App.css";
-// import LoginSignup from "./Components/LoginSignup/LoginSignup";
 import Home from "./Components/Homepage/Home";
 import Signup from "./Components/SignupPage/Signup";
 import Login from "./Components/LoginPage/Login";
@@ -18,7 +17,6 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Redirect to /home if user is logged in */}
         <Route
           path="/"
           element={authUser ? <Navigate to="/home" /> : <Login />}

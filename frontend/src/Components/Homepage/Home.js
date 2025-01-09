@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
 import { useNavigate } from "react-router-dom";
+
 import {
   FaDoorOpen,
   FaCog,
@@ -10,6 +11,7 @@ import {
   FaCamera,
 } from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
+import "../drawerstyle.css";
 import {
   GoogleMap,
   Marker,
@@ -25,7 +27,7 @@ import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
 const Home = () => {
-  const { authUser } = useUser(); // Destructure user from context
+  const { authUser, setAuthUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
 
@@ -38,6 +40,7 @@ const Home = () => {
   };
   const handleSettings = () => navigate("/settings");
   const handleInfo = () => alert("Info Button Clicked");
+  const handleMoreInfo = () => navigate("/moreinfo");
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -51,12 +54,33 @@ const Home = () => {
   };
 
   //===================== Fake Communities Data =====================
-  const [fakeCommunities, setCommunities] = useState([]);
+  const [fakeCommunities, setCommunities] = useState([
+    {
+      _id: "1",
+      name: "Sports Hub",
+      category: "Sport",
+      lat: 31.253,
+      lng: 34.792,
+      openingHours: "08:00-18:00",
+      contactinfo: "08-1234567",
+      contactEmail: "Nathan@nathaniel.com",
+    },
+  ]);
 
+  //fetching communities from database
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const response = await fetch("/get-fake-communities");
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // This ensures cookies are sent
+          }
+        );
         const data = await response.json();
 
         if (response.ok) {
@@ -94,28 +118,67 @@ const Home = () => {
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
-  const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
-  //const profilePicture = authUser.profilePicture || user_icon || null; // Default profile picture
+
+  const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const reader = new FileReader();
-      reader.onloadend = () => setNewPfp(reader.result);
+      reader.onloadend = () => {
+        let newProfilePic = reader.result; // Get the base64 data from the reader
+        setNewPfp(newProfilePic); // Optionally update the state
+        updateProfilePicture(newProfilePic); // Pass the profile picture directly
+      };
+
       reader.readAsDataURL(file);
+    }
+  };
+
+  // Update user profile picture
+  const updateProfilePicture = async (profilePic) => {
+    if (!profilePic) return;
+    try {
+      const response = await fetch(`/update-profile-pic/${authUser.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profilePic: profilePic, // Use the profilePic passed as a parameter
+          userType: authUser.userType,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Profile picture updated successfully!");
+        setAuthUser(data); // Assuming `setAuthUser` updates the user profile in the state
+        localStorage.setItem("user-info", JSON.stringify(data));
+      } else {
+        console.error("Failed to update profile picture: ", data);
+      }
+    } catch (err) {
+      console.error("Error updating profile picture:", err);
     }
   };
 
   const triggerFileInput = () => {
     document.getElementById("fileInput").click();
   };
+
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
       if (authUser.userType !== "Official")
         try {
           const response = await fetch(
-            `/users/${authUser.id}/fav/${authUser.userType}`
+            `/users/${authUser.id}/fav/${authUser.userType}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include", // This ensures cookies are sent
+            }
           );
           const data = await response.json();
 
@@ -137,14 +200,16 @@ const Home = () => {
   const onLoad = useCallback((mapInstance) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
 
+  //add comunity to favorites
   const addToFavorites = async (community) => {
     if (!favorites.some((fav) => fav.name === community.name)) {
       try {
-        const response = await fetch("/users/add-to-fav", {
+        const response = await fetch("http://localhost:3000/users/add-to-fav", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include", // This ensures cookies are sent
           body: JSON.stringify({
             id: authUser.id, // Pass the user's id from the logged-in user
             community, // Send the community object directly
@@ -175,11 +240,12 @@ const Home = () => {
   //adding communities for official user
   const addCommunityPopup = async () => {
     try {
-      const response = await fetch(`/add-community`, {
+      const response = await fetch(`http://localhost:3000/add-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // This ensures cookies are sent
         body: JSON.stringify({ name, category, lng, lat }),
       });
 
@@ -189,7 +255,9 @@ const Home = () => {
 
         setTimeout(async () => {
           // Wait for state update, then fetch updated communities
-          const communitiesResponse = await fetch("/get-fake-communities");
+          const communitiesResponse = await fetch(
+            "http://localhost:3000/get-fake-communities"
+          );
           const communitiesData = await communitiesResponse.json();
           if (communitiesResponse.ok) {
             setCommunities(communitiesData.communities);
@@ -211,18 +279,21 @@ const Home = () => {
   const removeCommunity = async (community) => {
     try {
       const name = community.name;
-      const response = await fetch(`/remove-community`, {
+      const response = await fetch(`http://localhost:3000/remove-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // This ensures cookies are sent
         body: JSON.stringify({ name }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        const response = await fetch("/get-fake-communities");
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
         const data = await response.json();
         setCommunities(data.communities); // Update with fresh data
         alert("Community deleted!");
@@ -235,11 +306,12 @@ const Home = () => {
   //deleting community from favotites
   const removeFavorite = async (community) => {
     try {
-      const response = await fetch(`/remove-favorite`, {
+      const response = await fetch(`http://localhost:3000/remove-favorite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // This ensures cookies are sent
         body: JSON.stringify({
           id: authUser.id,
           community,
@@ -275,13 +347,7 @@ const Home = () => {
 
   //===================== Component UI =====================
   return (
-    <div
-      className="mainbody"
-      style={{
-        backgroundImage: `url(${background_fornow})`,
-        backgroundColor: "transparent",
-      }}
-    >
+    <div className="mainbody">
       {/* Upper Tool Section */}
       <div className="upper-tool">
         <button className="exit-button" onClick={handleBackToLogin}>
@@ -348,27 +414,30 @@ const Home = () => {
             {/* InfoWindow for Selected Community */}
             {selectedCommunity && (
               <InfoWindow
+                className="info-window"
                 position={{
                   lat: selectedCommunity.lat,
                   lng: selectedCommunity.lng,
                 }}
                 onCloseClick={() => setSelectedCommunity(null)}
               >
-                <div>
+                <div className="info-window-content">
                   <h3>{selectedCommunity.name}</h3>
                   <p>Welcome to {selectedCommunity.name} community!</p>
                   {authUser.userType !== "Official" &&
                     !authUser.favorites.some(
                       (fav) => fav.name === selectedCommunity.name
                     ) && (
-                      <button
-                        onClick={() => {
-                          addToFavorites(selectedCommunity);
-                          setSelectedCommunity(null);
-                        }}
-                      >
-                        Add to Favorites
-                      </button>
+                      <div>
+                        <button
+                          onClick={() => {
+                            addToFavorites(selectedCommunity);
+                            setSelectedCommunity(null);
+                          }}
+                        >
+                          Add to Favorites
+                        </button>
+                      </div>
                     )}
 
                   {authUser.userType !== "Official" &&
@@ -395,6 +464,13 @@ const Home = () => {
                       Remove Community
                     </button>
                   )}
+                  <button
+                    onClick={() => {
+                      handleMoreInfo();
+                    }}
+                  >
+                    More info
+                  </button>
                 </div>
               </InfoWindow>
             )}
@@ -425,16 +501,23 @@ const Home = () => {
                 />
               </div>
             </div>
-
             <div className="inputs">
               <div className="input">
                 <img src={user_icon} alt="user" className="image" />
-                <input
+                <select
                   name="category"
-                  type="text"
-                  placeholder="Community Category"
+                  className="dropdown"
                   onChange={(e) => setCommunityCategory(e.target.value)}
-                />
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select Category
+                  </option>
+                  <option value="Sport">Sport</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Religon">Religon</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
             </div>
 
@@ -485,7 +568,6 @@ const Home = () => {
             <MessageContainer />
           </div>
         </Popup>
-
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
           <div className="right-toolside">
@@ -538,7 +620,7 @@ const Home = () => {
           >
             {/* Profile Section */}
             <div className="profile-section">
-              <img alt="Profile" className="profile-pic" />
+              <img src={newPfp} alt="Profile" className="profile-pic" />
               <FaCamera size={50} color="gray" className="change-pfp-icon" />
               <button onClick={triggerFileInput} className="change-profile-btn">
                 Change Profile

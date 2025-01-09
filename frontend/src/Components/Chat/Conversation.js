@@ -1,12 +1,20 @@
 import "./Conversation.css";
-const Conversation = () => {
+import useConversation from "../../zustand/useConversation";
+const Conversation = ({ conversation }) => {
+  const { selectedConversation, setSelectedConversation } = useConversation();
+
+  const isSelected = selectedConversation?._id === conversation._id;
+
   return (
     <>
-      <div className="conversation">
+      <div
+        className={`conversation ${isSelected ? "bg-conv" : ""}`}
+        onClick={() => setSelectedConversation(conversation)}
+      >
         <div className="logged-in"></div>
         <div>
           <div>
-            <p>Name</p>
+            <p>{conversation.name}</p>
             <span>Icon</span>
           </div>
         </div>

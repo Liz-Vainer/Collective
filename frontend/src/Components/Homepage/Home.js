@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
 import { useNavigate } from "react-router-dom";
+
 import {
   FaDoorOpen,
   FaCog,
@@ -10,6 +11,7 @@ import {
   FaCamera,
 } from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
+import '../drawerstyle.css';
 import {
   GoogleMap,
   Marker,
@@ -24,11 +26,12 @@ import MessageContainer from "../Messages/MessageContainer";
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
+
 const Home = () => {
   const { authUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
-
+    
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
@@ -38,6 +41,7 @@ const Home = () => {
   };
   const handleSettings = () => navigate("/settings");
   const handleInfo = () => alert("Info Button Clicked");
+  const handleMoreInfo = () => navigate("/moreinfo");
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -51,12 +55,25 @@ const Home = () => {
   };
 
   //===================== Fake Communities Data =====================
-  const [fakeCommunities, setCommunities] = useState([]);
+  const [fakeCommunities, setCommunities] = useState([
+    {
+      _id: "1",
+      name: "Sports Hub",
+      category: "Sport",
+      lat: 31.253,
+      lng: 34.792,
+      openingHours: "08:00-18:00",
+      contactinfo:"08-1234567",
+      contactEmail:"Nathan@nathaniel.com"
+    }
+  ]);
 
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const response = await fetch("/get-fake-communities");
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
         const data = await response.json();
 
         if (response.ok) {
@@ -90,10 +107,12 @@ const Home = () => {
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
   const [isChatOpen, setIsChatOpen] = useState(false);
-
+  
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
+
+
   const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
   //const profilePicture = authUser.profilePicture || user_icon || null; // Default profile picture
 
@@ -109,6 +128,7 @@ const Home = () => {
   const triggerFileInput = () => {
     document.getElementById("fileInput").click();
   };
+  
   // Fetch user's favorites from the backend
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -140,7 +160,7 @@ const Home = () => {
   const addToFavorites = async (community) => {
     if (!favorites.some((fav) => fav.name === community.name)) {
       try {
-        const response = await fetch("/users/add-to-fav", {
+        const response = await fetch("http://localhost:3000/users/add-to-fav", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -175,7 +195,7 @@ const Home = () => {
   //adding communities for official user
   const addCommunityPopup = async () => {
     try {
-      const response = await fetch(`/add-community`, {
+      const response = await fetch(`http://localhost:3000/add-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -189,7 +209,9 @@ const Home = () => {
 
         setTimeout(async () => {
           // Wait for state update, then fetch updated communities
-          const communitiesResponse = await fetch("/get-fake-communities");
+          const communitiesResponse = await fetch(
+            "http://localhost:3000/get-fake-communities"
+          );
           const communitiesData = await communitiesResponse.json();
           if (communitiesResponse.ok) {
             setCommunities(communitiesData.communities);
@@ -211,7 +233,7 @@ const Home = () => {
   const removeCommunity = async (community) => {
     try {
       const name = community.name;
-      const response = await fetch(`/remove-community`, {
+      const response = await fetch(`http://localhost:3000/remove-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -222,7 +244,9 @@ const Home = () => {
       const data = await response.json();
 
       if (response.ok) {
-        const response = await fetch("/get-fake-communities");
+        const response = await fetch(
+          "http://localhost:3000/get-fake-communities"
+        );
         const data = await response.json();
         setCommunities(data.communities); // Update with fresh data
         alert("Community deleted!");
@@ -235,7 +259,7 @@ const Home = () => {
   //deleting community from favotites
   const removeFavorite = async (community) => {
     try {
-      const response = await fetch(`/remove-favorite`, {
+      const response = await fetch(`http://localhost:3000/remove-favorite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -273,17 +297,16 @@ const Home = () => {
   if (loadError) return <div>Error loading maps</div>;
   if (!isLoaded) return <div>Loading maps...</div>;
 
+
   //===================== Component UI =====================
   return (
     <div
       className="mainbody"
-      style={{
-        backgroundImage: `url(${background_fornow})`,
-        backgroundColor: "transparent",
-      }}
+     
     >
       {/* Upper Tool Section */}
       <div className="upper-tool">
+      
         <button className="exit-button" onClick={handleBackToLogin}>
           <FaDoorOpen size={30} color="white" />
         </button>
@@ -325,6 +348,7 @@ const Home = () => {
 
       {/* Main Content Section */}
       <div className="main-container">
+         
         <div className="center-main">
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
@@ -347,28 +371,30 @@ const Home = () => {
 
             {/* InfoWindow for Selected Community */}
             {selectedCommunity && (
-              <InfoWindow
+              <InfoWindow className="info-window"
                 position={{
                   lat: selectedCommunity.lat,
                   lng: selectedCommunity.lng,
                 }}
                 onCloseClick={() => setSelectedCommunity(null)}
               >
-                <div>
+                <div className="info-window-content">
                   <h3>{selectedCommunity.name}</h3>
                   <p>Welcome to {selectedCommunity.name} community!</p>
                   {authUser.userType !== "Official" &&
                     !authUser.favorites.some(
                       (fav) => fav.name === selectedCommunity.name
                     ) && (
-                      <button
-                        onClick={() => {
-                          addToFavorites(selectedCommunity);
-                          setSelectedCommunity(null);
-                        }}
-                      >
-                        Add to Favorites
-                      </button>
+                      <div>
+                        <button
+                          onClick={() => {
+                            addToFavorites(selectedCommunity);
+                            setSelectedCommunity(null);
+                          }}
+                        >
+                          Add to Favorites
+                        </button>
+                      </div>
                     )}
 
                   {authUser.userType !== "Official" &&
@@ -395,6 +421,14 @@ const Home = () => {
                       Remove Community
                     </button>
                   )}
+                  <button
+                          onClick={() => {
+                            
+                            handleMoreInfo();
+                          }}
+                        >
+                          More info
+                        </button>
                 </div>
               </InfoWindow>
             )}
@@ -425,18 +459,24 @@ const Home = () => {
                 />
               </div>
             </div>
-
             <div className="inputs">
-              <div className="input">
-                <img src={user_icon} alt="user" className="image" />
-                <input
-                  name="category"
-                  type="text"
-                  placeholder="Community Category"
-                  onChange={(e) => setCommunityCategory(e.target.value)}
-                />
-              </div>
-            </div>
+  <div className="input">  
+    <img src={user_icon} alt="user" className="image" />
+    <select
+      name="category"
+      className="dropdown"
+      onChange={(e) => setCommunityCategory(e.target.value)}
+      defaultValue="">
+      <option value="" disabled>
+        Select Category
+      </option>
+      <option value="Sport">Sport</option>
+      <option value="Entertainment">Entertainment</option>
+      <option value="Religon">Religon</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</div>
 
             <div className="inputs">
               <div className="input">
@@ -474,18 +514,14 @@ const Home = () => {
             </button>
           </div>
         </Popup>
-
-        <Popup
-          trigger={isChatOpen}
-          setTrigger={toggleChat}
-          position="bottom-right"
-        >
-          <div className="chat">
-            <Sidebar />
-            <MessageContainer />
-          </div>
-        </Popup>
-
+       
+      
+        <Popup trigger={isChatOpen} setTrigger={toggleChat} position="bottom-right">
+      <div className="chat">
+        <Sidebar />
+        <MessageContainer />
+      </div>
+    </Popup>
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
           <div className="right-toolside">

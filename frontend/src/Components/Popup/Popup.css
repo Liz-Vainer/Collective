@@ -1,13 +1,17 @@
-/* Popup.css */
+/* Disable text selection for the entire popup */
 .popup {
   position: fixed;
   z-index: 1000;
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none;    /* For Firefox */
+  -ms-user-select: none;     /* For Internet Explorer/Edge */
+  user-select: none;         /* For modern browsers */
 }
 
 .popup.bottom-right {
-  top: 420px;   /* Position it from the bottom */
-  right: -200px;    /* Position it from the right */
-  transform: none;  /* No transform needed */
+  top: 420px;
+  right: -200px;
+  transform: none;
 }
 
 .popup.center {
@@ -24,35 +28,65 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
+  user-select: none; /* Disable selection in the content area */
 }
 
 .btn-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: red;
-  color: white;
+  top: 0.1px;
+  border-radius: 10px;
+  background-color: transparent;
+  color: #333;
   border: none;
-  padding: 10px;
+  font-size: 20px;
   cursor: pointer;
-  border-radius: 5px;
+  right: 10px; 
+  margin-left: 10px;
 }
 
 .btn-close:hover {
-  background-color: darkred;
+  color: #555;
+  background-color: #4CAF50;
+  transform: scale(0.6)
 }
 
-/* Button styling */
+.btn-collapse {
+  position: absolute;
+  top: 0.1px;
+  right: 60px; /* Position it next to the close button */
+  background-color: transparent;
+  color: #333;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.btn-collapse:hover {
+  color: #555;
+  background-color: #4CAF50;
+  transform: scale(0.6)
+}
+
+
+
+
+.inner-popup.collapsed {
+  height: 90px; /* Shrink the popup's height when collapsed */
+}
+
 .button {
   margin: auto;
   margin-top: 20px;
   margin-bottom: 20px;
   display: flex;
   gap: 10px;
+  padding: 10px 20px;
+  border-radius: 5px;
   border: 1px solid #ccc;
+  background-color: #4CAF50;
   color: white;
   cursor: pointer;
-  position: relative; /* Ensure proper layout for the button */
+  position: relative;
 }
 
 .button:after {

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
 import { useNavigate } from "react-router-dom";
+
 import {
   FaDoorOpen,
   FaCog,
@@ -30,7 +31,7 @@ const Home = () => {
   const { authUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
-
+    
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
@@ -106,10 +107,12 @@ const Home = () => {
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
   const [isChatOpen, setIsChatOpen] = useState(false);
-
+  
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
+
+
   const [newPfp, setNewPfp] = useState(null); // To hold the newly selected profile picture
   //const profilePicture = authUser.profilePicture || user_icon || null; // Default profile picture
 
@@ -294,14 +297,12 @@ const Home = () => {
   if (loadError) return <div>Error loading maps</div>;
   if (!isLoaded) return <div>Loading maps...</div>;
 
+
   //===================== Component UI =====================
   return (
     <div
       className="mainbody"
-      style={{
-        backgroundImage: `url(${background_fornow})`,
-        backgroundColor: "transparent",
-      }}
+     
     >
       {/* Upper Tool Section */}
       <div className="upper-tool">
@@ -347,6 +348,7 @@ const Home = () => {
 
       {/* Main Content Section */}
       <div className="main-container">
+         
         <div className="center-main">
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
@@ -512,18 +514,14 @@ const Home = () => {
             </button>
           </div>
         </Popup>
-
-        <Popup
-          trigger={isChatOpen}
-          setTrigger={toggleChat}
-          position="bottom-right"
-        >
-          <div className="chat">
-            <Sidebar />
-            <MessageContainer />
-          </div>
-        </Popup>
-
+       
+      
+        <Popup trigger={isChatOpen} setTrigger={toggleChat} position="bottom-right">
+      <div className="chat">
+        <Sidebar />
+        <MessageContainer />
+      </div>
+    </Popup>
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
           <div className="right-toolside">

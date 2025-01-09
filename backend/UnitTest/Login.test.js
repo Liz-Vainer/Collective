@@ -1,7 +1,7 @@
 // Import required modules
 import { expect } from 'chai'; // Chai for assertions
 import sinon from 'sinon';    // Sinon for mocking and spying
-import { logout } from './conrtolles'; // Adjust the path to your logout function
+import { logout } from './controllers'; // Adjust the path to your logout function
 
 describe('logout function', () => {
   let req, res;

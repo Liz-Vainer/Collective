@@ -1,3 +1,4 @@
+import "./messageSkeleton.css";
 const MessageSkeleton = () => {
   return (
     <>

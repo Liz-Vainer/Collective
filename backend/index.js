@@ -7,11 +7,9 @@ import methodOverride from "method-override";
 import connectToMongoDB from "./db/connectToMongoDb.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { app, server } from "./socket/socket.js";
 
 dotenv.config();
-
-// Initialize Express
-const app = express();
 
 // Middleware setup
 app.use(express.json());
@@ -30,7 +28,7 @@ app.use("/messages", messageRoutes);
 
 // Start the server
 const PORT = 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   connectToMongoDB();
   console.log(`Server is running on port ${PORT}`);
 });

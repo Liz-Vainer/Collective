@@ -1,72 +1,67 @@
 /* Conversation container styles */
 .conversation {
-    display: flex;
-    align-items: center; /* Vertically align items in the container */
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-    width: 60%;
-  }
-  .bg-conv{
-    background-color: #d4f7c5;
-  }
-  .convs{
-    margin-top: 10px;
-    margin-bottom: 50px;
-    overflow-y: scroll;
-    max-height: 300px;
-  }
-  
-  /* Styles for the status circle */
-  .logged-in {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: green; /* Status indicator (green for online) */
-    margin-right: 10px; /* Space between the circle and the name */
-  }
-  
-  /* Styles for the main content (name and icon) */
-  .conversation > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  /* Name and icon container styles */
-  .conversation > div > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* Align name and icon in a single row */
-  }
-  
-  /* Styles for the name */
-  .conversation p {
-    font-size: 16px;
-    font-weight: bold;
-    margin: 0; /* Remove default margin */
-    color: #333; /* Text color */
-    margin-right: 10px;
-  }
-  
-  /* Styles for the icon */
-  .conversation span {
-    font-size: 18px;
-    background-color: #19984e; /* Example background color for the icon */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px; /* Small rectangle with rounded edges */
-    cursor: pointer;
-  }
-  
-  /* Hover effect for the conversation items */
-  .conversation:hover {
-    background-color: #e1e1e1; /* Light background color on hover */
-  }
-  
-  .logged-out {
-    color: red;
-  }
+  display: flex;
+  align-items: center; /* Vertically align items in the container */
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  width: 80%;
+}
+
+/* Highlight the selected conversation */
+.bg-conv {
+  background-color: #d4f7c5;
+}
+
+.convs {
+  margin-top: 10px;
+  margin-bottom: 50px;
+  overflow-y: scroll;
+  max-height: 300px;
+}
+
+/* Status circle styles */
+.status-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 10px; /* Space between the circle and the name */
+}
+
+.logged-in {
+  background-color: green; /* Green for online */
+}
+
+.logged-out {
+  background-color: red; /* Red for offline */
+}
+
+/* Conversation details (name and profile picture) */
+.conversation-details {
+  display: flex;
+  align-items: center;
+}
+
+/* Profile picture */
+.profile-pic {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* Circular profile picture */
+  margin-right: 10px; /* Space between profile picture and name */
+}
+
+/* Styles for the conversation name */
+.conversation p {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0; /* Remove default margin */
+  color: #333; /* Text color */
+}
+
+/* Hover effect for the conversation items */
+.conversation:hover {
+  background-color: #e1e1e1; /* Light background color on hover */
+}

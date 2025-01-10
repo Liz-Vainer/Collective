@@ -1,0 +1,67 @@
+/* Skeleton loading animation */
+@keyframes skeleton-loading {
+    0% {
+      background-color: #e0e0e0;
+    }
+    50% {
+      background-color: #f0f0f0;
+    }
+    100% {
+      background-color: #e0e0e0;
+    }
+  }
+  
+  /* General skeleton styles */
+  .skeleton {
+    display: inline-block;
+    animation: skeleton-loading 1.5s infinite ease-in-out;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  /* Skeleton dimensions */
+  .w-10 {
+    width: 40px; /* Matches the width for w-10 */
+  }
+  
+  .h-10 {
+    height: 40px; /* Matches the height for h-10 */
+  }
+  
+  .rounded-full {
+    border-radius: 50%; /* Circle for profile picture */
+  }
+  
+  .h-4 {
+    height: 16px; /* Matches the height for h-4 */
+  }
+  
+  .w-40 {
+    width: 160px; /* Matches the width for w-40 */
+  }
+  
+  /* Flexbox utility styles */
+  .flex {
+    display: flex;
+  }
+  
+  .gap-3 {
+    gap: 12px; /* 3 * 4px */
+  }
+  
+  .gap-1 {
+    gap: 4px; /* 1 * 4px */
+  }
+  
+  .items-center {
+    align-items: center;
+  }
+  
+  .justify-end {
+    justify-content: flex-end;
+  }
+  
+  .shrink-0 {
+    flex-shrink: 0; /* Prevent shrinking of the element */
+  }
+  

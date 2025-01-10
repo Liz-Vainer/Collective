@@ -1,7 +1,9 @@
 import useConversation from "../zustand/useConversation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
 const useGetMessages = () => {
   const { messages, setMessages, selectedConversation } = useConversation();
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const getMessages = async (message) => {
       try {
@@ -10,11 +12,13 @@ const useGetMessages = () => {
         setMessages(data);
       } catch (err) {
         console.log("error getting messsage: ", err);
+      } finally {
+        setLoading(false);
       }
     };
     if (selectedConversation?._id) getMessages();
-  }, [selectedConversation?._id, setMessages]);
-  return { messages };
+  }, [selectedConversation?._id, setMessages, setLoading]);
+  return { messages, loading };
 };
 
 export default useGetMessages;

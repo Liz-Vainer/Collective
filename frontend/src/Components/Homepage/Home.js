@@ -302,8 +302,6 @@ const Home = () => {
         });
 
         const data = await response.json();
-        console.log(favorites); // Check the current favorites before adding
-        console.log(data); // Check what is returned by the backend
 
         if (response.ok) {
           authUser.favorites = data.favorites;

@@ -10,6 +10,9 @@ import {
   getUsersForSideBar,
   logout,
   updateProfilePicture,
+  checkJoined,
+  joinCommunity,
+  leaveCommunity,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -51,5 +54,11 @@ router.get("/side-bar", protectRoute, getUsersForSideBar);
 router.post("/logut", protectRoute, logout);
 
 router.post("/update-profile-pic/:id", protectRoute, updateProfilePicture);
+
+router.post("/check-joined-community", protectRoute, checkJoined);
+
+router.post("/join-community", protectRoute, joinCommunity);
+
+router.post("/leave-community", protectRoute, leaveCommunity);
 
 export default router;

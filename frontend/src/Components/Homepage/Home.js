@@ -111,6 +111,7 @@ const Home = () => {
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMember, setIsMember] = useState();
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -118,6 +119,92 @@ const Home = () => {
 
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 
+  useEffect(() => {
+    const fetchMembershipStatus = async () => {
+      const result = await checkJoined(selectedCommunity);
+      setIsMember(result);
+    };
+
+    fetchMembershipStatus();
+  }, [selectedCommunity]);
+
+  async function leaveCommunity(selectedCommunity) {
+    try {
+      const response = await fetch("/leave-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(`Left the ${selectedCommunity.name}!`);
+        setIsMember(false);
+      } else {
+        console.error(
+          `Your are still a member of the ${selectedCommunity.name}!`,
+          data
+        );
+      }
+    } catch (err) {
+      console.error("An error occurred while trying to leave a community", err);
+    }
+  }
+
+  async function joinCommunity(selectedCommunity) {
+    try {
+      const response = await fetch("/join-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(`Joined the ${selectedCommunity.name}!`);
+        setIsMember(true);
+      } else {
+        console.error(
+          `Your are not a member of the ${selectedCommunity.name}!`,
+          data
+        );
+      }
+    } catch (err) {
+      console.error("An error occurred while trying to join a community", err);
+    }
+  }
+  async function checkJoined(selectedCommunity) {
+    try {
+      const response = await fetch("/check-joined-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log("This is response from checkJoined: ", data);
+      if (response.ok) {
+        return data.member;
+      } else {
+        console.error("Your are not a member of this community!", data);
+        return data.member;
+      }
+    } catch (err) {
+      console.error(
+        "An error occurred while checking community membership",
+        err
+      );
+    }
+  }
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -403,7 +490,6 @@ const Home = () => {
                 onClick={() => setSelectedCommunity(community)}
               />
             ))}
-
             {/* InfoWindow for Selected Community */}
             {selectedCommunity && (
               <InfoWindow
@@ -432,6 +518,24 @@ const Home = () => {
                         </button>
                       </div>
                     )}
+                  {authUser.userType !== "Official" && !isMember && (
+                    <div>
+                      <button onClick={() => joinCommunity(selectedCommunity)}>
+                        Join Community
+                      </button>
+                    </div>
+                  )}
+                  {authUser.userType !== "Official" && isMember && (
+                    <div>
+                      <button
+                        onClick={() => {
+                          leaveCommunity(selectedCommunity);
+                        }}
+                      >
+                        Leave Community
+                      </button>
+                    </div>
+                  )}
 
                   {authUser.userType !== "Official" &&
                     authUser.favorites.some(

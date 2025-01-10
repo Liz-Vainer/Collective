@@ -318,6 +318,78 @@ export const logout = async (req, res) => {
   }
 };
 
+export const leaveCommunity = async (req, res) => {
+  const { communityId, userId } = req.body;
+  try {
+    const community = await Community.findById(communityId);
+    console.log("fROM BBACK ENMD : ", community);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    const userIndex = community.users.indexOf(userId);
+    community.users.splice(userIndex, 1);
+    await community.save();
+    return res.status(200).json({
+      message: "User successfully left to the community",
+      member: true,
+    });
+  } catch (err) {
+    console.error("Error while trying to leave a community ", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error (leaving a community)" });
+  }
+};
+
+export const joinCommunity = async (req, res) => {
+  const { communityId, userId } = req.body;
+  try {
+    const community = await Community.findById(communityId);
+    console.log("fROM BBACK ENMD : ", community);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    community.users.push(userId);
+    await community.save();
+    return res.status(200).json({
+      message: "User successfully added to the community",
+      member: true,
+    });
+  } catch (err) {
+    console.error("Error while trying to join a community ", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error (joining a community)" });
+  }
+};
+
+export const checkJoined = async (req, res) => {
+  const { communityId, userId } = req.body;
+  console.log("THIS IS ID FROM BBACK: ", communityId);
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    if (community.users.includes(userId)) {
+      console.log("member is true");
+      return res.status(200).json({
+        message: "User is already a member of the community",
+        member: true,
+      });
+    } else {
+      console.log("member is false");
+      return res.status(200).json({
+        message: "User is not a member of the community",
+        member: false,
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+};
 //settings change
 export const settings = async (req, res) => {
   const { userID, gender, age, religion, ethnicity, interest, userType } =

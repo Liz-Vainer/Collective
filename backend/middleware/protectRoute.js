@@ -25,6 +25,7 @@ const protectRoute = async (req, res, next) => {
       // If token verification fails, send a 401 Unauthorized response
       return res.status(401).json({ error: "Unauthorized - Invalid Token" });
     }
+    console.log(decoded);
 
     // Find the user in the database using the ID from the decoded token
     // Exclude the password field from the retrieved user data for security
@@ -41,7 +42,7 @@ const protectRoute = async (req, res, next) => {
       // If the user is not found, send a 404 Not Found response
       return res.status(404).json({ error: "User not found" });
     }
-
+    console.log(user);
     // Attach the authenticated user to the `req` object for downstream handlers
     req.user = user;
     // Proceed to the next middleware or route handler

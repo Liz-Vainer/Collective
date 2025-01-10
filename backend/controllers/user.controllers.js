@@ -61,6 +61,7 @@ const handleLogin = async (name, password, res) => {
       ethnicity: user.ethnicity,
       interest: user.interest,
       profilePic: user.profilePic,
+      name: user.name,
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -140,6 +141,7 @@ const handleSignup = async (
       ethnicity: newUser.ethnicity,
       interest: newUser.interest,
       profilePic: newUser.profilePic,
+      name: newUser.name,
     });
   } catch (err) {
     console.error("Error creating user:", err);
@@ -357,6 +359,8 @@ export const settings = async (req, res) => {
         religioun: updatedUser.religion,
         ethnicity: updatedUser.ethnicity,
         interest: updatedUser.interest,
+        name: updatedUser.name,
+        profilePic: updatedUser.profilePic,
       });
     }
 
@@ -384,6 +388,8 @@ export const settings = async (req, res) => {
         religioun: updatedUser.religion,
         ethnicity: updatedUser.ethnicity,
         interest: updatedUser.interest,
+        name: updatedUser.name,
+        profilePic: updatedUser.profilePic,
       });
     }
 
@@ -411,6 +417,8 @@ export const settings = async (req, res) => {
         religioun: updatedUser.religion,
         ethnicity: updatedUser.ethnicity,
         interest: updatedUser.interest,
+        name: updatedUser.name,
+        profilePic: updatedUser.profilePic,
       });
     }
 
@@ -493,6 +501,7 @@ export const updateProfilePicture = async (req, res) => {
       religioun: updatedUser.religion,
       ethnicity: updatedUser.ethnicity,
       interest: updatedUser.interest,
+      name: updatedUser.name,
       profilePic: updatedUser.profilePic,
     });
   } catch (err) {

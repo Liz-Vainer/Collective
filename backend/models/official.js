@@ -9,6 +9,7 @@ const officialSchema = new mongoose.Schema({
   ethnicity: { type: String, required: false },
   interest: { type: String, required: false },
   gender: { type: String, required: false },
+  profilePic: { type: String, required: false, default: "" },
 });
 
 const Official = mongoose.model("Official", officialSchema);

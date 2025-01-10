@@ -9,12 +9,13 @@
     border: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     width: 100%;
+    margin-bottom: 10px;
   }
   
   /* Input field styling */
   .message-input-field {
     flex: 1; /* Take up available space */
-    height: 40px;
+    height: 30px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -24,12 +25,13 @@
   
   /* Input field focus effect */
   .message-input-field:focus {
-    border-color: #19984e; /* Green border on focus */
+    border-color: #19984e;
+    box-shadow: 0 0 5px rgba(25, 152, 78, 0.5);
   }
   
   /* Send button styling */
   .message-send-button {
-    height: 30px;
+    height: 40px;
     padding: 0 10px;
     font-size: 14px;
     background-color: #19984e; /* Green background */

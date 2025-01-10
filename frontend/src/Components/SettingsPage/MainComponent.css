@@ -1,0 +1,36 @@
+/* SettingsPage.css */
+.settings-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;  /* Ensure that both the components stretch vertically */
+    height: 100vh;  /* Make the parent container take the full viewport height */
+  }
+  
+  .vertical-container {
+    display: flex;
+    flex-direction: column;  /* Stack the profile, divider, and main content vertically */
+    flex: 1;  /* Make the vertical container take up the remaining height */
+  }
+  
+  .main-content-container {
+    display: flex;
+    flex: 1;  /* Make sure the main content container fills the remaining height */
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    overflow-y: auto;  /* Ensure scrolling if content overflows */
+  }
+  
+  .profile {
+    padding: 20px;
+    background-color: #fff;
+    flex: 1;  /* This ensures the profile takes up its allocated space */
+  }
+  
+  .divider {
+    height: 100%;
+    width: 1px;
+    background-color: #ccc;
+    margin: 0 20px;
+  }
+  

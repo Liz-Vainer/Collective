@@ -121,7 +121,7 @@ const Signup = () => {
     if (succes) {
       navigate("/home");
     } else {
-      console.log("success does not work");
+      console.log("singup does not work");
     }
   };
   return (

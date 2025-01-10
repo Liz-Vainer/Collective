@@ -8,6 +8,8 @@ import connectToMongoDB from "./db/connectToMongoDb.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
+dotenv.config();
+
 // Initialize Express
 const app = express();
 
@@ -19,6 +21,7 @@ app.use(methodOverride("_method")); // For PUT and DELETE requests from forms
 app.use(
   cors({
     origin: "http://localhost:3001", // Adjust this to your frontend URL
+    credentials: true,
   })
 ); // Enable Cross-Origin Resource Sharing for frontend
 

@@ -1,0 +1,56 @@
+/* Settings Page Layout */
+.settings-page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+  }
+  
+  .settings-page-content {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  
+  .vertical-container {
+    width: 20%;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .vertical-container .profile {
+    text-align: center;
+  }
+  
+  .profile-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
+  
+  .settings-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .settings-list ul li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .settings-page-content .divider {
+    width: 1px;
+    background-color: #ccc;
+    height: 100%;
+  }
+  
+  .main-container {
+    width: 75%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  

@@ -17,6 +17,7 @@ const orginaizerSchema = new mongoose.Schema({
   ethnicity: { type: String, required: false },
   interest: { type: String, required: false },
   gender: { type: String, required: false },
+  profilePic: { type: String, required: false, default: "" },
 });
 
 const Orginaizer = mongoose.model("Orginaizer", orginaizerSchema);

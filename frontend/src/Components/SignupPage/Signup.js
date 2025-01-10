@@ -5,7 +5,7 @@ import useSignup from "./useSignup";
 import email_icon from "../Assets/email_icon.png";
 import user_icon from "../Assets/person_icon.png";
 import password_closed from "../Assets/password_closed_icon.png";
-// import password_open from "../Assets/password_look_icon.png ";
+import password_open from "../Assets/password_look_icon.png";
 import background_login from "../Assets/background_login.png";
 import art_community from "../Assets/art_community.jpg";
 import yoga_community from "../Assets/yoga_community.jpg";
@@ -32,13 +32,32 @@ const Signup = () => {
   const [isReligious, setIsReligious] = useState(false); // Track if user is religious
   const [religion, setReligion] = useState("no"); // Track selected religion
   const [userType, setUserType] = useState("citizen"); //
+  const [showContainer, setShowContainer] = useState(false);
   const images = [
     art_community,
     yoga_community,
     sports_community,
     music_community,
   ];
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State to toggle password visibility
+  
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
+  useEffect(() => {
+    if (userType === "citizen") {
+      setShowContainer(true); // Trigger fade-in when userType is "citizen"
+    } else {
+      setShowContainer(false); // Hide the container if userType changes
+    }
+  }, [userType]); // Depend on userType change
+
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isAnimating) {
@@ -124,10 +143,11 @@ const Signup = () => {
       console.log("singup does not work");
     }
   };
+
   return (
     <div
       className="body"
-      style={{ backgroundImage: `url(${background_login})` }}
+   
     >
       <div className="container">
         <div className="welcome-message">
@@ -147,7 +167,7 @@ const Signup = () => {
               placeholder="Name"
               onChange={(e) => setName(e.target.value)}
             />
-            {!formValidationName && <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>}
+            {!formValidationName &&    <div className="error-popup">Invalid or empty field</div>}
           </div>
           <div className="input">
             <img src={email_icon} alt="email" className="image" />
@@ -158,23 +178,48 @@ const Signup = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
             {!formValidationEmail && (
-              <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+                <div className="error-popup">Invalid or empty field</div>
             )}
           </div>
 
           <div className="input">
-            <img src={password_closed} alt="password" className="image" />
+            <img
+              src={showPassword ? password_open : password_closed}
+              alt="password"
+              className="image"
+              onClick={togglePasswordVisibility} // Toggle on click
+              style={{ cursor: "pointer" }} // Add pointer cursor
+            />
             <input
               name="password"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
             />
             {!formValidationPassword && (
-              <h1 color="RED">CHANGE HERE LIZA/MARIA</h1>
+               <div className="error-popup">Invalid or empty field</div>
             )}
           </div>
+          <div className="input">
+            <img
+              src={showConfirmPassword ? password_open : password_closed}
+              alt="password"
+              className="image"
+              onClick={toggleConfirmPasswordVisibility} // Toggle on click
+              style={{ cursor: "pointer" }} // Add pointer cursor
+            />
 
+            <input
+              name="ConfirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {!formValidationPassword && (
+                 <div className="error-popup">Invalid or empty field</div>
+            )}
+          </div>
           <div className="question">
             <label htmlFor="user-type-select">Which user are you?</label>
             <select
@@ -190,121 +235,128 @@ const Signup = () => {
           </div>
         </div>
       </div>
-      <div className="container">
-        <h2>Can you tell us more about you?</h2>
-        <h3>(Optional)</h3>
-        {/* =================== Gender Question =================== */}
-        <div className="question">
-          <label htmlFor="gender-select">What is your gender?</label>
-          <select
-            id="gender-select"
-            className="gender-list"
-            onChange={(e) => {
-              setGender(e.target.value);
-            }}
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
 
-        {/* =================== Age Question =================== */}
-        <div className="question">
-          <label htmlFor="age-input">What is your age?</label>
-          <input
-            type="number"
-            id="age-input"
-            className="age-input"
-            placeholder="age"
-            min="18"
-            max="100"
-            onChange={(e) => {
-              setAge(e.target.value);
-            }}
-          />
-        </div>
+      {userType === "citizen" && (
+        <div className={`second-container ${showContainer ? 'show' : ''}`}>
+          <h2>Can you tell us more about you?</h2>
+          <h3>(Optional)</h3>
 
-        {/* =================== Religious Question =================== */}
-        <div className="question">
-          <label>Are you religious?</label>
-          <label>
-            <input
-              type="checkbox"
-              checked={isReligious}
-              onChange={(e) => setIsReligious(e.target.checked)}
-            />
-          </label>
-          {isReligious && (
+          {/* =================== Gender Question =================== */}
+          <div className="question">
+            <label htmlFor="gender-select">What is your gender?</label>
             <select
+              id="gender-select"
               className="religion-list"
-              value={religion}
-              onChange={handleReligionChange}
+              onChange={(e) => {
+                setGender(e.target.value);
+              }}
             >
-              <option value="muslim">Muslim</option>
-              <option value="jewish">Jewish</option>
-              <option value="christian">Christian</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
-          )}
-        </div>
-        {/* =================== Ethnicity Question =================== */}
-        <div className="question">
-          <label htmlFor="ethnicity-select">What is your ethnicity?</label>
-          <select
-            id="ethnicity-select"
-            className="religion-list"
-            onChange={(e) => {
-              setEthnicity(e.target.value);
-            }}
-          >
-            <option value="other">Other</option>
-            <option value="black">Black</option>
-            <option value="middle-eastern">Middle Eastern</option>
-            <option value="asian">Asian</option>
-            <option value="caucasian">Caucasianr</option>
-          </select>
-        </div>
-        {/* =================== Interest Question =================== */}
-        <div className="question">
-          <label htmlFor="interest-select">
-            What is your preferred interest?
-          </label>
-          <select
-            id="interest-select"
-            className="religion-list"
-            onChange={(e) => {
-              setInterest(e.target.value);
-            }}
-          >
-            <option value="other">Other</option>
-            <option value="sport">Sport</option>
-            <option value="religion">Religion</option>
-            <option value="entertainmentr">Entertainment</option>
-          </select>
-        </div>
-        {/* =================== Image Carousel =================== */}
-        <div className="carousel-container">
-          <div ref={carouselRef} className="carousel-wrapper">
-            {images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt="Community"
-                className="carousel-image"
+          </div>
+
+          {/* =================== Age Question =================== */}
+          <div className="question">
+            <label htmlFor="age-input">What is your age?</label>
+            <input
+              type="number"
+              id="age-input"
+              className="age-input"
+              placeholder="age"
+              min="18"
+              max="100"
+              onChange={(e) => {
+                setAge(e.target.value);
+              }}
+            />
+          </div>
+
+          {/* =================== Religious Question =================== */}
+          <div className="question">
+            <label>Are you religious?</label>
+            <label>
+              <input
+                type="checkbox"
+                checked={isReligious}
+                onChange={(e) => setIsReligious(e.target.checked)}
               />
-            ))}
+            </label>
+            {isReligious && (
+              <select
+                className="religion-list"
+                value={religion}
+                onChange={handleReligionChange}
+              >
+                <option value="muslim">Muslim</option>
+                <option value="jewish">Jewish</option>
+                <option value="christian">Christian</option>
+                <option value="other">Other</option>
+              </select>
+            )}
+          </div>
+
+          {/* =================== Ethnicity Question =================== */}
+          <div className="question">
+            <label htmlFor="ethnicity-select">What is your ethnicity?</label>
+            <select
+              id="ethnicity-select"
+              className="religion-list"
+              onChange={(e) => {
+                setEthnicity(e.target.value);
+              }}
+            >
+              <option value="other">Other</option>
+              <option value="black">Black</option>
+              <option value="middle-eastern">Middle Eastern</option>
+              <option value="asian">Asian</option>
+              <option value="caucasian">Caucasian</option>
+            </select>
+          </div>
+
+          {/* =================== Interest Question =================== */}
+          <div className="question">
+            <label htmlFor="interest-select">
+              What is your preferred interest?
+            </label>
+            <select
+              id="interest-select"
+              className="religion-list"
+              onChange={(e) => {
+                setInterest(e.target.value);
+              }}
+            >
+              <option value="other">Other</option>
+              <option value="sport">Sport</option>
+              <option value="religion">Religion</option>
+              <option value="entertainment">Entertainment</option>
+            </select>
+          </div>
+
+          {/* =================== Image Carousel =================== */}
+          <div className="carousel-container">
+            <div ref={carouselRef} className="carousel-wrapper">
+              {images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt="Community"
+                  className="carousel-image"
+                />
+              ))}
+            </div>
           </div>
         </div>
-        {/* =================== Action Buttons (Back & Continue) =================== */}
-        <div className="submit-container">
+      )}
+
+      <div className="submit-container">
           <div
             className="submit"
             onClick={() => {
               navigate("/");
             }}
           >
-            {/* "/" --> "/login" */}
             Back to Login
           </div>
           <div
@@ -318,8 +370,8 @@ const Signup = () => {
             Continue
           </div>
         </div>
-      </div>
     </div>
   );
 };
+
 export default Signup;

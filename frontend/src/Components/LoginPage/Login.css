@@ -21,13 +21,13 @@
 /*==== CONTAINER STYLES ====*/
 .container {
   flex-direction: column;
-  margin: auto;
-  margin-top: 20px;
+  
+  margin-top: 100px;
   background: #ffff;
   padding-bottom: 30px;
   width: 600px;
   border-radius: 20px;
-  margin-bottom: 200px;
+ 
 }
 
 /*==== HEADER STYLES ====*/
@@ -100,11 +100,16 @@
 }
 
 /*==== BUTTON CONTAINER STYLES ====*/
-.submit-container {
+.submit-container-login {
+  margin-top: -150px;
+  flex-direction: row; /* Changed from column to row */
+  background: #fff;
+  padding-bottom: 15px;
+  width: 600px;
+  border: 5px solid #4a7652;
+  border-radius: 20px;
   display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin: 60px auto;
+  gap: 20px; /* Added gap between buttons */
 }
 
 .submit {
@@ -130,21 +135,7 @@
   background-color: #96ca98;
 }
 
-/*==== NEW BODY STYLES ====*/
 
-.container h2,
-h3 {
-  color: #4a7652;
-  font-size: 35px;
-  font-weight: 800;
-  align-items: center;
-  margin: 0px;
-  margin-left: 20px;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
-}
-
-/*==== CAROUSEL STYLES ====*/
 .carousel-container {
   width: 300px; /* Fixed width of the carousel */
   height: 200px; /* Fixed height of the carousel */

@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+import { useSocket } from "../context/SocketContext";
+
 const useGetConversation = () => {
+  const { friends } = useSocket();
   const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
@@ -18,7 +21,7 @@ const useGetConversation = () => {
       }
     };
     getConversations();
-  }, []);
+  }, [friends]);
   return { conversations };
 };
 

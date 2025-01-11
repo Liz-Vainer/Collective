@@ -11,6 +11,7 @@ export const useSocket = () => {
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [friends, setFriends] = useState([]);
   const { authUser } = useUser();
 
   useEffect(() => {
@@ -25,6 +26,16 @@ export const SocketContextProvider = ({ children }) => {
       socket.on("getOnlineUsers", (users) => {
         setOnlineUsers(users);
       });
+
+      // Listen for updated friends list
+      socket.on("updatedFriends", (updatedFriends) => {
+        setFriends(updatedFriends); // Update the friends list in real-time
+      });
+
+      socket.on("getFriends", (initialFriends) => {
+        setFriends(initialFriends); // Initial friends list when the user connects
+      });
+
       return () => socket.close();
     } else {
       if (socket) {
@@ -33,8 +44,9 @@ export const SocketContextProvider = ({ children }) => {
       }
     }
   }, [authUser]);
+
   return (
-    <SocketContext.Provider value={{ socket, onlineUsers }}>
+    <SocketContext.Provider value={{ socket, onlineUsers, friends }}>
       {children}
     </SocketContext.Provider>
   );

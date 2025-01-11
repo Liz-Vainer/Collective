@@ -1,13 +1,21 @@
 import "./Conversation.css";
 import useConversation from "../../zustand/useConversation";
 import { useSocket } from "../../context/SocketContext";
+import useRemoveFriend from "../../hooks/useRemoveFriend";
 
 const Conversation = ({ conversation }) => {
   const { selectedConversation, setSelectedConversation } = useConversation();
+  const { removeFriend } = useRemoveFriend();
 
   const isSelected = selectedConversation?._id === conversation._id;
   const { onlineUsers } = useSocket();
   const isOnline = onlineUsers.includes(conversation._id);
+
+  const handleRemove = async () => {
+    if (!conversation) return;
+    await removeFriend(conversation._id);
+    setSelectedConversation(null);
+  };
 
   return (
     <div
@@ -28,6 +36,9 @@ const Conversation = ({ conversation }) => {
         />
         <div>
           <p>{conversation.name}</p>
+        </div>
+        <div>
+          <button onClick={handleRemove}>remove friend</button>
         </div>
       </div>
     </div>

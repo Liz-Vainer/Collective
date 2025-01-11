@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
-const useGetConversation = () => {
-  const [conversations, setConversations] = useState([]);
+const useGetUsers = () => {
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const getConversations = async () => {
+    const getUsers = async () => {
       try {
-        const res = await fetch("/friends");
+        const res = await fetch("/side-bar");
         const data = await res.json();
         if (!data) {
           throw new Error(data.error);
         }
-        console.log("friends:", data);
-        setConversations(data);
+        console.log("all users:", data);
+        setUsers(data);
       } catch (err) {
         console.error("Error fetching conversations:", err);
         alert("An error occurred. Please try again.");
       }
     };
-    getConversations();
+    getUsers();
   }, []);
-  return { conversations };
+  return { users };
 };
 
-export default useGetConversation;
+export default useGetUsers;

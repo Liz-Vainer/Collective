@@ -669,32 +669,42 @@ export const rejectFriendRequest = async (req, res) => {
 
 export const removeFriend = async (req, res) => {
   try {
-    const { selectedUserId } = req.body;
-    const loggedUserId = req.user.id;
+    const { selectedUserId } = req.body; // ID of the friend to remove
+    const loggedUserId = req.user.id; // ID of the logged-in user
 
+    // Fetch the logged-in user and the selected user from the database
     const user = await User.findById(loggedUserId);
     const selectedUser = await User.findById(selectedUserId);
-    // Check if the user is already a friend
+
+    // Check if the selected user is a friend of the logged-in user
     if (!user.friends.includes(selectedUserId)) {
       return res.status(400).json({ error: "User is already not a friend" });
     }
-    // Remove the selected user from the logged-in user's friends
+
+    // Remove the selected user from the logged-in user's friends list
     user.friends = user.friends.filter(
       (friendId) => friendId.toString() !== selectedUserId
     );
-    await user.save();
 
-    //  remove the logged-in user from the selected user's friends
+    // Remove the logged-in user from the selected user's friends list
     selectedUser.friends = selectedUser.friends.filter(
       (friendId) => friendId.toString() !== loggedUserId
     );
 
-    await selectedUser.save();
+    // Save the updated users to the database
     await user.save();
+    await selectedUser.save();
 
-    res.status(200).json({ message: "friend removed succesfully!" });
+    // Notify the selected user in real-time about the removal
+    const receiverSocketId = getReceiverSocketId(selectedUserId); // Retrieve the socket ID of the selected user
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("removedFriend", loggedUserId); // Notify the selected user about the removal
+    }
+
+    // Respond with success
+    res.status(200).json({ message: "Friend removed successfully!" });
   } catch (err) {
     console.error("Error in removeFriend: ", err.message);
-    res.status(500).json({ err: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -1,4 +1,6 @@
+import useFriends from "../zustand/useFriends";
 const useRemoveFriend = () => {
+  const { friends, setFriends } = useFriends();
   const removeFriend = async (selectedUserId) => {
     try {
       const res = await fetch(`/friends/remove-friend`, {
@@ -10,6 +12,7 @@ const useRemoveFriend = () => {
       });
       const data = await res.json();
       console.log(data);
+      setFriends(friends.filter((friend) => friend.id !== selectedUserId));
     } catch (err) {
       console.log("error sending messsage: ", err);
     }

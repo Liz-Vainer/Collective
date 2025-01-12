@@ -1,11 +1,13 @@
 import Conversation from "./Conversation";
 import useGetConversations from "../../hooks/useGetConversation";
+import useListenFriends from "../../hooks/useListenFriends";
 const Conversations = () => {
-  const { conversations } = useGetConversations();
-  console.log(conversations);
+  const { friends } = useGetConversations();
+  useListenFriends();
+  console.log(friends);
   return (
     <div className="convs">
-      {conversations.map((conversation) => (
+      {friends.map((conversation) => (
         <Conversation key={conversation._id} conversation={conversation} />
       ))}
     </div>

@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { useSocket } from "../context/SocketContext";
+import useFriends from "../zustand/useFriends";
 
 const useGetConversation = () => {
-  const { friends } = useSocket();
-  const [conversations, setConversations] = useState([]);
+  const { friends, setFriends } = useFriends();
 
   useEffect(() => {
     const getConversations = async () => {
@@ -14,7 +13,7 @@ const useGetConversation = () => {
           throw new Error(data.error);
         }
         console.log("friends:", data);
-        setConversations(data);
+        setFriends(data);
       } catch (err) {
         console.error("Error fetching conversations:", err);
         alert("An error occurred. Please try again.");
@@ -22,7 +21,7 @@ const useGetConversation = () => {
     };
     getConversations();
   }, [friends]);
-  return { conversations };
+  return { friends };
 };
 
 export default useGetConversation;

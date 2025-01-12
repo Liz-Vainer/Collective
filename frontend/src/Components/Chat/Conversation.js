@@ -8,14 +8,13 @@ const Conversation = ({ conversation }) => {
   const { removeFriend } = useRemoveFriend();
 
   const isSelected = selectedConversation?._id === conversation._id;
-  const { onlineUsers, socket } = useSocket();
+  const { onlineUsers } = useSocket();
   const isOnline = onlineUsers.includes(conversation._id);
 
   const handleRemove = async () => {
     if (!conversation) return;
     await removeFriend(conversation._id);
-    // Emit the removeFriend event to the backend
-    socket.emit("removeFriend", conversation._id);
+
     setSelectedConversation(null);
   };
 

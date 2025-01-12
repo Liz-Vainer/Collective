@@ -7,8 +7,8 @@ const useListenFriends = () => {
   const { requests, setRequests } = useRequests();
 
   useEffect(() => {
-    socket?.on("newRequest", (newRequest) => {
-      setRequests([...requests, newRequest]);
+    socket?.on("newRequest", (updatedRequests) => {
+      setRequests(updatedRequests);
     });
 
     socket?.on("removeRequest", (updatedRequests) => {

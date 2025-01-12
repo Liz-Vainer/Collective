@@ -320,6 +320,69 @@ export const logout = async (req, res) => {
   }
 };
 
+//to find all users in a community
+export const findUsers = async (req, res) => {
+  const { communityId } = req.body;
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    if (community.users.length > 0) {
+      let arrayUsers = [];
+      for (let i = 0; i < community.users.length; i++) {
+        arrayUsers.push(community.users[i]);
+      }
+      const info = await userInfoById(arrayUsers);
+      return res.status(200).json({
+        message: `These are all the users from ${community.name}`,
+        users: info,
+      });
+    } else {
+      return res.status(200).json({
+        message: `There are no users in ${community.name}`,
+      });
+    }
+  } catch (err) {
+    console.log(
+      `There was an arror while trying to get all the users from ${community.name}`
+    );
+    res
+      .status(500)
+      .json({ message: "Internal Server Error (leaving a community)" });
+  }
+};
+
+//function to get user info by id (idArray)
+const userInfoById = async (idArray) => {
+  let info = [];
+  try {
+    for (let i = 0; i < idArray.length; i++) {
+      let user =
+        (await User.findById(idArray[i])) ||
+        (await Organizer.findById(idArray[i])) ||
+        (await Official.findById(idArray[i]));
+      if (user) {
+        let object = {
+          name: user.name,
+          email: user.email,
+          age: user.age,
+          gender: user.gender,
+          religion: user.religion,
+          ethnicity: user.ethnicity,
+          interest: user.interest,
+        };
+        info.push(object);
+      }
+    }
+    return info;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Error fetching user information");
+  }
+};
+
+//leave community
 export const leaveCommunity = async (req, res) => {
   const { communityId, userId } = req.body;
   try {
@@ -343,6 +406,7 @@ export const leaveCommunity = async (req, res) => {
   }
 };
 
+//join community
 export const joinCommunity = async (req, res) => {
   const { communityId, userId } = req.body;
   try {
@@ -365,6 +429,7 @@ export const joinCommunity = async (req, res) => {
   }
 };
 
+//check if user is already joined
 export const checkJoined = async (req, res) => {
   const { communityId, userId } = req.body;
   console.log("THIS IS ID FROM BBACK: ", communityId);
@@ -392,6 +457,7 @@ export const checkJoined = async (req, res) => {
       .json({ message: "An error occurred", error: error.message });
   }
 };
+
 //settings change
 export const settings = async (req, res) => {
   const { userID, gender, age, religion, ethnicity, interest, userType } =

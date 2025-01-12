@@ -128,6 +128,32 @@ const Home = () => {
     fetchMembershipStatus();
   }, [selectedCommunity]);
 
+  //Look users of selected community
+  const lookUsers = async (selectedCommunity) => {
+    try {
+      const response = await fetch("/find-users-by-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        if (data.users && data.users.length > 0) {
+          console.log("Users found:", data.users);
+        } else {
+          console.log(data.message); // "There are no users in {community.name}"
+        }
+      } else {
+        console.error("Error:", data.message);
+      }
+    } catch (err) {
+      console.error("An error occurred while showing members", err);
+    }
+  };
+  //Leave community
   async function leaveCommunity(selectedCommunity) {
     try {
       const response = await fetch("/leave-community", {
@@ -153,7 +179,7 @@ const Home = () => {
       console.error("An error occurred while trying to leave a community", err);
     }
   }
-
+  //Join community
   async function joinCommunity(selectedCommunity) {
     try {
       const response = await fetch("/join-community", {
@@ -179,6 +205,7 @@ const Home = () => {
       console.error("An error occurred while trying to join a community", err);
     }
   }
+  //Check if user is a member of the community
   async function checkJoined(selectedCommunity) {
     try {
       const response = await fetch("/check-joined-community", {
@@ -205,6 +232,7 @@ const Home = () => {
       );
     }
   }
+
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -558,6 +586,18 @@ const Home = () => {
                     >
                       Remove Community
                     </button>
+                  )}
+                  {authUser.userType === "Official" && (
+                    <button
+                      onClick={() => {
+                        lookUsers(selectedCommunity);
+                      }}
+                    >
+                      Show members
+                    </button>
+                  )}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => {}}>Show statistics</button>
                   )}
                   <button
                     onClick={() => {

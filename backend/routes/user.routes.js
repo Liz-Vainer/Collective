@@ -13,6 +13,7 @@ import {
   checkJoined,
   joinCommunity,
   leaveCommunity,
+  findUsers,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -60,5 +61,7 @@ router.post("/check-joined-community", protectRoute, checkJoined);
 router.post("/join-community", protectRoute, joinCommunity);
 
 router.post("/leave-community", protectRoute, leaveCommunity);
+
+router.post("/find-users-by-community", protectRoute, findUsers);
 
 export default router;

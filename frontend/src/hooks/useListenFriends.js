@@ -4,15 +4,20 @@ import useFriends from "../zustand/useFriends";
 
 const useListenFriends = () => {
   const { socket } = useSocket();
-  const { friends, setFriends } = useFriends();
+  const { setFriends } = useFriends();
 
   useEffect(() => {
-    socket?.on("newFriend", (newFriend) => {
-      setFriends([...friends, newFriend]);
-    });
+    // Handler for new friend events
+    const handleNewFriend = (newFriend) => {
+      setFriends((prevFriends) => [...prevFriends, newFriend]);
+    };
 
-    return () => socket?.off("newFriend");
-  }, [socket, setFriends, friends]);
+    // Add event listener for "newFriend"
+    socket?.on("newFriend", handleNewFriend);
+
+    // Cleanup function to remove the listener
+    return () => socket?.off("newFriend", handleNewFriend);
+  }, [socket, setFriends]);
 };
 
 export default useListenFriends;

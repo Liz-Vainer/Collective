@@ -585,17 +585,21 @@ export const sendFriendRequest = async (req, res) => {
 
 export const acceptFriendRequest = async (req, res) => {
   try {
-    const { requesterId } = req.body; // ID of the user who sent the request
+    // Extract the requester's ID from the request body
+    const { requesterId } = req.body; // ID of the user who sent the friend request
+    // Retrieve the logged-in user's ID from the authenticated request
     const loggedUserId = req.user.id;
 
+    // Find the logged-in user and the requester in the database
     const user = await User.findById(loggedUserId);
     const requester = await User.findById(requesterId);
 
+    // Check if both users exist in the database
     if (!user || !requester) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Check if the friend request exists
+    // Verify that a friend request exists from the requester
     if (!user.friendRequests.includes(requesterId)) {
       return res
         .status(400)
@@ -603,19 +607,29 @@ export const acceptFriendRequest = async (req, res) => {
     }
 
     // Add each other as friends
-    user.friends.push(requesterId);
-    requester.friends.push(loggedUserId);
+    user.friends.push(requesterId); // Add the requester to the user's friends list
+    requester.friends.push(loggedUserId); // Add the user to the requester's friends list
 
-    // Remove the friend request
+    // Remove the friend request from the user's friend requests list
     user.friendRequests = user.friendRequests.filter(
-      (id) => id.toString() !== requesterId
+      (id) => id.toString() !== requesterId // Keep all IDs except the requester's ID
     );
 
+    // Save the updated user and requester to the database
     await user.save();
     await requester.save();
 
+    // Notify the requester in real-time about the accepted friend request
+    const receiverSocketId = getReceiverSocketId(requesterId); // Retrieve the socket ID of the requester
+    if (receiverSocketId) {
+      // If the requester is connected, send a real-time notification
+      io.to(receiverSocketId).emit("newFriend", loggedUserId); // Notify the requester with the logged-in user's ID
+    }
+
+    // Respond with success
     res.status(200).json({ message: "Friend request accepted!" });
   } catch (err) {
+    // Log and handle any errors that occur
     console.error("Error in acceptFriendRequest: ", err.message);
     res.status(500).json({ error: "Internal server error" });
   }

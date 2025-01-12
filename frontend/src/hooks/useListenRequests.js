@@ -11,6 +11,10 @@ const useListenFriends = () => {
       setRequests([...requests, newRequest]);
     });
 
+    socket?.on("removeRequest", (updatedRequests) => {
+      setRequests(updatedRequests);
+    });
+
     return () => socket?.off("newFriend");
   }, [socket, setRequests, requests]);
 };

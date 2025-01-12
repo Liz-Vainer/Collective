@@ -628,14 +628,19 @@ export const acceptFriendRequest = async (req, res) => {
     // Emit the updated friends data to both users
     if (userSocketId) {
       io.to(userSocketId).emit("newFriend", { friends: requester.friends });
+      io.to(userSocketId).emit("removeRequest", {
+        friends: user.friendRequests,
+      });
     }
     if (requesterSocketId) {
       io.to(requesterSocketId).emit("newFriend", { friends: user.friends });
     }
 
-    res
-      .status(200)
-      .json({ message: "Friend request accepted!", friends: user.friends });
+    res.status(200).json({
+      message: "Friend request accepted!",
+      friends: user.friends,
+      requestes: user.friendRequests,
+    });
   } catch (err) {
     console.error("Error in acceptFriendRequest: ", err.message);
     res.status(500).json({ error: "Internal server error" });

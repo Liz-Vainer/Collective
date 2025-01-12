@@ -5,11 +5,20 @@ import useGetRequests from "../../hooks/useGetRequests";
 import useListenRequests from "../../hooks/useListenRequests";
 
 const Friends = () => {
-  const { requests } = useGetRequests();
+  const { requests, loading } = useGetRequests();
   useListenRequests();
+
+  // Render loading spinner or message while data is loading
+  if (loading) {
+    return <div>Loading...</div>; // You can replace this with a spinner or a more styled message
+  }
+
+  // Ensure friends is always an array before calling map()
+  const requestsArray = Array.isArray(requests) ? requests : [];
+
   return (
     <div className="convs">
-      {requests.map((user) => (
+      {requestsArray.map((user) => (
         <Request key={user._id} user={user} />
       ))}
     </div>

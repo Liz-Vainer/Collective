@@ -1,8 +1,10 @@
 import { useSocket } from "../context/SocketContext";
 import useFriends from "../zustand/useFriends";
+import useRequests from "../zustand/useRequests";
 
 const useAcceptRequest = () => {
   const { friends, setFriends } = useFriends();
+  const { setRequests } = useRequests();
 
   const { socket } = useSocket(); // Get the socket instance
 
@@ -21,7 +23,7 @@ const useAcceptRequest = () => {
 
       // Add the new friend
       setFriends(data.friends); // where data is a new user object
-
+      setRequests(data.requestes);
       // Notify the other user via socket
       if (socket) {
         socket.emit("newFriend", data.friends); // Send the updated friend list or a specific message

@@ -12,7 +12,11 @@ const useRemoveFriend = () => {
       });
       const data = await res.json();
       console.log(data);
-      setFriends(friends.filter((friend) => friend.id !== selectedUserId));
+      setFriends((prevFriends) =>
+        prevFriends.filter((friend) => friend.id !== selectedUserId)
+      );
+
+      alert("Friend removed!");
     } catch (err) {
       console.log("error sending messsage: ", err);
     }

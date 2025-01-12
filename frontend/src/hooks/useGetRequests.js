@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import useRequests from "../zustand/useRequests";
 const useGetRequests = () => {
-  const [requests, setRequests] = useState([]);
+  const { requests, setRequests } = useRequests();
 
   useEffect(() => {
     const getRequests = async () => {
@@ -10,7 +11,6 @@ const useGetRequests = () => {
         if (!data) {
           throw new Error(data.error);
         }
-        console.log("all users:", data);
         setRequests(data);
       } catch (err) {
         console.error("Error fetching conversations:", err);
@@ -18,7 +18,7 @@ const useGetRequests = () => {
       }
     };
     getRequests();
-  }, []);
+  }, [setRequests]);
   return { requests };
 };
 

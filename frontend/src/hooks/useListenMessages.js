@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSocket } from "../context/SocketContext";
 import useConversation from "../zustand/useConversation";
 

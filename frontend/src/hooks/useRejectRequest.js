@@ -10,6 +10,7 @@ const useRejectRequest = () => {
       });
       const data = await res.json();
       console.log(data);
+      alert("Friend request rejected");
     } catch (err) {
       console.log("error sending messsage: ", err);
     }

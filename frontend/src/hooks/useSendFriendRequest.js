@@ -10,6 +10,7 @@ const useSendFriendRequest = () => {
       });
       const data = await res.json();
       console.log(data);
+      alert("Friend request sent!");
     } catch (err) {
       console.log("error sending messsage: ", err);
     }

@@ -4,6 +4,7 @@ import Organizer from "../models/orginaizer.js"; // Organizer model
 import Official from "../models/official.js"; // Official model
 import Community from "../models/community.js"; // Adjust the import path as needed
 import generateTokenAndSetCookie from "../utils/generateToken.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 // Function to try to log in by checking each model (User, Organizer, Official)
 const handleLogin = async (name, password, res) => {
@@ -576,6 +577,12 @@ export const sendFriendRequest = async (req, res) => {
     recipient.friendRequests.push(senderId);
     await recipient.save();
 
+    const receiverSocketId = getReceiverSocketId(recipient); //retrieve the socket ID of the receiver (the user who should get the message)
+    if (receiverSocketId) {
+      //check if the receiver is currently connected (has an active socket)
+      io.to(receiverSocketId).emit("newRequest", sender); //send a real-time event named "newMessage" to the receiver's socket
+    } //this event will deliver the new message to the intended recipient
+
     res.status(200).json({ message: "Friend request sent successfully!" });
   } catch (err) {
     console.error("Error in sendFriendRequest: ", err.message);
@@ -603,8 +610,8 @@ export const acceptFriendRequest = async (req, res) => {
     }
 
     // Add each other as friends
-    user.friends.push(requesterId);
-    requester.friends.push(loggedUserId);
+    user.friends.push(requester);
+    requester.friends.push(user);
 
     // Remove the friend request
     user.friendRequests = user.friendRequests.filter(
@@ -614,7 +621,21 @@ export const acceptFriendRequest = async (req, res) => {
     await user.save();
     await requester.save();
 
-    res.status(200).json({ message: "Friend request accepted!" });
+    // Get the socket IDs of both users
+    const userSocketId = getReceiverSocketId(loggedUserId);
+    const requesterSocketId = getReceiverSocketId(requesterId);
+
+    // Emit the updated friends data to both users
+    if (userSocketId) {
+      io.to(userSocketId).emit("newFriend", { friends: requester.friends });
+    }
+    if (requesterSocketId) {
+      io.to(requesterSocketId).emit("newFriend", { friends: user.friends });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Friend request accepted!", friends: user.friends });
   } catch (err) {
     console.error("Error in acceptFriendRequest: ", err.message);
     res.status(500).json({ error: "Internal server error" });
@@ -660,7 +681,7 @@ export const removeFriend = async (req, res) => {
 
     const user = await User.findById(loggedUserId);
     const selectedUser = await User.findById(selectedUserId);
-    // Check if the user is already a friend
+    // Check if the user is already not a friend
     if (!user.friends.includes(selectedUserId)) {
       return res.status(400).json({ error: "User is already not a friend" });
     }
@@ -677,6 +698,13 @@ export const removeFriend = async (req, res) => {
 
     await selectedUser.save();
     await user.save();
+
+    // Notify the selected user (the friend who was removed) in real-time
+    const receiverSocketId = getReceiverSocketId(selectedUserId); // Retrieve the socket ID of the removed friend
+    if (receiverSocketId) {
+      // If the removed friend is connected, send a real-time notification
+      io.to(receiverSocketId).emit("removeFriend", user);
+    }
 
     res.status(200).json({ message: "friend removed succesfully!" });
   } catch (err) {

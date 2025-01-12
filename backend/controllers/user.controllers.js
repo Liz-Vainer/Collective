@@ -585,21 +585,17 @@ export const sendFriendRequest = async (req, res) => {
 
 export const acceptFriendRequest = async (req, res) => {
   try {
-    // Extract the requester's ID from the request body
-    const { requesterId } = req.body; // ID of the user who sent the friend request
-    // Retrieve the logged-in user's ID from the authenticated request
+    const { requesterId } = req.body; // ID of the user who sent the request
     const loggedUserId = req.user.id;
 
-    // Find the logged-in user and the requester in the database
     const user = await User.findById(loggedUserId);
     const requester = await User.findById(requesterId);
 
-    // Check if both users exist in the database
     if (!user || !requester) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Verify that a friend request exists from the requester
+    // Check if the friend request exists
     if (!user.friendRequests.includes(requesterId)) {
       return res
         .status(400)
@@ -607,29 +603,19 @@ export const acceptFriendRequest = async (req, res) => {
     }
 
     // Add each other as friends
-    user.friends.push(requesterId); // Add the requester to the user's friends list
-    requester.friends.push(loggedUserId); // Add the user to the requester's friends list
+    user.friends.push(requesterId);
+    requester.friends.push(loggedUserId);
 
-    // Remove the friend request from the user's friend requests list
+    // Remove the friend request
     user.friendRequests = user.friendRequests.filter(
-      (id) => id.toString() !== requesterId // Keep all IDs except the requester's ID
+      (id) => id.toString() !== requesterId
     );
 
-    // Save the updated user and requester to the database
     await user.save();
     await requester.save();
 
-    // Notify the requester in real-time about the accepted friend request
-    const receiverSocketId = getReceiverSocketId(requesterId); // Retrieve the socket ID of the requester
-    if (receiverSocketId) {
-      // If the requester is connected, send a real-time notification
-      io.to(receiverSocketId).emit("newFriend", loggedUserId); // Notify the requester with the logged-in user's ID
-    }
-
-    // Respond with success
     res.status(200).json({ message: "Friend request accepted!" });
   } catch (err) {
-    // Log and handle any errors that occur
     console.error("Error in acceptFriendRequest: ", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -669,42 +655,32 @@ export const rejectFriendRequest = async (req, res) => {
 
 export const removeFriend = async (req, res) => {
   try {
-    const { selectedUserId } = req.body; // ID of the friend to remove
-    const loggedUserId = req.user.id; // ID of the logged-in user
+    const { selectedUserId } = req.body;
+    const loggedUserId = req.user.id;
 
-    // Fetch the logged-in user and the selected user from the database
     const user = await User.findById(loggedUserId);
     const selectedUser = await User.findById(selectedUserId);
-
-    // Check if the selected user is a friend of the logged-in user
+    // Check if the user is already a friend
     if (!user.friends.includes(selectedUserId)) {
       return res.status(400).json({ error: "User is already not a friend" });
     }
-
-    // Remove the selected user from the logged-in user's friends list
+    // Remove the selected user from the logged-in user's friends
     user.friends = user.friends.filter(
       (friendId) => friendId.toString() !== selectedUserId
     );
+    await user.save();
 
-    // Remove the logged-in user from the selected user's friends list
+    //  remove the logged-in user from the selected user's friends
     selectedUser.friends = selectedUser.friends.filter(
       (friendId) => friendId.toString() !== loggedUserId
     );
 
-    // Save the updated users to the database
-    await user.save();
     await selectedUser.save();
+    await user.save();
 
-    // Notify the selected user in real-time about the removal
-    const receiverSocketId = getReceiverSocketId(selectedUserId); // Retrieve the socket ID of the selected user
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("removedFriend", loggedUserId); // Notify the selected user about the removal
-    }
-
-    // Respond with success
-    res.status(200).json({ message: "Friend removed successfully!" });
+    res.status(200).json({ message: "friend removed succesfully!" });
   } catch (err) {
     console.error("Error in removeFriend: ", err.message);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ err: "Internal server error" });
   }
 };

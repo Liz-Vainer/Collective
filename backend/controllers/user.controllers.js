@@ -319,6 +319,7 @@ export const logout = async (req, res) => {
 //to find all users in a community
 export const findUsers = async (req, res) => {
   const { communityId } = req.body;
+  console.log(communityId);
   try {
     const community = await Community.findById(communityId);
     if (!community) {
@@ -358,19 +359,8 @@ const userInfoById = async (idArray) => {
         (await User.findById(idArray[i])) ||
         (await Organizer.findById(idArray[i])) ||
         (await Official.findById(idArray[i]));
-      if (user) {
-        let object = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          age: user.age,
-          gender: user.gender,
-          religion: user.religion,
-          ethnicity: user.ethnicity,
-          interest: user.interest,
-        };
-        info.push(object);
-      }
+
+      info.push(user);
     }
     return info;
   } catch (err) {

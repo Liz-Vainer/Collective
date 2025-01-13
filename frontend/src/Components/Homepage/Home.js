@@ -33,6 +33,7 @@ import user_icon from "../Assets/person_icon.png"; //temporary until we make com
 import Popup from "../Popup/Popup";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
+import Members from "../Members/Members";
 
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
@@ -142,50 +143,14 @@ const Home = () => {
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 
   useEffect(() => {
-    const fetchMembershipStatus = async () => {
-      const result = await checkJoined(selectedCommunity);
-      setIsMember(result);
-    };
-    fetchMembershipStatus();
+    if (selectedCommunity) {
+      const fetchMembershipStatus = async () => {
+        const result = await checkJoined(selectedCommunity);
+        setIsMember(result);
+      };
+      fetchMembershipStatus();
+    }
   }, [selectedCommunity]);
-
-  useEffect(() => {
-    if (showMembers) {
-      lookUsers(selectedCommunity).then((fetchedUsers) => {
-        setUsers(fetchedUsers); // Store the users in state
-      });
-    }
-  }, [showMembers]);
-
-  //Look users of selected community
-  const lookUsers = async (selectedCommunity) => {
-    try {
-      const response = await fetch("/find-users-by-community", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          communityId: selectedCommunity._id,
-        }),
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (response.ok) {
-        if (data.users && data.users.length > 0) {
-          console.log("Users found:", data.users);
-          return data.users;
-        } else {
-          console.log(data.message); // "There are no users in {community.name}"
-          return [];
-        }
-      } else {
-        console.error("Error:", data.message);
-        return [];
-      }
-    } catch (err) {
-      console.error("An error occurred while showing members", err);
-      return [];
-    }
-  };
 
   //Leave community
   async function leaveCommunity(selectedCommunity) {
@@ -615,7 +580,7 @@ const Home = () => {
                     <button onClick={() => downloadChart}>Pie Charts</button>
                   )}
                   {/* Render the PieChart but hide it from view */}
-                  <PieChart users={users} chartRef={chartRef} />
+                  {/* <PieChart users={users} chartRef={chartRef} /> */}
 
                   {authUser.userType === "Official" && (
                     <button
@@ -652,39 +617,15 @@ const Home = () => {
           </GoogleMap>
         </div>
         {/* Pop up for showing members*/}
-        <Popup trigger={showMembers} setTrigger={setShowMembers}>
-          <h2>Member List</h2>
-          {users.length > 0 ? (
-            <ul>
-              {users.map((user) => (
-                <li key={user.id}>
-                  <p>
-                    <strong>Name:</strong> {user.name}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {user.email}
-                  </p>
-                  <p>
-                    <strong>Age:</strong> {user.age}
-                  </p>
-                  <p>
-                    <strong>Gender:</strong> {user.gender}
-                  </p>
-                  <p>
-                    <strong>Religion:</strong> {user.religion}
-                  </p>
-                  <p>
-                    <strong>Ethnicity:</strong> {user.ethnicity}
-                  </p>
-                  <p>
-                    <strong>Interest:</strong> {user.interest}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No users found in this community.</p>
-          )}
+        <Popup
+          trigger={showMembers}
+          setTrigger={setShowMembers}
+          position="bottom-right"
+        >
+          <div className="popup-container">
+            <h2>Member List</h2>
+            <Members selectedCommunity={selectedCommunity} />
+          </div>
         </Popup>
         {/*Popup for adding communities */}
         <Popup
@@ -767,16 +708,19 @@ const Home = () => {
           </div>
         </Popup>
         {/* Chat Popup */}
-        <Popup
-          trigger={isChatOpen}
-          setTrigger={toggleChat}
-          position="bottom-right"
-        >
-          <div className="chat">
-            <Sidebar />
-            <MessageContainer />
-          </div>
-        </Popup>
+        {authUser.userType === "User" && (
+          <Popup
+            trigger={isChatOpen}
+            setTrigger={toggleChat}
+            position="bottom-right"
+          >
+            <div className="chat">
+              <Sidebar />
+              <MessageContainer />
+            </div>
+          </Popup>
+        )}
+
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
           <div className="right-toolside">

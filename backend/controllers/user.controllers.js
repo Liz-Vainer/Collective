@@ -577,10 +577,18 @@ export const sendFriendRequest = async (req, res) => {
     recipient.friendRequests.push(senderId);
     await recipient.save();
 
-    const receiverSocketId = getReceiverSocketId(recipient); //retrieve the socket ID of the receiver (the user who should get the message)
+    const user = await User.findById(recipientId).populate(
+      "friendRequests",
+      "name profilePic"
+    );
+    const friendsRequests = user.friendRequests;
+
+    const receiverSocketId = getReceiverSocketId(recipientId); //retrieve the socket ID of the receiver (the user who should get the message)
     if (receiverSocketId) {
       //check if the receiver is currently connected (has an active socket)
-      io.to(receiverSocketId).emit("newRequest", sender); //send a real-time event named "newMessage" to the receiver's socket
+      io.to(receiverSocketId).emit("newRequest", {
+        requests: friendsRequests,
+      }); //send a real-time event named "newMessage" to the receiver's socket
     } //this event will deliver the new message to the intended recipient
 
     res.status(200).json({ message: "Friend request sent successfully!" });
@@ -618,6 +626,8 @@ export const acceptFriendRequest = async (req, res) => {
       (id) => id.toString() !== requesterId
     );
 
+    console.log(user.friendRequests);
+
     await user.save();
     await requester.save();
 
@@ -629,7 +639,7 @@ export const acceptFriendRequest = async (req, res) => {
     if (userSocketId) {
       io.to(userSocketId).emit("newFriend", { friends: requester.friends });
       io.to(userSocketId).emit("removeRequest", {
-        friends: user.friendRequests,
+        updatedRequests: user.friendRequests,
       });
     }
     if (requesterSocketId) {
@@ -671,6 +681,16 @@ export const rejectFriendRequest = async (req, res) => {
     );
 
     await user.save();
+
+    // Get the socket IDs of both users
+    const userSocketId = getReceiverSocketId(loggedUserId);
+
+    // Emit the updated friends data to both users
+    if (userSocketId) {
+      io.to(userSocketId).emit("removeRequest", {
+        updatedRequests: user.friendRequests,
+      });
+    }
 
     res.status(200).json({ message: "Friend request rejected!" });
   } catch (err) {

@@ -7,11 +7,12 @@ const useListenFriends = () => {
   const { requests, setRequests } = useRequests();
 
   useEffect(() => {
-    socket?.on("newRequest", (updatedRequests) => {
-      setRequests(updatedRequests);
+    socket?.on("newRequest", ({ requests }) => {
+      console.log("new requests:", requests);
+      setRequests(requests);
     });
 
-    socket?.on("removeRequest", (updatedRequests) => {
+    socket?.on("removeRequest", ({ updatedRequests }) => {
       setRequests(updatedRequests);
     });
 

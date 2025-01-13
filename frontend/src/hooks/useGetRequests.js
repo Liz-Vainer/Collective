@@ -13,8 +13,8 @@ const useGetRequests = () => {
         if (!data) {
           throw new Error(data.error);
         }
-        console.log("fetching reqs");
         setRequests(data);
+        console.log("fetching reqs", requests);
       } catch (err) {
         console.error("Error fetching conversations:", err);
         alert("An error occurred. Please try again.");
@@ -22,12 +22,8 @@ const useGetRequests = () => {
         setLoading(false);
       }
     };
-    if (!requests.length) {
-      getRequests();
-    } else {
-      setLoading(false); // If friends already exist, skip the fetch
-    }
-  }, [requests.length, setRequests]);
+    getRequests();
+  }, [setRequests]);
   return { requests, loading };
 };
 

@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useEffect } from "react";
-import background_fornow from "../Assets/background_login.png";
+// External libraries
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
+import PieChart from "../Charts/Pie";
 import {
   FaDoorOpen,
   FaCog,
@@ -11,20 +11,29 @@ import {
   FaCamera,
 } from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
-import "../drawerstyle.css";
 import {
   GoogleMap,
   Marker,
   useJsApiLoader,
   InfoWindow,
 } from "@react-google-maps/api";
-import "./Home.css";
-import Popup from "../Popup/Popup";
-import Sidebar from "../Chat/Sidebar";
-import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
-import MessageContainer from "../Messages/MessageContainer";
+
+// Internal libraries and components
+import { Bar } from "react-chartjs-2";
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
+
+// Styles and assets
+import "../drawerstyle.css";
+import "./Home.css";
+import background_fornow from "../Assets/background_login.png";
+import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
+
+// Components
+import Popup from "../Popup/Popup";
+import Sidebar from "../Chat/Sidebar";
+import MessageContainer from "../Messages/MessageContainer";
+import Members from "../Members/Members";
 
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
@@ -111,12 +120,117 @@ const Home = () => {
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isInfoWindowVisible, setIsInfoWindowVisible] = useState(false);
-  const toggleChat = () => setIsChatOpen((prev) => !prev);
-  const handleInfoWindowToggle = () => setIsInfoWindowVisible((prev) => !prev);
-  
+  const [isMember, setIsMember] = useState();
+  const [showMembers, setShowMembers] = useState(false);
+  const [users, setUsers] = useState([]);
+  const chartRef = useRef(null); // Ref to access the pie chart instance
+
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+
+  // Pie chart download function
+  const downloadChart = () => {
+    const chart = chartRef.current.chartInstance; // Get the chart instance
+    const imageUrl = chart.toBase64Image(); // Generate the image as base64 string
+
+    const a = document.createElement("a");
+    a.href = imageUrl;
+    a.download = "pie-chart.png"; // Set the file name
+    a.click(); // Trigger download
+  };
 
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
+
+  useEffect(() => {
+    if (selectedCommunity) {
+      const fetchMembershipStatus = async () => {
+        const result = await checkJoined(selectedCommunity);
+        setIsMember(result);
+      };
+      fetchMembershipStatus();
+    }
+  }, [selectedCommunity]);
+
+  //Leave community
+  async function leaveCommunity(selectedCommunity) {
+    try {
+      const response = await fetch("/leave-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(`Left the ${selectedCommunity.name}!`);
+        setIsMember(false);
+      } else {
+        console.error(
+          `Your are still a member of the ${selectedCommunity.name}!`,
+          data
+        );
+      }
+    } catch (err) {
+      console.error("An error occurred while trying to leave a community", err);
+    }
+  }
+  //Join community
+  async function joinCommunity(selectedCommunity) {
+    try {
+      const response = await fetch("/join-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(`Joined the ${selectedCommunity.name}!`);
+        setIsMember(true);
+      } else {
+        console.error(
+          `Your are not a member of the ${selectedCommunity.name}!`,
+          data
+        );
+      }
+    } catch (err) {
+      console.error("An error occurred while trying to join a community", err);
+    }
+  }
+  //Check if user is a member of the community
+  async function checkJoined(selectedCommunity) {
+    try {
+      const response = await fetch("/check-joined-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log("This is response from checkJoined: ", data);
+      if (response.ok) {
+        return data.member;
+      } else {
+        console.error("Your are not a member of this community!", data);
+        return data.member;
+      }
+    } catch (err) {
+      console.error(
+        "An error occurred while checking community membership",
+        err
+      );
+    }
+  }
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -401,7 +515,6 @@ const Home = () => {
                 onClick={() => setSelectedCommunity(community)}
               />
             ))}
-
             {/* InfoWindow for Selected Community */}
             {selectedCommunity && (
               <InfoWindow
@@ -430,6 +543,24 @@ const Home = () => {
                         </button>
                       </div>
                     )}
+                  {authUser.userType !== "Official" && !isMember && (
+                    <div>
+                      <button onClick={() => joinCommunity(selectedCommunity)}>
+                        Join Community
+                      </button>
+                    </div>
+                  )}
+                  {authUser.userType !== "Official" && isMember && (
+                    <div>
+                      <button
+                        onClick={() => {
+                          leaveCommunity(selectedCommunity);
+                        }}
+                      >
+                        Leave Community
+                      </button>
+                    </div>
+                  )}
 
                   {authUser.userType !== "Official" &&
                     authUser.favorites.some(
@@ -444,6 +575,12 @@ const Home = () => {
                         Remove from favorites
                       </button>
                     )}
+                  {/* Pie charts */}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => downloadChart}>Pie Charts</button>
+                  )}
+                  {/* Render the PieChart but hide it from view */}
+                  {/* <PieChart users={users} chartRef={chartRef} /> */}
 
                   {authUser.userType === "Official" && (
                     <button
@@ -454,6 +591,18 @@ const Home = () => {
                     >
                       Remove Community
                     </button>
+                  )}
+                  {authUser.userType === "Official" && (
+                    <button
+                      onClick={() => {
+                        setShowMembers(true);
+                      }}
+                    >
+                      Show members
+                    </button>
+                  )}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => {}}>Show statistics</button>
                   )}
                   <button
                     onClick={() => {
@@ -467,7 +616,17 @@ const Home = () => {
             )}
           </GoogleMap>
         </div>
-
+        {/* Pop up for showing members*/}
+        <Popup
+          trigger={showMembers}
+          setTrigger={setShowMembers}
+          position="bottom-right"
+        >
+          <div className="popup-container">
+            <h2>Member List</h2>
+            <Members selectedCommunity={selectedCommunity} />
+          </div>
+        </Popup>
         {/*Popup for adding communities */}
         <Popup
           className="popup"
@@ -548,17 +707,20 @@ const Home = () => {
             </button>
           </div>
         </Popup>
+        {/* Chat Popup */}
+        {authUser.userType === "User" && (
+          <Popup
+            trigger={isChatOpen}
+            setTrigger={toggleChat}
+            position="bottom-right"
+          >
+            <div className="chat">
+              <Sidebar />
+              <MessageContainer />
+            </div>
+          </Popup>
+        )}
 
-        <Popup
-          trigger={isChatOpen}
-          setTrigger={toggleChat}
-          position="bottom-right"
-        >
-          <div className="chat">
-            <Sidebar />
-            <MessageContainer />
-          </div>
-        </Popup>
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
           <div className="right-toolside">

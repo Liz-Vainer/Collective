@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
-import User from "../models/user.js"; // Your user model
+import User from "../models/user.js"; // user model
 import Organizer from "../models/orginaizer.js"; // Organizer model
 import Official from "../models/official.js"; // Official model
 import Community from "../models/community.js"; // Adjust the import path as needed
 import generateTokenAndSetCookie from "../utils/generateToken.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 // Function to try to log in by checking each model (User, Organizer, Official)
 const handleLogin = async (name, password, res) => {
@@ -38,11 +39,6 @@ const handleLogin = async (name, password, res) => {
     }
 
     generateTokenAndSetCookie(user._id, res);
-    console.log("THIS IS AGE FROM USER CONTROLLES (BAACKENMD): ", user);
-    console.log(
-      "THIS IS RELIGIOUN FROM USER CONTROLLES (BAACKENMD): ",
-      user.religion
-    );
     let isReligious;
     if (user.religion !== "no") {
       isReligious = true;
@@ -320,6 +316,135 @@ export const logout = async (req, res) => {
   }
 };
 
+//to find all users in a community
+export const findUsers = async (req, res) => {
+  const { communityId } = req.body;
+  console.log(communityId);
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    if (community.users.length > 0) {
+      let arrayUsers = [];
+      for (let i = 0; i < community.users.length; i++) {
+        arrayUsers.push(community.users[i]);
+      }
+      const info = await userInfoById(arrayUsers);
+      return res.status(200).json({
+        message: `These are all the users from ${community.name}`,
+        users: info,
+      });
+    } else {
+      return res.status(200).json({
+        message: `There are no users in ${community.name}`,
+      });
+    }
+  } catch (err) {
+    console.log(
+      `There was an arror while trying to get all the users from ${community.name}`
+    );
+    res
+      .status(500)
+      .json({ message: "Internal Server Error (leaving a community)" });
+  }
+};
+
+//function to get user info by id (idArray)
+const userInfoById = async (idArray) => {
+  let info = [];
+  try {
+    for (let i = 0; i < idArray.length; i++) {
+      let user =
+        (await User.findById(idArray[i])) ||
+        (await Organizer.findById(idArray[i])) ||
+        (await Official.findById(idArray[i]));
+
+      info.push(user);
+    }
+    return info;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Error fetching user information");
+  }
+};
+
+//leave community
+export const leaveCommunity = async (req, res) => {
+  const { communityId, userId } = req.body;
+  try {
+    const community = await Community.findById(communityId);
+    console.log("fROM BBACK ENMD : ", community);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    const userIndex = community.users.indexOf(userId);
+    community.users.splice(userIndex, 1);
+    await community.save();
+    return res.status(200).json({
+      message: "User successfully left to the community",
+      member: true,
+    });
+  } catch (err) {
+    console.error("Error while trying to leave a community ", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error (leaving a community)" });
+  }
+};
+
+//join community
+export const joinCommunity = async (req, res) => {
+  const { communityId, userId } = req.body;
+  try {
+    const community = await Community.findById(communityId);
+    console.log("fROM BBACK ENMD : ", community);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    community.users.push(userId);
+    await community.save();
+    return res.status(200).json({
+      message: "User successfully added to the community",
+      member: true,
+    });
+  } catch (err) {
+    console.error("Error while trying to join a community ", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error (joining a community)" });
+  }
+};
+
+//check if user is already joined
+export const checkJoined = async (req, res) => {
+  const { communityId, userId } = req.body;
+  console.log("THIS IS ID FROM BBACK: ", communityId);
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    if (community.users.includes(userId)) {
+      console.log("member is true");
+      return res.status(200).json({
+        message: "User is already a member of the community",
+        member: true,
+      });
+    } else {
+      console.log("member is false");
+      return res.status(200).json({
+        message: "User is not a member of the community",
+        member: false,
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+};
+
 //settings change
 export const settings = async (req, res) => {
   const { userID, gender, age, religion, ethnicity, interest, userType } =
@@ -439,10 +564,18 @@ export const getUsersForSideBar = async (req, res) => {
   try {
     const loggedUserId = req.user.id;
 
+    // Find the logged-in user to get their list of friends
+    const loggedUser = await User.findById(loggedUserId);
+
+    if (!loggedUser) {
+      return res.status(404).json({ error: "Logged-in user not found" });
+    }
+
     const filteredUsers = await User.find({
-      //getting all users exept the logged user
-      _id: { $ne: loggedUserId },
-    }).select("-password");
+      _id: {
+        $nin: [...loggedUser.friends, loggedUserId], // Exclude friends and the logged-in user
+      },
+    }).select("-password"); // Exclude the password field
 
     res.status(200).json(filteredUsers);
   } catch (err) {
@@ -456,8 +589,6 @@ export const updateProfilePicture = async (req, res) => {
   try {
     const { profilePic, userType } = req.body;
     const userId = req.user._id; // Assuming user ID is in the request
-
-    console.log(userType);
 
     let Model;
     switch (userType) {
@@ -507,5 +638,231 @@ export const updateProfilePicture = async (req, res) => {
   } catch (err) {
     console.error("Error updating profile picture:", err.message);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const showFriends = async (req, res) => {
+  try {
+    const loggedUserId = req.user.id;
+
+    const user = await User.findById(loggedUserId).populate(
+      "friends",
+      "name profilePic"
+    );
+    const friends = user.friends;
+
+    res.status(200).json(friends);
+  } catch (err) {
+    console.error("Error in showFriends: ", err.message);
+    res.status(500).json({ err: "Internal server error" });
+  }
+};
+
+export const showRequests = async (req, res) => {
+  try {
+    const loggedUserId = req.user.id;
+
+    const user = await User.findById(loggedUserId).populate(
+      "friendRequests",
+      "name profilePic"
+    );
+    const friendsRequests = user.friendRequests;
+
+    res.status(200).json(friendsRequests);
+  } catch (err) {
+    console.error("Error in showRequests: ", err.message);
+    res.status(500).json({ err: "Internal server error" });
+  }
+};
+
+export const sendFriendRequest = async (req, res) => {
+  try {
+    const { recipientId } = req.body; // ID of the user to whom the request is sent
+    const senderId = req.user.id;
+
+    const recipient = await User.findById(recipientId);
+    const sender = await User.findById(senderId);
+
+    if (!recipient || !sender) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if a friend request already exists or they are already friends
+    if (recipient.friendRequests.includes(senderId)) {
+      return res.status(400).json({ error: "Friend request already sent" });
+    }
+
+    if (sender.friendRequests.includes(recipientId)) {
+      return res
+        .status(400)
+        .json({ error: "This user already sent a request" });
+    }
+
+    if (recipient.friends.includes(senderId)) {
+      return res.status(400).json({ error: "User is already a friend" });
+    }
+
+    // Add the friend request
+    recipient.friendRequests.push(senderId);
+    await recipient.save();
+
+    const user = await User.findById(recipientId).populate(
+      "friendRequests",
+      "name profilePic"
+    );
+    const friendsRequests = user.friendRequests;
+
+    const receiverSocketId = getReceiverSocketId(recipientId); //retrieve the socket ID of the receiver (the user who should get the message)
+    if (receiverSocketId) {
+      //check if the receiver is currently connected (has an active socket)
+      io.to(receiverSocketId).emit("newRequest", {
+        requests: friendsRequests,
+      }); //send a real-time event named "newMessage" to the receiver's socket
+    } //this event will deliver the new message to the intended recipient
+
+    res.status(200).json({ message: "Friend request sent successfully!" });
+  } catch (err) {
+    console.error("Error in sendFriendRequest: ", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const acceptFriendRequest = async (req, res) => {
+  try {
+    const { requesterId } = req.body; // ID of the user who sent the request
+    const loggedUserId = req.user.id;
+
+    const user = await User.findById(loggedUserId);
+    const requester = await User.findById(requesterId);
+
+    if (!user || !requester) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the friend request exists
+    if (!user.friendRequests.includes(requesterId)) {
+      return res
+        .status(400)
+        .json({ error: "No friend request from this user" });
+    }
+
+    // Add each other as friends
+    user.friends.push(requester);
+    requester.friends.push(user);
+
+    // Remove the friend request
+    user.friendRequests = user.friendRequests.filter(
+      (id) => id.toString() !== requesterId
+    );
+
+    console.log(user.friendRequests);
+
+    await user.save();
+    await requester.save();
+
+    // Get the socket IDs of both users
+    const userSocketId = getReceiverSocketId(loggedUserId);
+    const requesterSocketId = getReceiverSocketId(requesterId);
+
+    // Emit the updated friends data to both users
+    if (userSocketId) {
+      io.to(userSocketId).emit("newFriend", { friends: requester.friends });
+      io.to(userSocketId).emit("removeRequest", {
+        updatedRequests: user.friendRequests,
+      });
+    }
+    if (requesterSocketId) {
+      io.to(requesterSocketId).emit("newFriend", { friends: user.friends });
+    }
+
+    res.status(200).json({
+      message: "Friend request accepted!",
+      friends: user.friends,
+      requestes: user.friendRequests,
+    });
+  } catch (err) {
+    console.error("Error in acceptFriendRequest: ", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const rejectFriendRequest = async (req, res) => {
+  try {
+    const { requesterId } = req.body; // ID of the user who sent the request
+    const loggedUserId = req.user.id;
+
+    const user = await User.findById(loggedUserId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the friend request exists
+    if (!user.friendRequests.includes(requesterId)) {
+      return res
+        .status(400)
+        .json({ error: "No friend request from this user" });
+    }
+
+    // Remove the friend request
+    user.friendRequests = user.friendRequests.filter(
+      (id) => id.toString() !== requesterId
+    );
+
+    await user.save();
+
+    // Get the socket IDs of both users
+    const userSocketId = getReceiverSocketId(loggedUserId);
+
+    // Emit the updated friends data to both users
+    if (userSocketId) {
+      io.to(userSocketId).emit("removeRequest", {
+        updatedRequests: user.friendRequests,
+      });
+    }
+
+    res.status(200).json({ message: "Friend request rejected!" });
+  } catch (err) {
+    console.error("Error in rejectFriendRequest: ", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const removeFriend = async (req, res) => {
+  try {
+    const { selectedUserId } = req.body;
+    const loggedUserId = req.user.id;
+
+    const user = await User.findById(loggedUserId);
+    const selectedUser = await User.findById(selectedUserId);
+    // Check if the user is already not a friend
+    if (!user.friends.includes(selectedUserId)) {
+      return res.status(400).json({ error: "User is already not a friend" });
+    }
+    // Remove the selected user from the logged-in user's friends
+    user.friends = user.friends.filter(
+      (friendId) => friendId.toString() !== selectedUserId
+    );
+    await user.save();
+
+    //  remove the logged-in user from the selected user's friends
+    selectedUser.friends = selectedUser.friends.filter(
+      (friendId) => friendId.toString() !== loggedUserId
+    );
+
+    await selectedUser.save();
+    await user.save();
+
+    // Notify the selected user (the friend who was removed) in real-time
+    const receiverSocketId = getReceiverSocketId(selectedUserId); // Retrieve the socket ID of the removed friend
+    if (receiverSocketId) {
+      // If the removed friend is connected, send a real-time notification
+      io.to(receiverSocketId).emit("removeFriend", user);
+    }
+
+    res.status(200).json({ message: "friend removed succesfully!" });
+  } catch (err) {
+    console.error("Error in removeFriend: ", err.message);
+    res.status(500).json({ err: "Internal server error" });
   }
 };

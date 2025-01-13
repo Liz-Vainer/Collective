@@ -1,29 +1,7 @@
-// Components/PieChart.js
-import React, { useEffect, useState, useRef } from "react";
-import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+// hooks/useGenderChartData.js
+import { useState, useEffect } from "react";
 
-// Register the necessary chart components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-const PieChart = ({ users, chartRef }) => {
+const useGenderChartData = (users) => {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -35,6 +13,7 @@ const PieChart = ({ users, chartRef }) => {
     ],
   });
 
+  // Use the effect to process the user data and create the chart data
   useEffect(() => {
     if (users.length > 0) {
       const genderCounts = { male: 0, female: 0, other: 0 };
@@ -57,7 +36,7 @@ const PieChart = ({ users, chartRef }) => {
     }
   }, [users]);
 
-  return <Pie data={chartData} ref={chartRef} />;
+  return chartData;
 };
 
-export default PieChart;
+export default useGenderChartData;

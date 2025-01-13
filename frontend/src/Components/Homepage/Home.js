@@ -1,25 +1,7 @@
-import React, { useState, useCallback, useEffect } from "react";
-import background_fornow from "../Assets/background_login.png";
-import { Bar } from "react-chartjs-2";
+// External libraries
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
+import PieChart from "../Charts/Pie";
 import {
   FaDoorOpen,
   FaCog,
@@ -29,20 +11,28 @@ import {
   FaCamera,
 } from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
-import "../drawerstyle.css";
 import {
   GoogleMap,
   Marker,
   useJsApiLoader,
   InfoWindow,
 } from "@react-google-maps/api";
-import "./Home.css";
-import Popup from "../Popup/Popup";
-import Sidebar from "../Chat/Sidebar";
-import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
-import MessageContainer from "../Messages/MessageContainer";
+
+// Internal libraries and components
+import { Bar } from "react-chartjs-2";
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
+
+// Styles and assets
+import "../drawerstyle.css";
+import "./Home.css";
+import background_fornow from "../Assets/background_login.png";
+import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
+
+// Components
+import Popup from "../Popup/Popup";
+import Sidebar from "../Chat/Sidebar";
+import MessageContainer from "../Messages/MessageContainer";
 
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
@@ -132,9 +122,21 @@ const Home = () => {
   const [isMember, setIsMember] = useState();
   const [showMembers, setShowMembers] = useState(false);
   const [users, setUsers] = useState([]);
+  const chartRef = useRef(null); // Ref to access the pie chart instance
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
+  };
+
+  // Pie chart download function
+  const downloadChart = () => {
+    const chart = chartRef.current.chartInstance; // Get the chart instance
+    const imageUrl = chart.toBase64Image(); // Generate the image as base64 string
+
+    const a = document.createElement("a");
+    a.href = imageUrl;
+    a.download = "pie-chart.png"; // Set the file name
+    a.click(); // Trigger download
   };
 
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
@@ -608,6 +610,12 @@ const Home = () => {
                         Remove from favorites
                       </button>
                     )}
+                  {/* Pie charts */}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => downloadChart}>Pie Charts</button>
+                  )}
+                  {/* Render the PieChart but hide it from view */}
+                  <PieChart users={users} chartRef={chartRef} />
 
                   {authUser.userType === "Official" && (
                     <button

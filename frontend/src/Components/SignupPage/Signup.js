@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../../context/UserContext";
 import useSignup from "./useSignup";
 import email_icon from "../Assets/email_icon.png";
 import user_icon from "../Assets/person_icon.png";
 import password_closed from "../Assets/password_closed_icon.png";
 import password_open from "../Assets/password_look_icon.png";
-import background_login from "../Assets/background_login.png";
 import art_community from "../Assets/art_community.jpg";
 import yoga_community from "../Assets/yoga_community.jpg";
 import sports_community from "../Assets/sports_community.jpg";

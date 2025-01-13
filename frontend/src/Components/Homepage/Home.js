@@ -111,10 +111,10 @@ const Home = () => {
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
   const [isChatOpen, setIsChatOpen] = useState(false);
-
-  const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
-  };
+  const [isInfoWindowVisible, setIsInfoWindowVisible] = useState(false);
+  const toggleChat = () => setIsChatOpen((prev) => !prev);
+  const handleInfoWindowToggle = () => setIsInfoWindowVisible((prev) => !prev);
+  
 
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 

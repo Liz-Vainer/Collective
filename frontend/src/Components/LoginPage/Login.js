@@ -21,7 +21,8 @@ const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-
+  const [formValidationName, setFormValidationName] = useState(true);
+  const [formValidationPassword, setFormValidationPassword] = useState(true);
   const images = [
     art_community,
     yoga_community,
@@ -31,6 +32,38 @@ const Login = () => {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+
+  const validation1 = () => {
+    const regex = /^(?=.*[A-Z]).{8,}$/;
+    let flag = true;
+
+    if (name === "") {
+      setFormValidationName(false);
+      flag = false;
+    } else {
+      setFormValidationName(true);
+    }
+    if (password === "") {
+      setFormValidationPassword(false);
+      flag = false;
+    } else {
+      setFormValidationPassword(true);
+    }
+    if (password) {
+      if (regex.test(password)) {
+        setFormValidationPassword(true);
+      } else {
+        flag = false;
+        setFormValidationPassword(false);
+      }
+    }
+    if (!flag) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isAnimating) {
@@ -87,6 +120,9 @@ const Login = () => {
               placeholder="Name"
               onChange={(e) => setName(e.target.value)}
             />
+            {!formValidationName && (
+               <div className="error-popup">Invalid or empty field</div>
+            )}
           </div>
 
           <div className="input">
@@ -102,6 +138,9 @@ const Login = () => {
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
             />
+            {!formValidationPassword && (
+               <div className="error-popup">Invalid or empty field</div>
+            )}
           </div>
         </div>
         <div className="forgotPassword">

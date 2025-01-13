@@ -364,6 +364,7 @@ const userInfoById = async (idArray) => {
         (await Official.findById(idArray[i]));
       if (user) {
         let object = {
+          id: user.id,
           name: user.name,
           email: user.email,
           age: user.age,

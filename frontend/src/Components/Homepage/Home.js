@@ -1,6 +1,24 @@
 import React, { useState, useCallback, useEffect } from "react";
 import background_fornow from "../Assets/background_login.png";
+import { Bar } from "react-chartjs-2";
 import { useNavigate } from "react-router-dom";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 import {
   FaDoorOpen,
@@ -112,6 +130,8 @@ const Home = () => {
   const [lat, setCommunityLat] = useState();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMember, setIsMember] = useState();
+  const [showMembers, setShowMembers] = useState(false);
+  const [users, setUsers] = useState([]);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -124,9 +144,16 @@ const Home = () => {
       const result = await checkJoined(selectedCommunity);
       setIsMember(result);
     };
-
     fetchMembershipStatus();
   }, [selectedCommunity]);
+
+  useEffect(() => {
+    if (showMembers) {
+      lookUsers(selectedCommunity).then((fetchedUsers) => {
+        setUsers(fetchedUsers); // Store the users in state
+      });
+    }
+  }, [showMembers]);
 
   //Look users of selected community
   const lookUsers = async (selectedCommunity) => {
@@ -143,16 +170,21 @@ const Home = () => {
       if (response.ok) {
         if (data.users && data.users.length > 0) {
           console.log("Users found:", data.users);
+          return data.users;
         } else {
           console.log(data.message); // "There are no users in {community.name}"
+          return [];
         }
       } else {
         console.error("Error:", data.message);
+        return [];
       }
     } catch (err) {
       console.error("An error occurred while showing members", err);
+      return [];
     }
   };
+
   //Leave community
   async function leaveCommunity(selectedCommunity) {
     try {
@@ -590,7 +622,7 @@ const Home = () => {
                   {authUser.userType === "Official" && (
                     <button
                       onClick={() => {
-                        lookUsers(selectedCommunity);
+                        setShowMembers(true);
                       }}
                     >
                       Show members
@@ -611,7 +643,41 @@ const Home = () => {
             )}
           </GoogleMap>
         </div>
-
+        {/* Pop up for showing members*/}
+        <Popup trigger={showMembers} setTrigger={setShowMembers}>
+          <h2>Member List</h2>
+          {users.length > 0 ? (
+            <ul>
+              {users.map((user) => (
+                <li key={user.id}>
+                  <p>
+                    <strong>Name:</strong> {user.name}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {user.email}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {user.age}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {user.gender}
+                  </p>
+                  <p>
+                    <strong>Religion:</strong> {user.religion}
+                  </p>
+                  <p>
+                    <strong>Ethnicity:</strong> {user.ethnicity}
+                  </p>
+                  <p>
+                    <strong>Interest:</strong> {user.interest}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No users found in this community.</p>
+          )}
+        </Popup>
         {/*Popup for adding communities */}
         <Popup
           className="popup"
@@ -692,7 +758,7 @@ const Home = () => {
             </button>
           </div>
         </Popup>
-
+        {/* Chat Popup */}
         <Popup
           trigger={isChatOpen}
           setTrigger={toggleChat}

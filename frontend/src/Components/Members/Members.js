@@ -9,7 +9,11 @@ const Members = ({ selectedCommunity }) => {
     return (
       <div className="members">
         {members.map((user) => (
-          <Member key={user.id} user={user} />
+          <Member
+            key={user.id}
+            user={user}
+            communityId={selectedCommunity._id}
+          />
         ))}
       </div>
     );

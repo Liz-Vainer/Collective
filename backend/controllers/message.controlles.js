@@ -31,13 +31,14 @@ export const sendMessage = async (req, res) => {
       conversation.messages.push(newMessage._id);
     }
 
-    await conversation.save();
-    await newMessage.save();
+    await conversation.save(); //saving conversation to database
+    await newMessage.save(); //saving message to database
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
+    const receiverSocketId = getReceiverSocketId(receiverId); //retrieve the socket ID of the receiver (the user who should get the message)
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
-    }
+      //check if the receiver is currently connected (has an active socket)
+      io.to(receiverSocketId).emit("newMessage", newMessage); //send a real-time event named "newMessage" to the receiver's socket
+    } //this event will deliver the new message to the intended recipient
 
     res.status(201).json(newMessage);
   } catch (err) {

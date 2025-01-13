@@ -21,6 +21,7 @@
     "@react-google-maps/api": "^2.20.3",
     "body-parser": "^1.20.3",
     "chart.js": "^4.4.7",
+    "collective_ex": "file:..",
     "cord": "^1.0.1",
     "cra-template": "1.2.0",
     "dotenv": "^16.4.7",

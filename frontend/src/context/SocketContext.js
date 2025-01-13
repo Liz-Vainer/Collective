@@ -25,6 +25,7 @@ export const SocketContextProvider = ({ children }) => {
       socket.on("getOnlineUsers", (users) => {
         setOnlineUsers(users);
       });
+
       return () => socket.close();
     } else {
       if (socket) {
@@ -33,6 +34,7 @@ export const SocketContextProvider = ({ children }) => {
       }
     }
   }, [authUser]);
+
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}

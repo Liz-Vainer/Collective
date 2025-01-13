@@ -753,7 +753,7 @@ const Home = () => {
         )}
 
         <button
-          className="drawer-toggle-button"
+          className="drawer-trigger"
           onClick={() => setDrawerOpen(true)}
           onMouseEnter={() => setDrawerOpen(true)} // Open on hover
           // Open the drawer on button click

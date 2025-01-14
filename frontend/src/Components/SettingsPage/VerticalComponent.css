@@ -1,15 +1,18 @@
 /* VerticalComponent.css */
 .vertical-container {
-  display: flex;
+  display: fixed;
+  flex-direction: column;
   align-items: flex-start;
-  height: 100%;
+  height:900px;
+  width: 240px;
 }
 
 .profile {
-  flex: 1;
+  flex: none;
+  
   padding: 20px;
   background-color: #f4f4f4;
-  border-right: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
 }
 
 .profile-picture {
@@ -32,4 +35,25 @@
   flex: 3;
   padding: 20px;
   background-color: #fff;
+  
 }
+.settings-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-list li {
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 30px;
+  border-bottom: 1px solid #ccc; /* Divider between items */
+}
+
+.settings-list li:last-child {
+  border-top: 1px solid #ccc; 
+border-bottom: none;
+  margin-top: 300px;/* Remove divider for the last item */
+  margin-bottom: 0px
+}
+

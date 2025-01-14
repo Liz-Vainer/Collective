@@ -134,7 +134,3 @@
   transition: 0s;
 }
 
-/* You can hide the extra exit button inside the popup */
-.popup-close-button {
-  display: none;
-}

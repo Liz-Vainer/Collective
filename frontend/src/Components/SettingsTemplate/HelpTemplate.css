@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&family=Open+Sans:wght@400&display=swap');
+
+.help-container {
+    text-align: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  .help-container h2 {
+    font-size: 60px;
+    margin: 0;
+    color: #037c33;
+    font-family: 'Roboto Slab', serif;
+  }
+  .email-button {
+    background-color: #26b347;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 100px;
+  }
+  
+  .email-button:hover {
+    background-color: #037848;
+  }
+  
+  .faq-section {
+    margin-top: 20px;
+    text-align: left;
+  }
+  
+  .faq-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    cursor: pointer;
+  }
+  
+  .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .faq-question h4 {
+    font-size: 24px;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  .arrow {
+    font-size: 18px;
+    color: #037c33;
+  }
+  
+  .faq-answer {
+    margin-top: 10px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    color: #000000;
+    line-height: 1.6;
+  }
+  

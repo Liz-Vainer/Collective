@@ -1,7 +1,8 @@
 import React from 'react';
 import './ChatPopup.css';
-import Sidebar from './Sidebar';
-import MessageContainer from './MessageContainer';
+import Sidebar from '../Chat/Sidebar';
+import Conversations from '../Chat/Conversations';
+
 
 const ChatPopup = ({ trigger, setTrigger }) => {
   return (
@@ -9,7 +10,7 @@ const ChatPopup = ({ trigger, setTrigger }) => {
       <div className="chat-popup">
         <div className="inner-chat-popup">
           <Sidebar />
-          <MessageContainer />
+          <Conversations />
         </div>
       </div>
     )

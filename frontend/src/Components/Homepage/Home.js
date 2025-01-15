@@ -1,8 +1,7 @@
 // External libraries
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PostContainer from "./PostContainer";
-import PieChart from "../Charts/Pie";
 import {
   FaDoorOpen,
   FaCog,
@@ -19,22 +18,18 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 
-// Internal libraries and components
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
 // Styles and assets
 import "../drawerstyle.css";
 import "./Home.css";
-import background_fornow from "../Assets/background_login.png";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
 
 // Components
 import Popup from "../Popup/Popup";
-import Sidebar from "../Chat/Sidebar";
-import MessageContainer from "../Messages/MessageContainer";
 import Members from "../Members/Members";
-import PieChart from "../Charts/Pie";
+import ChatPopup from "../Popup/ChatPopup";
 
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
@@ -124,13 +119,22 @@ const Home = () => {
   const [isMember, setIsMember] = useState();
   const [showMembers, setShowMembers] = useState(false);
   const [users, setUsers] = useState([]);
-  const [statistics, setStatistics] = useState(false);
+  const chartRef = useRef(null); // Ref to access the pie chart instance
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
   // Pie chart download function
+  const downloadChart = () => {
+    const chart = chartRef.current.chartInstance; // Get the chart instance
+    const imageUrl = chart.toBase64Image(); // Generate the image as base64 string
+
+    const a = document.createElement("a");
+    a.href = imageUrl;
+    a.download = "pie-chart.png"; // Set the file name
+    a.click(); // Trigger download
+  };
 
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 
@@ -143,45 +147,6 @@ const Home = () => {
       fetchMembershipStatus();
     }
   }, [selectedCommunity]);
-
-  useEffect(() => {
-    console.log("USEEFFECT IS WORKING");
-    if (showMembers || statistics) {
-      lookUsers(selectedCommunity).then((fetchedUsers) => {
-        setUsers(fetchedUsers); // Store the users in state
-      });
-    }
-  }, [showMembers, statistics]);
-
-  //Look users of selected community
-  const lookUsers = async (selectedCommunity) => {
-    try {
-      const response = await fetch("/find-users-by-community", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          communityId: selectedCommunity._id,
-        }),
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (response.ok) {
-        if (data.users && data.users.length > 0) {
-          console.log("Users found:", data.users);
-          return data.users;
-        } else {
-          console.log(data.message); // "There are no users in {community.name}"
-          return [];
-        }
-      } else {
-        console.error("Error:", data.message);
-        return [];
-      }
-    } catch (err) {
-      console.error("An error occurred while showing members", err);
-      return [];
-    }
-  };
 
   //Leave community
   async function leaveCommunity(selectedCommunity) {
@@ -483,6 +448,8 @@ const Home = () => {
 
   //===================== Component UI =====================
   return (
+
+    
     <div className="mainbody">
       {/* Upper Tool Section */}
       <div className="upper-tool">
@@ -528,6 +495,7 @@ const Home = () => {
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
+        
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
           <GoogleMap
@@ -606,6 +574,12 @@ const Home = () => {
                         Remove from favorites
                       </button>
                     )}
+                  {/* Pie charts */}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => downloadChart}>Pie Charts</button>
+                  )}
+                  {/* Render the PieChart but hide it from view */}
+                  {/* <PieChart users={users} chartRef={chartRef} /> */}
 
                   {authUser.userType === "Official" && (
                     <button
@@ -627,42 +601,8 @@ const Home = () => {
                     </button>
                   )}
                   {authUser.userType === "Official" && (
-                    <div>
-                      {/* Ternary operator to switch between "Show Statistics" and "Hide Charts" */}
-                      {statistics ? (
-                        // When statistics is true, show the "Hide Charts" button and the charts
-                        <div>
-                          <button
-                            onClick={() => {
-                              setStatistics(false); // Hide the charts and set statistics to false
-                            }}
-                          >
-                            Hide Charts
-                          </button>
-
-                          {/* Render charts when statistics is true */}
-                          {users &&
-                            Array.isArray(users) &&
-                            users.length > 0 && (
-                              <PieChart
-                                data={users}
-                                setStatistics={setStatistics}
-                              />
-                            )}
-                        </div>
-                      ) : (
-                        // When statistics is false, show the "Show Statistics" button
-                        <button
-                          onClick={() => {
-                            setStatistics(true); // Show the charts and set statistics to true
-                          }}
-                        >
-                          Show Statistics
-                        </button>
-                      )}
-                    </div>
+                    <button onClick={() => {}}>Show statistics</button>
                   )}
-
                   <button
                     onClick={() => {
                       handleMoreInfo();
@@ -769,16 +709,7 @@ const Home = () => {
         </Popup>
         {/* Chat Popup */}
         {authUser.userType === "User" && (
-          <Popup
-            trigger={isChatOpen}
-            setTrigger={toggleChat}
-            position="bottom-right"
-          >
-            <div className="chat">
-              <Sidebar />
-              <MessageContainer />
-            </div>
-          </Popup>
+            <ChatPopup trigger={isChatOpen} setTrigger={toggleChat} />
         )}
 
         {/* Right Toolbox for Favorites */}

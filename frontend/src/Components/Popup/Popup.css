@@ -1,6 +1,6 @@
 /* Disable text selection for the entire popup */
 .popup {
-  position: absolute;
+  position: fixed;
   z-index: 1000;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -32,7 +32,6 @@
   position: fixed;
   user-select: none; /* Disable selection in the content area */
   max-width: 700px;
-  max-height: 490px;
   width: 100%; /* Ensure the width is contained within the popup */
   overflow: hidden; /* Prevent content from overflowing */
   transition: max-height 0.3s ease-in-out;

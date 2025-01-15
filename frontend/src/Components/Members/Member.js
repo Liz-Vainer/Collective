@@ -44,8 +44,7 @@ const Member = ({ user, communityId }) => {
       <Popup
         trigger={infoButton}
         setTrigger={toggleInfo}
-        position="center"
-        className="popup"
+        className="info-popup"
       >
         <div className="member-info">
           <h2>{user.name}'s Information</h2>

@@ -2,33 +2,37 @@ import { useState } from "react";
 import useMembers from "../zustand/useMembers";
 
 const useRemoveMember = () => {
-  const { setMembers } = useMembers();
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const { members, setMembers } = useMembers();
+  const [isLoading, setIsLoading] = useState(false);
 
   const removeMember = async (communityId, selectedUserId) => {
-    setIsLoading(true); // Set loading to true at the start
+    setIsLoading(true);
     try {
       const res = await fetch("/remove-member", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ communityId, selectedUserId }),
       });
 
       const data = await res.json();
-      console.log("members after removal:", data.members);
-      setMembers(data.members);
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to remove member");
+      }
 
+      const updatedMembers = members.filter(
+        (member) => member.id !== selectedUserId
+      );
+      setMembers(updatedMembers); // Update global state
       alert("Member removed!");
     } catch (err) {
-      console.log("Error removing a member: ", err);
+      console.error("Error removing a member:", err);
+      alert("Failed to remove member. Please try again.");
     } finally {
-      setIsLoading(false); // Ensure loading is reset regardless of success or failure
+      setIsLoading(false);
     }
   };
 
-  return { removeMember, isLoading }; // Expose `isLoading` for UI feedback
+  return { removeMember, isLoading };
 };
 
 export default useRemoveMember;

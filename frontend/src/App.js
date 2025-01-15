@@ -14,7 +14,6 @@ import {
   Navigate,
 } from "react-router-dom";
 
-
 function App() {
   const { authUser } = useUser();
 

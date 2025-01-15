@@ -9,6 +9,7 @@
   background-position: center;
   background-repeat: no-repeat;
   padding: 20px;
+  overflow: scroll;
   color: white;
 }
 

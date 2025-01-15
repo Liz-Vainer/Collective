@@ -319,6 +319,7 @@ export const logout = async (req, res) => {
 //to find all users in a community
 export const findUsers = async (req, res) => {
   const { communityId } = req.body;
+  console.log(communityId);
   try {
     const community = await Community.findById(communityId);
     if (!community) {
@@ -358,19 +359,8 @@ const userInfoById = async (idArray) => {
         (await User.findById(idArray[i])) ||
         (await Organizer.findById(idArray[i])) ||
         (await Official.findById(idArray[i]));
-      if (user) {
-        let object = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          age: user.age,
-          gender: user.gender,
-          religion: user.religion,
-          ethnicity: user.ethnicity,
-          interest: user.interest,
-        };
-        info.push(object);
-      }
+
+      info.push(user);
     }
     return info;
   } catch (err) {
@@ -452,6 +442,29 @@ export const checkJoined = async (req, res) => {
     return res
       .status(500)
       .json({ message: "An error occurred", error: error.message });
+  }
+};
+
+export const removeUserFromCommunity = async (req, res) => {
+  const { communityId, userId } = req.body;
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    const userIndex = community.users.indexOf(userId);
+    community.users.splice(userIndex, 1);
+    console.log("members: ", community.users);
+    await community.save();
+    return res.status(200).json({
+      message: "User successfully Removed from the community",
+      members: community.users,
+    });
+  } catch (err) {
+    console.error("Error while trying to leave a community ", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error (leaving a community)" });
   }
 };
 
@@ -651,6 +664,7 @@ export const updateProfilePicture = async (req, res) => {
   }
 };
 
+//frinds for chat
 export const showFriends = async (req, res) => {
   try {
     const loggedUserId = req.user.id;
@@ -668,6 +682,7 @@ export const showFriends = async (req, res) => {
   }
 };
 
+//friends requests
 export const showRequests = async (req, res) => {
   try {
     const loggedUserId = req.user.id;
@@ -685,6 +700,7 @@ export const showRequests = async (req, res) => {
   }
 };
 
+//sending friend request
 export const sendFriendRequest = async (req, res) => {
   try {
     const { recipientId } = req.body; // ID of the user to whom the request is sent
@@ -737,6 +753,7 @@ export const sendFriendRequest = async (req, res) => {
   }
 };
 
+//accept friend request
 export const acceptFriendRequest = async (req, res) => {
   try {
     const { requesterId } = req.body; // ID of the user who sent the request
@@ -796,6 +813,7 @@ export const acceptFriendRequest = async (req, res) => {
   }
 };
 
+//rejecting friend request
 export const rejectFriendRequest = async (req, res) => {
   try {
     const { requesterId } = req.body; // ID of the user who sent the request
@@ -838,6 +856,7 @@ export const rejectFriendRequest = async (req, res) => {
   }
 };
 
+//removing a friend
 export const removeFriend = async (req, res) => {
   try {
     const { selectedUserId } = req.body;

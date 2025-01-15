@@ -20,6 +20,7 @@ import {
   rejectFriendRequest,
   removeFriend,
   showRequests,
+  removeUserFromCommunity,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -64,12 +65,19 @@ router.post("/logut", protectRoute, logout);
 //updating user profile pic
 router.post("/update-profile-pic/:id", protectRoute, updateProfilePicture);
 
+//chek if a user is amember of the community
 router.post("/check-joined-community", protectRoute, checkJoined);
 
+//joining a community
 router.post("/join-community", protectRoute, joinCommunity);
 
+//leaving a community
 router.post("/leave-community", protectRoute, leaveCommunity);
 
+//removing a user from a community
+router.post("/remove-member", protectRoute, removeUserFromCommunity);
+
+//fetching community members
 router.post("/find-users-by-community", protectRoute, findUsers);
 
 //get users friends

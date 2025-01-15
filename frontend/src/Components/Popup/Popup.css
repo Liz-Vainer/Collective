@@ -1,16 +1,21 @@
 /* Disable text selection for the entire popup */
 .popup {
-  position: fixed;
-  z-index: 1000;
-  -webkit-user-select: none; /* For Safari */
-  -moz-user-select: none;    /* For Firefox */
-  -ms-user-select: none;     /* For Internet Explorer/Edge */
-  user-select: none;         /* For modern browsers */
+  position: fixed; /* Keeps the popup in the same position relative to the viewport */
+  z-index: 1000; /* Ensure it's above other elements */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for exact centering */
+  height: auto;
+  width:auto;
+  -webkit-user-select: none; 
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .popup.bottom-right {
-  top: 420px;
-  right: -200px;
+  bottom: 20px; /* Position from the bottom */
+  right: 20px; /* Position from the right */
   width: 600px;
   transform: none;
 }
@@ -23,60 +28,81 @@
   align-items: center;
 }
 
+/* Inner popup styles */
 .inner-popup {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: fixed;
+  position: relative; /* Use relative positioning for inner content */
   user-select: none; /* Disable selection in the content area */
   max-width: 700px;
-  max-height: 420px;
+  width: 100%; /* Ensure the width is contained within the popup */
+  overflow: hidden; /* Prevent content from overflowing */
+  transition: max-height 0.3s ease-in-out;
+  margin-bottom: 10px;
 }
 
-.btn-close {
+.inner-popup.collapsed {
+  max-height: 90px; /* Shrink the popup's height when collapsed */
+  overflow: hidden;
+}
+
+/* Button container styles when collapsed */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   position: absolute;
-  top: 0.1px;
-  border-radius: 10px;
+  top: 10px;
+  right: 10px;
+  width: auto;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  padding: 5px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.button-container.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Close button */
+.btn-close {
   background-color: transparent;
   color: #333;
   border: none;
   font-size: 20px;
   cursor: pointer;
-  right: 10px; 
-  margin-left: 10px;
 }
 
 .btn-close:hover {
   color: #555;
   background-color: #4CAF50;
-  transform: scale(0.6)
+  transform: scale(0.6);
 }
 
+/* Collapse button */
 .btn-collapse {
-  position: absolute;
-  top: 0.1px;
-  right: 60px; /* Position it next to the close button */
   background-color: transparent;
   color: #333;
   border: none;
   font-size: 20px;
   cursor: pointer;
+  margin-left: 10px; /* Add space between the buttons */
 }
 
 .btn-collapse:hover {
   color: #555;
   background-color: #4CAF50;
-  transform: scale(0.6)
+  transform: scale(0.6);
 }
 
-
-
-
-.inner-popup.collapsed {
-  height: 90px; /* Shrink the popup's height when collapsed */
-}
-
+/* Button styles for any other elements */
 .button {
   margin: auto;
   margin-top: 20px;
@@ -110,4 +136,23 @@
   margin: 0;
   opacity: 1;
   transition: 0s;
+}
+
+/* Chat popup styles */
+.chat-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.chat-popup .inner-chat-popup {
+  padding: 20px;
+  user-select: none;
 }

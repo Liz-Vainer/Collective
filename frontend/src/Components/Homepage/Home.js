@@ -1,6 +1,8 @@
 // External libraries
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PostContainer from "./PostContainer";
+import PieChart from "../Charts/Pie";
 import {
   FaDoorOpen,
   FaCog,
@@ -31,6 +33,7 @@ import user_icon from "../Assets/person_icon.png"; //temporary until we make com
 import Popup from "../Popup/Popup";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
+import Members from "../Members/Members";
 import PieChart from "../Charts/Pie";
 
 const Home = () => {
@@ -132,11 +135,13 @@ const Home = () => {
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 
   useEffect(() => {
-    const fetchMembershipStatus = async () => {
-      const result = await checkJoined(selectedCommunity);
-      setIsMember(result);
-    };
-    fetchMembershipStatus();
+    if (selectedCommunity) {
+      const fetchMembershipStatus = async () => {
+        const result = await checkJoined(selectedCommunity);
+        setIsMember(result);
+      };
+      fetchMembershipStatus();
+    }
   }, [selectedCommunity]);
 
   useEffect(() => {
@@ -519,7 +524,7 @@ const Home = () => {
           ))}
         </div>
       </div>
-
+      <PostContainer />
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
@@ -671,39 +676,16 @@ const Home = () => {
           </GoogleMap>
         </div>
         {/* Pop up for showing members*/}
-        <Popup trigger={showMembers} setTrigger={setShowMembers}>
-          <h2>Member List</h2>
-          {users.length > 0 ? (
-            <ul>
-              {users.map((user) => (
-                <li key={user.id}>
-                  <p>
-                    <strong>Name:</strong> {user.name}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {user.email}
-                  </p>
-                  <p>
-                    <strong>Age:</strong> {user.age}
-                  </p>
-                  <p>
-                    <strong>Gender:</strong> {user.gender}
-                  </p>
-                  <p>
-                    <strong>Religion:</strong> {user.religion}
-                  </p>
-                  <p>
-                    <strong>Ethnicity:</strong> {user.ethnicity}
-                  </p>
-                  <p>
-                    <strong>Interest:</strong> {user.interest}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No users found in this community.</p>
-          )}
+        <Popup
+          trigger={showMembers}
+          setTrigger={setShowMembers}
+          position="bottom-right"
+          className="popup"
+        >
+          <div className="">
+            <h2>Member List</h2>
+            <Members selectedCommunity={selectedCommunity} />
+          </div>
         </Popup>
         {/*Popup for adding communities */}
         <Popup
@@ -786,16 +768,19 @@ const Home = () => {
           </div>
         </Popup>
         {/* Chat Popup */}
-        <Popup
-          trigger={isChatOpen}
-          setTrigger={toggleChat}
-          position="bottom-right"
-        >
-          <div className="chat">
-            <Sidebar />
-            <MessageContainer />
-          </div>
-        </Popup>
+        {authUser.userType === "User" && (
+          <Popup
+            trigger={isChatOpen}
+            setTrigger={toggleChat}
+            position="bottom-right"
+          >
+            <div className="chat">
+              <Sidebar />
+              <MessageContainer />
+            </div>
+          </Popup>
+        )}
+
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
           <div className="right-toolside">
@@ -828,7 +813,7 @@ const Home = () => {
         )}
 
         <button
-          className="drawer-toggle-button"
+          className="drawer-trigger"
           onClick={() => setDrawerOpen(true)}
           onMouseEnter={() => setDrawerOpen(true)} // Open on hover
           // Open the drawer on button click

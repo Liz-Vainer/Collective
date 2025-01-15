@@ -1,7 +1,6 @@
 // External libraries
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PieChart from "../Charts/Pie";
 import {
   FaDoorOpen,
   FaCog,
@@ -19,7 +18,6 @@ import {
 } from "@react-google-maps/api";
 
 // Internal libraries and components
-import { Bar } from "react-chartjs-2";
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
@@ -33,6 +31,7 @@ import user_icon from "../Assets/person_icon.png"; //temporary until we make com
 import Popup from "../Popup/Popup";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
+import PieChart from "../Charts/Pie";
 
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
@@ -122,22 +121,13 @@ const Home = () => {
   const [isMember, setIsMember] = useState();
   const [showMembers, setShowMembers] = useState(false);
   const [users, setUsers] = useState([]);
-  const chartRef = useRef(null); // Ref to access the pie chart instance
+  const [statistics, setStatistics] = useState(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
   // Pie chart download function
-  const downloadChart = () => {
-    const chart = chartRef.current.chartInstance; // Get the chart instance
-    const imageUrl = chart.toBase64Image(); // Generate the image as base64 string
-
-    const a = document.createElement("a");
-    a.href = imageUrl;
-    a.download = "pie-chart.png"; // Set the file name
-    a.click(); // Trigger download
-  };
 
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 
@@ -150,12 +140,13 @@ const Home = () => {
   }, [selectedCommunity]);
 
   useEffect(() => {
-    if (showMembers) {
+    console.log("USEEFFECT IS WORKING");
+    if (showMembers || statistics) {
       lookUsers(selectedCommunity).then((fetchedUsers) => {
         setUsers(fetchedUsers); // Store the users in state
       });
     }
-  }, [showMembers]);
+  }, [showMembers, statistics]);
 
   //Look users of selected community
   const lookUsers = async (selectedCommunity) => {
@@ -610,12 +601,6 @@ const Home = () => {
                         Remove from favorites
                       </button>
                     )}
-                  {/* Pie charts */}
-                  {authUser.userType === "Official" && (
-                    <button onClick={() => downloadChart}>Pie Charts</button>
-                  )}
-                  {/* Render the PieChart but hide it from view */}
-                  <PieChart users={users} chartRef={chartRef} />
 
                   {authUser.userType === "Official" && (
                     <button
@@ -637,8 +622,42 @@ const Home = () => {
                     </button>
                   )}
                   {authUser.userType === "Official" && (
-                    <button onClick={() => {}}>Show statistics</button>
+                    <div>
+                      {/* Ternary operator to switch between "Show Statistics" and "Hide Charts" */}
+                      {statistics ? (
+                        // When statistics is true, show the "Hide Charts" button and the charts
+                        <div>
+                          <button
+                            onClick={() => {
+                              setStatistics(false); // Hide the charts and set statistics to false
+                            }}
+                          >
+                            Hide Charts
+                          </button>
+
+                          {/* Render charts when statistics is true */}
+                          {users &&
+                            Array.isArray(users) &&
+                            users.length > 0 && (
+                              <PieChart
+                                data={users}
+                                setStatistics={setStatistics}
+                              />
+                            )}
+                        </div>
+                      ) : (
+                        // When statistics is false, show the "Show Statistics" button
+                        <button
+                          onClick={() => {
+                            setStatistics(true); // Show the charts and set statistics to true
+                          }}
+                        >
+                          Show Statistics
+                        </button>
+                      )}
+                    </div>
                   )}
+
                   <button
                     onClick={() => {
                       handleMoreInfo();

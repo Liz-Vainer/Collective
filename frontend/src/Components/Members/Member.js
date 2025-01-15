@@ -1,13 +1,23 @@
 import { useState } from "react";
 import Popup from "../Popup/Popup";
 import "./Members.css";
+import useRemoveMember from "../../hooks/useRemoveMember";
 
-const Member = ({ user }) => {
+const Member = ({ user, communityId }) => {
   const [infoButton, setInfoButton] = useState(false);
+  const { removeMember, isLoading } = useRemoveMember(); // Include loading state
+  const [isRemoving, setIsRemoving] = useState(false); // Local loading state for individual member
+
   const toggleInfo = () => {
     setInfoButton(!infoButton);
   };
-  const toggleRemove = () => {};
+
+  const toggleRemove = async () => {
+    setIsRemoving(isLoading); // Start removing
+    await removeMember(communityId, user.id);
+    setIsRemoving(isLoading); // Reset removing state
+  };
+
   return (
     <div>
       <div className="member">
@@ -21,12 +31,21 @@ const Member = ({ user }) => {
         <div className="info">
           <button onClick={toggleInfo}>Info</button>
         </div>
-        {/* User info Button */}
+
+        {/* Remove User Button */}
         <div className="info">
-          <button onClick={toggleRemove}>Remove from community</button>
+          <button onClick={toggleRemove} disabled={isRemoving || isLoading}>
+            {isRemoving ? "Removing..." : "Remove from community"}
+          </button>
         </div>
       </div>
-      <Popup trigger={infoButton} setTrigger={toggleInfo} position="center">
+
+      {/* User Info Popup */}
+      <Popup
+        trigger={infoButton}
+        setTrigger={toggleInfo}
+        className="info-popup"
+      >
         <div className="member-info">
           <h2>{user.name}'s Information</h2>
           <div className="info-item">
@@ -59,7 +78,6 @@ const Member = ({ user }) => {
               <p>No favorites</p>
             )}
           </div>
-
           <div className="info-item">
             <strong>Joined on:</strong>{" "}
             {new Date(user.createdAt).toLocaleDateString()}

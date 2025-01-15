@@ -6,5 +6,5 @@
     background-color: #f4f4f4; /* Light background color */
     border-right: 1px solid #ddd; /* Add subtle border */
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
-    height: 100vh; /* Full height of viewport */
+    height: auto; /* Full height of viewport */
   }

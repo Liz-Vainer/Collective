@@ -13,9 +13,9 @@ const Member = ({ user, communityId }) => {
   };
 
   const toggleRemove = async () => {
-    setIsRemoving(true); // Start removing
+    setIsRemoving(isLoading); // Start removing
     await removeMember(communityId, user.id);
-    setIsRemoving(false); // Reset removing state
+    setIsRemoving(isLoading); // Reset removing state
   };
 
   return (
@@ -41,7 +41,12 @@ const Member = ({ user, communityId }) => {
       </div>
 
       {/* User Info Popup */}
-      <Popup trigger={infoButton} setTrigger={toggleInfo} position="center">
+      <Popup
+        trigger={infoButton}
+        setTrigger={toggleInfo}
+        position="center"
+        className="popup"
+      >
         <div className="member-info">
           <h2>{user.name}'s Information</h2>
           <div className="info-item">

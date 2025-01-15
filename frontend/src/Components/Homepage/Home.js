@@ -621,8 +621,9 @@ const Home = () => {
           trigger={showMembers}
           setTrigger={setShowMembers}
           position="bottom-right"
+          className="popup"
         >
-          <div className="popup-container">
+          <div className="">
             <h2>Member List</h2>
             <Members selectedCommunity={selectedCommunity} />
           </div>

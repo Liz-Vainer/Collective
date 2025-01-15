@@ -1,0 +1,73 @@
+.post-container {
+  width: 100%;
+  height: 800px; /* Fixed height of the container */
+  margin: 30px auto;
+  overflow: hidden; /* Hide posts that overflow */
+  position: relative;
+}
+
+.post-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack posts vertically */
+  animation: scrollPosts 15s linear infinite; /* Infinite smooth scroll */
+}
+
+.post-wrapper.paused {
+  animation-play-state: paused; /* Pause the animation when hovering */
+}
+
+.post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 10px; /* Add a gap between post image and actions */
+  margin-bottom: 20px; /* Adds a gap between posts */
+}
+
+.post-image {
+  width: 250px;
+  height: 300px;
+  object-fit: cover;
+}
+
+.post-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.like-button,
+.dislike-button {
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.like-button {
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.dislike-button {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+@keyframes scrollPosts {
+  0% {
+    transform: translateY(0); /* Start from the top */
+  }
+  50% {
+    transform: translateY(-800px); /* Scroll the first set up */
+  }
+  75% {
+    transform: translateY(0); /* Immediately reset to top after half scroll */
+  }
+  100% {
+    transform: translateY(-800px); /* Scroll to the bottom of the second set */
+  }
+}

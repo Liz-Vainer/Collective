@@ -1,9 +1,9 @@
 /* Settings Page Layout */
 .settings-page-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* This ensures child elements stretch to the same height */
+  height: 80%
   }
   
   .settings-page-content {
@@ -13,20 +13,28 @@
   }
   
   .vertical-container {
-    width: 20%;
-    background-color: #f4f4f4;
+    display: flex;
+    margin-top: 30px;
+    flex-direction: column; /* Stack profile and settings list vertically */
+    flex: 0 0 200px; /* Fixed width for the vertical component */
     padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f4f4f4;
+    border-radius: 10px;
   }
-  
+  .divider {
+    height: auto; /* Let it stretch with flexbox */
+    width: 1px;
+    margin-top: 30px;
+    background-color: #ccc;
+    margin: 0 20px;
+  }
   .vertical-container .profile {
     text-align: center;
   }
   
   .profile-image {
     width: 80px;
-    height: 80px;
+    height: 50px;
     border-radius: 50%;
   }
   
@@ -48,6 +56,7 @@
   
   .main-container {
     width: 75%;
+    margin-top: 30px;
     background-color: white;
     padding: 20px;
     border-radius: 5px;

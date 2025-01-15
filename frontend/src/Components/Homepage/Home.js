@@ -1,6 +1,7 @@
 // External libraries
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import PostContainer from "./PostContainer";
 import PieChart from "../Charts/Pie";
 import {
   FaDoorOpen,
@@ -452,6 +453,8 @@ const Home = () => {
 
   //===================== Component UI =====================
   return (
+
+    
     <div className="mainbody">
       {/* Upper Tool Section */}
       <div className="upper-tool">
@@ -493,10 +496,11 @@ const Home = () => {
           ))}
         </div>
       </div>
-
+      <PostContainer />
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
+        
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
           <GoogleMap

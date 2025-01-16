@@ -1,71 +1,162 @@
-import React, { useState } from 'react';
-import './PostContainer.css';
-import CommunityPost1 from '../Assets/communityPost_1.jpg';
-import CommunityPost2 from '../Assets/communityPost_2.jpg';
-import CommunityPost3 from '../Assets/communityPost_3.jpg';
+import React, { useState } from "react";
+import "./PostContainer.css";
+import useGetEvents from "../../hooks/useGetEvents";
+import { useUser } from "../../context/UserContext";
+import Popup from "../Popup/Popup";
+import useCreateEvent from "../../hooks/useCreateEvent";
 
-const Post = ({ image, id, onLike, onDislike, likeCount, dislikeCount }) => {
+// Function to convert image URL to base64
+const convertImageToBase64 = async (imageUrl) => {
+  const response = await fetch(imageUrl);
+  const blob = await response.blob();
+  const reader = new FileReader();
+
+  return new Promise((resolve, reject) => {
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob); // This converts the blob into base64
+  });
+};
+
+const Post = ({ event }) => {
+  // Handle like click
+  const handleLike = () => {};
+
+  // Handle dislike click
+  const handleDislike = () => {};
+
   return (
     <div className="post">
-      <img src={image} alt={`Post ${id}`} className="post-image" />
+      <img src={event.image} alt={`Post ${event.id}`} className="post-image" />
       <div className="post-actions">
-        <button className="like-button" onClick={() => onLike(id)}>👍 {likeCount}</button>
-        <button className="dislike-button" onClick={() => onDislike(id)}>👎 {dislikeCount}</button>
+        <button className="like-button" onClick={() => handleLike()}>
+          👍 {event.likes}
+        </button>
+        <button className="dislike-button" onClick={() => handleDislike()}>
+          👎 {event.dislikes}
+        </button>
       </div>
     </div>
   );
 };
 
 const PostContainer = () => {
-  const [likes, setLikes] = useState([1, 1, 1]); // Start with one like for each post
-  const [dislikes, setDislikes] = useState([0, 0, 0]); // Start with zero dislikes for each post
+  const { authUser } = useUser();
+  const { events, setEvents } = useGetEvents();
   const [isPaused, setIsPaused] = useState(false);
+  const [addButton, setAddButton] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    name: "",
+    community: "",
+    startDate: "",
+    endDate: "",
+    image: "",
+  });
+  const { createEvent } = useCreateEvent();
 
-  // Image URLs for the posts (you can replace these with your own images)
-  const postImages = [
-    CommunityPost1,
-    CommunityPost2,
-    CommunityPost3,
-  ];
-
-  // Handle like click
-  const handleLike = (id) => {
-    const updatedLikes = [...likes];
-    updatedLikes[id] += 1;
-    setLikes(updatedLikes);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewEvent({ ...newEvent, [name]: value });
   };
 
-  // Handle dislike click
-  const handleDislike = (id) => {
-    const updatedDislikes = [...dislikes];
-    updatedDislikes[id] += 1;
-    setDislikes(updatedDislikes);
+  const toggleAdd = () => {
+    setAddButton(!addButton);
   };
 
-  // Handle hover events
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
 
+  const HandleAddEvent = async (e) => {
+    e.preventDefault();
+
+    // Convert image URL to base64
+    let base64Image = newEvent.image;
+    if (newEvent.image) {
+      base64Image = await convertImageToBase64(newEvent.image); // Convert URL to base64
+    }
+    newEvent.image = base64Image;
+
+    const createdEvent = await createEvent(newEvent);
+    if (createdEvent) {
+      setEvents([...events, createEvent]);
+      setAddButton(false); // Close the popup after the event is created
+    }
+  };
+
+  if (!events) {
+    return <div>Loading events...</div>;
+  }
+
   return (
-    <div
-      className="post-container"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div className={`post-wrapper ${isPaused ? 'paused' : ''}`}>
-        {postImages.map((image, index) => (
-          <Post
-            key={index}
-            id={index}
-            image={image}
-            onLike={handleLike}
-            onDislike={handleDislike}
-            likeCount={likes[index]}
-            dislikeCount={dislikes[index]}
-          />
-        ))}
+    <>
+      <div
+        className="post-container"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className={`post-wrapper ${isPaused ? "paused" : ""}`}>
+          {events.map((event) => (
+            <Post key={event.id} event={event} />
+          ))}
+        </div>
+        {authUser.userType === "Organizer" && (
+          <div>
+            <button onClick={toggleAdd}>Add event</button>
+          </div>
+        )}
       </div>
-    </div>
+      <Popup trigger={addButton} setTrigger={toggleAdd} className="popup">
+        <form onSubmit={HandleAddEvent} className="create-event-form">
+          <h2>Create New Event</h2>
+          <label htmlFor="name">Event Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={newEvent.name}
+            onChange={handleChange}
+            required
+          />
+          <label htmlFor="community">Community:</label>
+          <input
+            type="text"
+            id="community"
+            name="community"
+            value={newEvent.community}
+            onChange={handleChange}
+            required
+          />
+          <label htmlFor="startDate">Start Date:</label>
+          <input
+            type="date"
+            id="startDate"
+            name="startDate"
+            value={newEvent.startDate}
+            onChange={handleChange}
+            required
+          />
+          <label htmlFor="endDate">End Date:</label>
+          <input
+            type="date"
+            id="endDate"
+            name="endDate"
+            value={newEvent.endDate}
+            onChange={handleChange}
+            required
+          />
+          <label htmlFor="image">Event Image URL:</label>
+          <input
+            type="url"
+            id="image"
+            name="image"
+            value={newEvent.image}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit">Create Event</button>
+        </form>
+      </Popup>
+    </>
   );
 };
 

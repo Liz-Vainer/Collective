@@ -32,7 +32,6 @@ import Members from "../Members/Members";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
 
-
 const Home = () => {
   const classes = useStyles(); // Use custom styles
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
@@ -457,8 +456,6 @@ const closePopup = () => setButtonPopup(false);
 
   //===================== Component UI =====================
   return (
-
-    
     <div className="mainbody">
       {/* Upper Tool Section */}
       <div className="upper-tool">
@@ -502,7 +499,6 @@ const closePopup = () => setButtonPopup(false);
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
-        
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
           <GoogleMap
@@ -714,7 +710,7 @@ const closePopup = () => setButtonPopup(false);
             </button>
           </div>
         </Popup>
-        
+
         {/* Chat Popup */}
         {authUser.userType === "User" && (
           <Popup

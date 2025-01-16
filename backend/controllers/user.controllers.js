@@ -2,7 +2,8 @@ import bcrypt from "bcrypt";
 import User from "../models/user.js"; // user model
 import Organizer from "../models/orginaizer.js"; // Organizer model
 import Official from "../models/official.js"; // Official model
-import Community from "../models/community.js"; // Adjust the import path as needed
+import Community from "../models/community.js"; // Community model
+import Event from "../models/events.js"; // Event model
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 
@@ -398,7 +399,6 @@ export const joinCommunity = async (req, res) => {
   const { communityId, userId } = req.body;
   try {
     const community = await Community.findById(communityId);
-    console.log("fROM BBACK ENMD : ", community);
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
@@ -893,5 +893,104 @@ export const removeFriend = async (req, res) => {
   } catch (err) {
     console.error("Error in removeFriend: ", err.message);
     res.status(500).json({ err: "Internal server error" });
+  }
+};
+
+//leave Event
+export const leaveEvent = async (req, res) => {
+  const { EventId, user } = req.body;
+  try {
+    const event = await Event.findById(EventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    const userIndex = event.participants.indexOf(user);
+    event.participants.splice(userIndex, 1);
+    await event.save();
+    return res.status(200).json({
+      message: "User successfully left the Event",
+      participants: event.participants,
+    });
+  } catch (err) {
+    console.error("Error in leaveEvent ", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+//join Event
+export const joinEvent = async (req, res) => {
+  const { EventId, user } = req.body;
+  try {
+    const event = await Event.findById(EventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    event.participants.push(user);
+    await event.save();
+    return res.status(200).json({
+      message: "User successfully added to the Event",
+      participants: event.participants,
+    });
+  } catch (err) {
+    console.error("Error in joinEvent", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+//check if user is already joined
+export const checkJoinedEvent = async (req, res) => {
+  const { eventId, user } = req.body;
+  try {
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (event.participants.includes(user)) {
+      return res.status(200).json({
+        message: "User is already a member of the community",
+        member: true,
+      });
+    } else {
+      return res.status(200).json({
+        message: "User is not a member of the community",
+        member: false,
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+};
+
+export const likeEvent = async (req, res) => {
+  const { eventId } = req.body;
+  try {
+    const event = await Event.findOne({ eventId });
+    event.likes = event.likes + 1;
+    await event.save();
+
+    res.status(200).json({ message: "Event liked succesfully" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "An error occurred in likeEvent",
+      error: error.message,
+    });
+  }
+};
+
+export const dislikeEvent = async (req, res) => {
+  const { eventId } = req.body;
+  try {
+    const event = await Event.findOne({ eventId });
+    event.dislikes = event.dislikes + 1;
+    await event.save();
+
+    res.status(200).json({ message: "Event disliked succesfully" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "An error occurred in dislikeEvent",
+      error: error.message,
+    });
   }
 };

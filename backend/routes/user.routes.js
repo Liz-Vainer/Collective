@@ -21,6 +21,10 @@ import {
   removeFriend,
   showRequests,
   removeUserFromCommunity,
+  joinEvent,
+  leaveEvent,
+  likeEvent,
+  dislikeEvent,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -28,6 +32,11 @@ import {
   rem_community,
 } from "../controllers/communities.controllers.js";
 import protectRoute from "../middleware/protectRoute.js";
+import {
+  createEvent,
+  deleteEvent,
+  fetchEvents,
+} from "../controllers/events.controlles.js";
 
 // Create new user (SignUp)
 router.post("/signup", signup);
@@ -97,5 +106,26 @@ router.post("/friends/remove-friend", protectRoute, removeFriend);
 
 //get users requests
 router.get("/friends/requests", protectRoute, showRequests);
+
+//get events
+router.get("/events", protectRoute, fetchEvents);
+
+//join event
+router.post("/events/join", protectRoute, joinEvent);
+
+//leave event
+router.post("/events/leave", protectRoute, leaveEvent);
+
+//create event
+router.post("/events/create", protectRoute, createEvent);
+
+//delete event
+router.post("/events/leave", protectRoute, deleteEvent);
+
+//like event
+router.post("/events/like", protectRoute, likeEvent);
+
+//dislike event
+router.post("/events/dislike", protectRoute, dislikeEvent);
 
 export default router;

@@ -32,7 +32,6 @@ import Members from "../Members/Members";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
 
-
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -450,8 +449,6 @@ const Home = () => {
 
   //===================== Component UI =====================
   return (
-
-    
     <div className="mainbody">
       {/* Upper Tool Section */}
       <div className="upper-tool">
@@ -497,7 +494,6 @@ const Home = () => {
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
-        
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
           <GoogleMap
@@ -709,7 +705,7 @@ const Home = () => {
             </button>
           </div>
         </Popup>
-        
+
         {/* Chat Popup */}
         {authUser.userType === "User" && (
           <Popup

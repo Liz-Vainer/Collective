@@ -4,7 +4,6 @@ import useGetMembers from "../../hooks/useGetMembers";
 import useMembers from "../../zustand/useMembers";
 
 const Members = ({ selectedCommunity }) => {
-  console.log(selectedCommunity._id);
   useGetMembers(selectedCommunity._id);
   const { members } = useMembers(); // Directly subscribe to global state
   if (members)

@@ -19,8 +19,8 @@
 }
 
 .popup.bottom-right {
-  bottom: 20px; /* Position from the bottom */
-  right: 20px; /* Position from the right */
+  bottom: 20px; 
+  right: 20px; 
   width: 600px;
   transform: none;
 }
@@ -34,8 +34,6 @@
 }
 
 
-
-/* Button container styles when collapsed */
 .button-container {
   display: flex;
   justify-content: flex-end;
@@ -58,29 +56,13 @@
   visibility: visible;
 }
 
-/* Close button */
-.btn-close {
-  background-color: transparent;
-  color: #333;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.btn-close:hover {
-  color: #555;
-  background-color: #4CAF50;
-  transform: scale(0.6);
-}
-
-/* Collapse button */
 .btn-collapse {
   background-color: transparent;
   color: #333;
   border: none;
   font-size: 20px;
   cursor: pointer;
-  margin-left: 10px; /* Add space between the buttons */
+  margin-left: 10px; 
 }
 
 /* Inner popup styles */
@@ -92,8 +74,8 @@
   position: fixed;
   user-select: none; /* Disable selection in the content area */
   max-width: 700px;
-  width: 100%; /* Ensure the width is contained within the popup */
-  overflow: hidden; /* Prevent content from overflowing */
+  width: 100%;
+  overflow: hidden; 
   height: auto;
   transition: max-height 0.3s ease-in-out;
   margin-bottom: 10px;
@@ -107,41 +89,5 @@
   color: #555;
   background-color: #4CAF50;
   transform: scale(0.6);
-}
-
-/* Button styles for any other elements */
-.button {
-  margin: auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-  position: relative;
-}
-
-.button:after {
-  content: "";
-  background: #f1f1f1;
-  display: block;
-  position: absolute;
-  padding-top: 300%;
-  padding-left: 350%;
-  margin-left: -20px !important;
-  margin-top: -120%;
-  opacity: 0;
-  transition: all 0.8s;
-}
-
-.button:active:after {
-  padding: 0;
-  margin: 0;
-  opacity: 1;
-  transition: 0s;
 }
 

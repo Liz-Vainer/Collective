@@ -36,8 +36,8 @@ function App() {
             element={authUser ? <Navigate to="/home" /> : <Login />}
           />
           <Route
-            path="/moreinfo"
-            element={authUser ? <Navigate to="/moreinfo" /> : <CommunityInfo />}
+            path="/CommunityInfo"
+            element={authUser ? <CommunityInfo /> : <Navigate to="/" />}
           />
           <Route
             path="/signup"
@@ -52,11 +52,10 @@ function App() {
             path="/settings"
             element={authUser ? <SettingsPage /> : <Navigate to="/" />}
           />
-         
         </Routes>
       </Router>
     </div>
   );
-}
+};
 
 export default App;

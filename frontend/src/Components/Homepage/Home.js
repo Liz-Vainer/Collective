@@ -5,7 +5,7 @@ import PostContainer from "./PostContainer";
 import {
   FaDoorOpen,
   FaCog,
-  FaInfoCircle,
+
   FaSearch,
   FaBars,
   FaCamera,
@@ -17,12 +17,12 @@ import {
   useJsApiLoader,
   InfoWindow,
 } from "@react-google-maps/api";
-
+import useStyles from './DrawerStyle';
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
 // Styles and assets
-import "../drawerstyle.css";
+
 import "./Home.css";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
 
@@ -34,6 +34,7 @@ import MessageContainer from "../Messages/MessageContainer";
 
 
 const Home = () => {
+  const classes = useStyles(); // Use custom styles
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
@@ -46,8 +47,11 @@ const Home = () => {
     navigate("/");
   };
   const handleSettings = () => navigate("/settings");
-  const handleInfo = () => alert("Info Button Clicked");
-  const handleMoreInfo = () => navigate("/moreinfo");
+
+  const handleMoreInfo = () => navigate("/CommunityInfo");
+
+
+
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -122,6 +126,9 @@ const Home = () => {
   const [showMembers, setShowMembers] = useState(false);
   const [users, setUsers] = useState([]);
   const chartRef = useRef(null); // Ref to access the pie chart instance
+
+  const openPopup = () => setButtonPopup(true);
+const closePopup = () => setButtonPopup(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -461,9 +468,7 @@ const Home = () => {
         <button className="settings-button" onClick={handleSettings}>
           <FaCog size={30} color="white" />
         </button>
-        <button className="info-button" onClick={handleInfo}>
-          <FaInfoCircle size={30} color="white" />
-        </button>
+      
 
         <div className="search-bar">
           <input
@@ -766,37 +771,51 @@ const Home = () => {
 
         {/* Drawer Component */}
         <Drawer
-          anchor="right"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-        >
-          <div
-            className="drawer-content"
-            onMouseLeave={() => setDrawerOpen(false)}
-          >
-            {/* Profile Section */}
-            <div className="profile-section">
-              <img src={newPfp} alt="Profile" className="profile-pic" />
-              <FaCamera size={50} color="gray" className="change-pfp-icon" />
-              <button onClick={triggerFileInput} className="change-profile-btn">
-                Change Profile
-              </button>
-              {/* Hidden File Input */}
-              <input
-                id="fileInput"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                style={{ display: "none" }}
-              />
-            </div>
+  anchor="right"
+  open={drawerOpen}
+  onClose={() => setDrawerOpen(false)}
+  classes={{ paper: classes.drawerPaper }}
+>
+  <div
+    className={classes.drawerContent}
+    onMouseLeave={() => setDrawerOpen(false)}
+  >
+    {/* User Greeting */}
+    <div className={classes.drawerText}>Hello!</div>
 
-            {/* Other Drawer Buttons */}
-            <button onClick={handleBackToLogin}>Back to Login</button>
-            <button onClick={handleSettings}>Settings</button>
-            <button onClick={handleInfo}>Info</button>
-          </div>
-        </Drawer>
+    {/* Profile Section */}
+    <div className={classes.profileSection}>
+      <img src={newPfp} alt="Profile" className={classes.profilePic} />
+      <FaCamera
+        size={30}
+        color="#067029"
+        className={classes.changePfpIcon}
+        onClick={triggerFileInput} // Trigger the file input on icon click
+      />
+      <button onClick={triggerFileInput} className={classes.changeProfileBtn}>
+        Change Profile
+      </button>
+      {/* Hidden File Input */}
+      <input
+        id="fileInput"
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange} // Handle the file input change
+        style={{ display: "none" }}
+      />
+    </div>
+
+    {/* Quote Section */}
+    <div className={classes.quoteSection}>
+      "Nature does not hurry, yet everything is accomplished." – Lao Tzu
+    </div>
+
+    {/* Settings Button */}
+    <button onClick={handleSettings} className={classes.changeProfileBtn}>
+      Settings
+    </button>
+  </div>
+</Drawer>
 
         <button
           className={`chat-button ${isChatOpen ? "hidden" : ""}`}

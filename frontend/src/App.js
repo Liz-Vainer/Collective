@@ -13,6 +13,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import CommunityInfo from "./Components/CommunityInfo/CommunityInfo";
 
 function App() {
   const { authUser } = useUser();
@@ -35,6 +36,10 @@ function App() {
             element={authUser ? <Navigate to="/home" /> : <Login />}
           />
           <Route
+            path="/moreinfo"
+            element={authUser ? <Navigate to="/moreinfo" /> : <CommunityInfo />}
+          />
+          <Route
             path="/signup"
             element={authUser ? <Navigate to="/home" /> : <Signup />}
           />
@@ -47,6 +52,7 @@ function App() {
             path="/settings"
             element={authUser ? <SettingsPage /> : <Navigate to="/" />}
           />
+         
         </Routes>
       </Router>
     </div>

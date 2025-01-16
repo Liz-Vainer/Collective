@@ -1,16 +1,21 @@
 /* Disable text selection for the entire popup */
 .popup {
-  position: fixed; /* Keeps the popup in the same position relative to the viewport */
-  z-index: 1000; /* Ensure it's above other elements */
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%); /* Adjust for exact centering */
-  height: auto;
-  width:auto;
-  -webkit-user-select: none; 
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background: transparent;
+  padding: 20px;
+
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.popup-container {
+  width: 90%;
+  max-width: 600px;
 }
 
 .popup.bottom-right {
@@ -28,25 +33,7 @@
   align-items: center;
 }
 
-/* Inner popup styles */
-.inner-popup {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative; /* Use relative positioning for inner content */
-  user-select: none; /* Disable selection in the content area */
-  max-width: 700px;
-  width: 100%; /* Ensure the width is contained within the popup */
-  overflow: hidden; /* Prevent content from overflowing */
-  transition: max-height 0.3s ease-in-out;
-  margin-bottom: 10px;
-}
 
-.inner-popup.collapsed {
-  max-height: 90px; /* Shrink the popup's height when collapsed */
-  overflow: hidden;
-}
 
 /* Button container styles when collapsed */
 .button-container {
@@ -96,6 +83,26 @@
   margin-left: 10px; /* Add space between the buttons */
 }
 
+/* Inner popup styles */
+.inner-popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  user-select: none; /* Disable selection in the content area */
+  max-width: 700px;
+  width: 100%; /* Ensure the width is contained within the popup */
+  overflow: hidden; /* Prevent content from overflowing */
+  height: auto;
+  transition: max-height 0.3s ease-in-out;
+  margin-bottom: 10px;
+}
+
+.inner-popup.collapsed {
+  max-height: 90px; /* Shrink the popup's height when collapsed */
+  overflow: hidden;
+}
 .btn-collapse:hover {
   color: #555;
   background-color: #4CAF50;
@@ -138,21 +145,3 @@
   transition: 0s;
 }
 
-/* Chat popup styles */
-.chat-popup {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 300px;
-  max-height: 400px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-.chat-popup .inner-chat-popup {
-  padding: 20px;
-  user-select: none;
-}

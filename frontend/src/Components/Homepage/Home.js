@@ -29,7 +29,9 @@ import user_icon from "../Assets/person_icon.png"; //temporary until we make com
 // Components
 import Popup from "../Popup/Popup";
 import Members from "../Members/Members";
-import ChatPopup from "../Popup/ChatPopup";
+import Sidebar from "../Chat/Sidebar";
+import MessageContainer from "../Messages/MessageContainer";
+
 
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
@@ -707,9 +709,19 @@ const Home = () => {
             </button>
           </div>
         </Popup>
+        
         {/* Chat Popup */}
         {authUser.userType === "User" && (
-            <ChatPopup trigger={isChatOpen} setTrigger={toggleChat} />
+          <Popup
+            trigger={isChatOpen}
+            setTrigger={toggleChat}
+            position="bottom-right"
+          >
+            <div className="chat">
+              <Sidebar />
+              <MessageContainer />
+            </div>
+          </Popup>
         )}
 
         {/* Right Toolbox for Favorites */}

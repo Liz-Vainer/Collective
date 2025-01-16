@@ -1,5 +1,5 @@
 import React from 'react';
-import '../communityTemplate.css';
+import './communityTemplate.css';
 
 export default function CommunityTemplate({ name, mainContent, sideContent }) {
   return (

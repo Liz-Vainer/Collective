@@ -4,6 +4,8 @@ import server from "../index.js";
 import User from "../models/user.js";
 import Organizer from "../models/orginaizer.js";
 import Official from "../models/official.js";
+import bcrypt from "bcrypt";
+
 
 const should = chai.should();
 chai.use(chaiHttp);

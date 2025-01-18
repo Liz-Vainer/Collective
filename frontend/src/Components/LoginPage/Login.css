@@ -22,11 +22,10 @@
 /*==== CONTAINER STYLES ====*/
 .container {
   flex-direction: column;
-  
   margin-top: 100px;
   background: #ffff;
   padding-bottom: 30px;
-  width: 400px;
+  max-width: 600px;
   border-radius: 20px;
  
 }

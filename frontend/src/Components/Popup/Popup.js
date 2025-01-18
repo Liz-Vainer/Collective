@@ -8,20 +8,18 @@ function Popup(props) {
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Adjust the popup position when it is triggered and positioned in the "bottom-right" corner
+  // Adjust the popup position to the center
   useEffect(() => {
-    if (props.trigger && props.position === "bottom-right") {
-      const popupHeight = 600; // Default popup height
-      const popupWidth = 1200; // Default popup width
-      const marginFromBottom = 20;
-      const marginFromRight = 20;
+    if (props.trigger) {
+      const popupHeight = props.height || 400; // Dynamic height based on content
+      const popupWidth = props.width || 600; // Dynamic width based on content
 
       setPopupPosition({
-        top: Math.max(window.innerHeight - popupHeight - marginFromBottom, 0),
-        left: Math.max(window.innerWidth - popupWidth - marginFromRight, 0),
+        top: Math.max(window.innerHeight / 2 - popupHeight / 2, 0), // Center vertically
+        left: Math.max(window.innerWidth / 2 - popupWidth / 2, 0),  // Center horizontally
       });
     }
-  }, [props.trigger, props.position]);
+  }, [props.trigger, props.position, props.height, props.width]);
 
   // Enable drag functionality for the popup
   const handleMouseDown = (e) => {
@@ -44,7 +42,7 @@ function Popup(props) {
     document.addEventListener("mouseup", handleMouseUp);
   };
 
-  // Toggle collapse state of the popup
+  // Toggle collapse state of the popup (header + body)
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
@@ -52,31 +50,34 @@ function Popup(props) {
   // Popup content including draggable, collapsible, and close functionality
   const popupContent = (
     <div
-      className={`popup ${
-        props.position === "bottom-right" ? "bottom-right" : ""
-      }`}
+      className={`popup`}
       style={{
         position: "absolute",
         top: `${popupPosition.top}px`,
         left: `${popupPosition.left}px`,
+        height: isCollapsed ? "90px" : "auto", // Adjust height based on collapse
+        width: "auto", // Dynamic width based on content
+        minWidth: "400px",
+        maxWidth: "900px",
+        borderRadius: "12px", // Rounded corners
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", // Softer shadow
+        transition: "none", // No transition for instant movement
       }}
       onMouseDown={handleMouseDown}
     >
-      <div className={`inner-popup ${isCollapsed ? "collapsed" : ""}`}>
-        {/* Button container for close and collapse functionality */}
-        <div className="buttons-container">
-          {/* Close button */}
-          <button className="btn-close" onClick={() => props.setTrigger(false)}>
-            <AiOutlineClose />
-          </button>
-          {/* Collapse button */}
-          <button className="btn-collapse" onClick={toggleCollapse}>
-            {isCollapsed ? <AiOutlineArrowDown /> : <AiOutlineArrowUp />}
-          </button>
-        </div>
+      {/* Close and collapse buttons on the left */}
+      <div className="popup-header">
+        <button className="btn-close" onClick={() => props.setTrigger(false)}>
+          <AiOutlineClose />
+        </button>
+        <button className="btn-collapse" onClick={toggleCollapse}>
+          {isCollapsed ? <AiOutlineArrowDown /> : <AiOutlineArrowUp />}
+        </button>
+      </div>
 
-        {/* Display content only when the popup is not collapsed */}
-        {!isCollapsed && props.children}
+      {/* Content area */}
+      <div className={`popup-body ${isCollapsed ? "collapsed" : ""}`}>
+        {props.children}
       </div>
     </div>
   );

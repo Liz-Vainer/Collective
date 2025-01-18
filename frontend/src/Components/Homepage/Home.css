@@ -208,6 +208,25 @@ html, body {
   margin-bottom:200px;
 }
 
+.inner-chat-popup {
+  display: flex; 
+  height: 100%; 
+  width: 100%;
+}
+
+
+/* Optional: Customize specific widths for Sidebar and MessageContainer */
+.inner-chat-popup > :first-child {
+  flex: 0.4; /* Sidebar takes 30% of the width */
+  background-color: #f0f0f0; /* Optional: Add a light background color */
+  overflow-x: hidden;
+}
+
+.inner-chat-popup > :last-child {
+  flex: 0.7; 
+  background-color: #fff;
+}
+
 .popup-message{
   display: flex;
   flex-direction: column;

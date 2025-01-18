@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PostContainer from "./PostContainer";
+import ChatPopup from "../Popup/ChatPopup";
 import {
   FaDoorOpen,
   FaCog,
@@ -712,18 +713,14 @@ const closePopup = () => setButtonPopup(false);
         </Popup>
 
         {/* Chat Popup */}
-        {authUser.userType === "User" && (
-          <Popup
-            trigger={isChatOpen}
-            setTrigger={toggleChat}
-            position="bottom-right"
-          >
-            <div className="chat">
-              <Sidebar />
-              <MessageContainer />
-            </div>
-          </Popup>
-        )}
+        {authUser.userType === "User" && isChatOpen && (
+        <ChatPopup trigger={isChatOpen} setTrigger={setIsChatOpen}>
+          <div className="inner-chat-popup">
+            <Sidebar />
+            <MessageContainer />
+          </div>
+        </ChatPopup>
+      )}
 
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (

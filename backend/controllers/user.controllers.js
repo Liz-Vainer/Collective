@@ -618,10 +618,10 @@ export const updateProfilePicture = async (req, res) => {
       case "User":
         Model = User;
         break;
-      case "event-organizer":
+      case "Organizer":
         Model = Organizer;
         break;
-      case "city-official":
+      case "Official":
         Model = Official;
         break;
       default:

@@ -34,12 +34,10 @@ export const deleteEvent = async (req, res) => {
       return res.status(404).json({ message: `Event '${name}' not found.` });
     }
     const events = await Event.find();
-    res
-      .status(200)
-      .json({
-        message: `Event '${name}' deleted successfully!`,
-        events: events,
-      });
+    res.status(200).json({
+      message: `Event '${name}' deleted successfully!`,
+      events: events,
+    });
   } catch (err) {
     console.error("Error in backend deleteEvent:", err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -55,3 +53,14 @@ export const fetchEvents = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch communities." });
   }
 };
+
+// export const fetchParticipants = async (req, res) => {
+//   const { eventId } = req.body;
+//   try {
+//     const event = await Event.findById({ eventId });
+//     res.json({ participants: event.participants });
+//   } catch (err) {
+//     console.error("Error fetching communities:", err);
+//     res.status(500).json({ message: "Failed to fetch communities." });
+//   }
+// };

@@ -57,19 +57,36 @@
   border-radius: 5px;
 }
 
-.post p {
-  font-size: 1.5rem; /* Adjust font size */
-  font-weight: bold; /* Make the name bold */
-  color: #333; /* Darker color for contrast */
-  text-align: center; /* Center the text */
-  margin: 0; /* Remove default margin */
-  padding: 10px 20px; /* Add padding for better spacing */
-  letter-spacing: 0.5px; /* Add slight letter-spacing */
+/* Name styling */
+.post .name {
+  font-size: 1.8rem; /* Larger font for the name */
+  font-weight: bold; /* Bold text for emphasis */
+  color: #2c3e50; /* Dark color for better readability */
+  text-align: center; /* Center-align the text */
+  margin: 10px 0; /* Add spacing around the name */
+  padding: 8px 16px; /* Add padding for better visual spacing */
+  background-color: #ecf0f1; /* Light grey background for contrast */
+  border-radius: 8px; /* Rounded corners for a soft appearance */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   text-transform: capitalize; /* Capitalize the first letter of each word */
-  background-color: #A8D5BA; /* Greenish background color */
-  border-radius: 15px; /* Rounded corners for the background */
-  border: 2px solid #6C9D6F; /* A slightly darker border for contrast */
+  letter-spacing: 0.5px; /* Slight spacing between letters */
 }
+
+/* Date styling */
+.post .date {
+  font-size: 1.2rem; /* Slightly smaller font than the name */
+  font-weight: 500; /* Medium weight for emphasis */
+  color: #34495e; /* Slightly darker color for distinction */
+  text-align: center; /* Center-align the date */
+  margin: 5px 0; /* Spacing above and below */
+  padding: 6px 12px; /* Padding for better spacing */
+  background-color: #e8f6f3; /* Soft teal background for a calming effect */
+  border-radius: 6px; /* Rounded corners for consistency */
+  border: 1px solid #bdc3c7; /* Subtle border for structure */
+  text-transform: none; /* Keep the date in its original case */
+  letter-spacing: 0.3px; /* Slight spacing for readability */
+}
+
 
 .create-event-form {
   width: 100%;

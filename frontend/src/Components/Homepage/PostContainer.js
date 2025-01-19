@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./PostContainer.css";
 import useGetEvents from "../../hooks/useGetEvents";
 import { useUser } from "../../context/UserContext";
@@ -6,6 +6,8 @@ import Popup from "../Popup/Popup";
 import useCreateEvent from "../../hooks/useCreateEvent";
 import useRemoveEvent from "../../hooks/useRemoveEvent";
 import useEvents from "../../zustand/useEvents";
+import useIsParticipant from "../../hooks/useIsParticipant";
+import useJoinEvent from "../../hooks/useJoinEvent";
 
 // Function to convert image URL to base64
 const convertImageToBase64 = async (imageUrl) => {
@@ -23,9 +25,35 @@ const convertImageToBase64 = async (imageUrl) => {
 const Post = ({ event }) => {
   const { authUser } = useUser();
   const { removeEvent, loading } = useRemoveEvent();
+  const [isParticipant, setIsParticipant] = useState(null);
+  const { joinEvent } = useJoinEvent();
+  const { isParticipant: checkParticipant } = useIsParticipant(); // Destructure isParticipant from useIsParticipant
+
+  useEffect(() => {
+    // Check if the user is a participant when the component mounts
+    const fetchParticipantStatus = async () => {
+      const status = await checkParticipant(event._id, authUser.id);
+      setIsParticipant(status);
+    };
+
+    fetchParticipantStatus();
+  }, [authUser.id, event._id, checkParticipant]);
 
   const handleRemove = async () => {
     await removeEvent(event.name);
+  };
+
+  const handleParticipants = async () => {};
+
+  const handleJoinOrLeave = async () => {
+    if (!isParticipant) {
+      // If not a participant, join the event
+      const success = await joinEvent(event._id, authUser.id);
+      if (success) {
+        setIsParticipant(true);
+      }
+    } else {
+    }
   };
   // Handle like click
   const handleLike = () => {};
@@ -35,7 +63,8 @@ const Post = ({ event }) => {
 
   return (
     <div className="post">
-      <p>{event.name}</p>
+      <p className="name">{event.name}</p>
+
       <img src={event.image} alt={`Post ${event.id}`} className="post-image" />
       <div className="post-actions">
         <button className="like-button" onClick={() => handleLike()}>
@@ -47,15 +76,30 @@ const Post = ({ event }) => {
         {authUser.userType === "Organizer" && (
           <div>
             <button
-              onClick={() => handleRemove(event.name)}
+              onClick={() => handleRemove()}
               disabled={loading} // Disable button while loading
             >
               {loading ? "Removing..." : "Remove"}{" "}
               {/* Display different text during loading */}
             </button>
+            <button onClick={() => handleParticipants()}>participants</button>
+          </div>
+        )}
+        {authUser.userType === "User" && (
+          <div>
+            <button
+              onClick={() => handleJoinOrLeave()}
+              disabled={loading} // Disable button while loading
+            >
+              {isParticipant ? "Leave" : "Join"}{" "}
+              {/* Display different text during loading */}
+            </button>
           </div>
         )}
       </div>
+      <p className="date">
+        {event.start} - {event.end}
+      </p>
     </div>
   );
 };

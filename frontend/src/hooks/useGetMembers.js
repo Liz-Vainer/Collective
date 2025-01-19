@@ -36,7 +36,7 @@ const useGetMembers = (selectedCommunityId) => {
 
     // Optional: Adding a cleanup function to avoid memory leaks
     return () => setLoading(false);
-  }, [setMembers]);
+  }, [setMembers, selectedCommunityId, members]);
 
   return { members, loading };
 };

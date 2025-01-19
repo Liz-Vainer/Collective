@@ -34,7 +34,6 @@ import Popup from "../Popup/Popup";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
 import Members from "../Members/Members";
-import PieChart from "../Charts/Pie";
 
 const Home = () => {
   const { authUser, setAuthUser } = useUser(); // Destructure user from context

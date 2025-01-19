@@ -1,12 +1,51 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // Import useLocation hook
 
 import "./CommunityInfo.css";
 import CommunityTemplate from "../ComTemplate/communityTemplate"; // Corrected import path
 import communityPost1 from "../Assets/communityPost_1.jpg"; // Import the image
+import useGetMembers from "../../hooks/useGetMembers";
+import MultipleCharts from "../Charts/Pie";
 
 const CommunityInfo = () => {
   const [communityData, setCommunityData] = useState([]);
   const [currentSection, setCurrentSection] = useState(null); // State to track which section is clicked
+  const [users, setUsers] = useState([]); // State to store the users
+  const location = useLocation(); // Get the location object
+
+  // Parse the query parameters from the URL
+  const queryParams = new URLSearchParams(location.search);
+  const selectedCommunityId = queryParams.get("id"); // Get the community ID from the URL
+
+  const lookUsers = async (selectedCommunityId) => {
+    try {
+      const response = await fetch("/find-users-by-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunityId,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        if (data.users && data.users.length > 0) {
+          return data.users;
+        } else {
+          return [];
+        }
+      } else {
+        console.error("Error:", data.message);
+        return [];
+      }
+    } catch (err) {
+      console.error("An error occurred while showing members", err);
+      return [];
+    }
+  };
+  lookUsers(selectedCommunityId).then((fetchedUsers) => {
+    setUsers(fetchedUsers); // Store the users in state
+  });
 
   useEffect(() => {
     // Fake community data without an API
@@ -19,6 +58,7 @@ const CommunityInfo = () => {
         sideContent: [
           { name: "Upcoming Events", type: "event" },
           { name: "Trending Topics", type: "topics" },
+          { name: "Charts", type: "charts" }, // New Charts section
           { name: "Resources", type: "resources" },
         ],
       },
@@ -57,6 +97,14 @@ const CommunityInfo = () => {
             </ul>
           </div>
         );
+      case "charts":
+        return (
+          <div>
+            <h2>Community Charts</h2>
+            <MultipleCharts data={users} />
+            {/* You can replace the paragraph with actual chart components, e.g., using libraries like Chart.js or Recharts */}
+          </div>
+        );
       case "resources":
         return <div>Resources will be available soon.</div>;
       default:
@@ -66,7 +114,6 @@ const CommunityInfo = () => {
 
   return (
     <div className="community-info">
-    
       {communityData.length === 0 ? (
         <div>Loading...</div>
       ) : (
@@ -74,7 +121,11 @@ const CommunityInfo = () => {
           <CommunityTemplate
             key={community.id}
             name={community.name}
-            mainContent={currentSection ? renderSectionContent(currentSection) : community.mainContent}
+            mainContent={
+              currentSection
+                ? renderSectionContent(currentSection)
+                : community.mainContent
+            }
             sideContent={community.sideContent.map((item) => ({
               ...item,
               onClick: () => setCurrentSection(item.type), // When clicked, set current section

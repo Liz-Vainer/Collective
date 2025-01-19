@@ -26,11 +26,7 @@ const useGetConversation = () => {
     };
 
     // Fetch friends only when they are empty (initial load) or need an update
-    if (!friends.length) {
-      getConversations();
-    } else {
-      setLoading(false); // If friends already exist, skip the fetch
-    }
+    getConversations();
 
     // Optional: Adding a cleanup function to avoid memory leaks
     return () => setLoading(false);

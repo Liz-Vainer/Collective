@@ -889,7 +889,9 @@ export const removeFriend = async (req, res) => {
       io.to(receiverSocketId).emit("removeFriend", user);
     }
 
-    res.status(200).json({ message: "friend removed succesfully!" });
+    res
+      .status(200)
+      .json({ message: "friend removed succesfully!", friends: user.friends });
   } catch (err) {
     console.error("Error in removeFriend: ", err.message);
     res.status(500).json({ err: "Internal server error" });

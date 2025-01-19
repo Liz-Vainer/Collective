@@ -33,7 +33,13 @@ export const deleteEvent = async (req, res) => {
     if (result === 0) {
       return res.status(404).json({ message: `Event '${name}' not found.` });
     }
-    res.status(200).json({ message: `Event '${name}' deleted successfully!` });
+    const events = await Event.find();
+    res
+      .status(200)
+      .json({
+        message: `Event '${name}' deleted successfully!`,
+        events: events,
+      });
   } catch (err) {
     console.error("Error in backend deleteEvent:", err);
     res.status(500).json({ message: "Internal Server Error" });

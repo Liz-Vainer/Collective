@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import useEvents from "../zustand/useEvents";
 const useGetEvents = () => {
-  const [events, setEvents] = useState([]);
+  const { setEvents } = useEvents();
 
   useEffect(() => {
     const getEvents = async () => {
@@ -18,8 +19,7 @@ const useGetEvents = () => {
       }
     };
     getEvents();
-  }, []);
-  return { events, setEvents };
+  }, [setEvents]);
 };
 
 export default useGetEvents;

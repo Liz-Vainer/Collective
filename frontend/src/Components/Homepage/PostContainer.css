@@ -57,6 +57,94 @@
   border-radius: 5px;
 }
 
+.post p {
+  font-size: 1.5rem; /* Adjust font size */
+  font-weight: bold; /* Make the name bold */
+  color: #333; /* Darker color for contrast */
+  text-align: center; /* Center the text */
+  margin: 0; /* Remove default margin */
+  padding: 10px 20px; /* Add padding for better spacing */
+  letter-spacing: 0.5px; /* Add slight letter-spacing */
+  text-transform: capitalize; /* Capitalize the first letter of each word */
+  background-color: #A8D5BA; /* Greenish background color */
+  border-radius: 15px; /* Rounded corners for the background */
+  border: 2px solid #6C9D6F; /* A slightly darker border for contrast */
+}
+
+.create-event-form {
+  width: 100%;
+  max-width: 500px;
+  margin: 10px auto; /* Center the form */
+  padding: 10px;
+  background-color: #f4f7fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-right: 120px;
+}
+
+.create-event-form h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.create-event-form label {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  color: #444;
+}
+
+.create-event-form input {
+  width: 90%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+}
+
+.create-event-form input[type="date"] {
+  background-color: #f0f0f0;
+}
+
+.create-event-form input:focus {
+  border-color: #6c9d6f; /* Greenish border on focus */
+  outline: none;
+  box-shadow: 0 0 5px rgba(108, 157, 111, 0.3); /* Subtle focus shadow */
+}
+
+.create-event-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #6c9d6f; /* Greenish button */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-event-form button:hover {
+  background-color: #5b8c58; /* Slightly darker green when hovered */
+}
+
+.create-event-form button:active {
+  background-color: #4c7b4a; /* Darker green on button press */
+}
+
+.create-event-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+
+
 @keyframes scrollPosts {
   0% {
     transform: translateY(0); /* Start from the top */

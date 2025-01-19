@@ -120,7 +120,7 @@ router.post("/events/leave", protectRoute, leaveEvent);
 router.post("/events/create", protectRoute, createEvent);
 
 //delete event
-router.post("/events/leave", protectRoute, deleteEvent);
+router.post("/events/delete", protectRoute, deleteEvent);
 
 //like event
 router.post("/events/like", protectRoute, likeEvent);

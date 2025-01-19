@@ -4,6 +4,8 @@ import useGetEvents from "../../hooks/useGetEvents";
 import { useUser } from "../../context/UserContext";
 import Popup from "../Popup/Popup";
 import useCreateEvent from "../../hooks/useCreateEvent";
+import useRemoveEvent from "../../hooks/useRemoveEvent";
+import useEvents from "../../zustand/useEvents";
 
 // Function to convert image URL to base64
 const convertImageToBase64 = async (imageUrl) => {
@@ -19,6 +21,12 @@ const convertImageToBase64 = async (imageUrl) => {
 };
 
 const Post = ({ event }) => {
+  const { authUser } = useUser();
+  const { removeEvent, loading } = useRemoveEvent();
+
+  const handleRemove = async () => {
+    await removeEvent(event.name);
+  };
   // Handle like click
   const handleLike = () => {};
 
@@ -27,6 +35,7 @@ const Post = ({ event }) => {
 
   return (
     <div className="post">
+      <p>{event.name}</p>
       <img src={event.image} alt={`Post ${event.id}`} className="post-image" />
       <div className="post-actions">
         <button className="like-button" onClick={() => handleLike()}>
@@ -35,6 +44,17 @@ const Post = ({ event }) => {
         <button className="dislike-button" onClick={() => handleDislike()}>
           👎 {event.dislikes}
         </button>
+        {authUser.userType === "Organizer" && (
+          <div>
+            <button
+              onClick={() => handleRemove(event.name)}
+              disabled={loading} // Disable button while loading
+            >
+              {loading ? "Removing..." : "Remove"}{" "}
+              {/* Display different text during loading */}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -42,7 +62,8 @@ const Post = ({ event }) => {
 
 const PostContainer = () => {
   const { authUser } = useUser();
-  const { events, setEvents } = useGetEvents();
+  const { events, setEvents } = useEvents();
+  useGetEvents();
   const [isPaused, setIsPaused] = useState(false);
   const [addButton, setAddButton] = useState(false);
   const [newEvent, setNewEvent] = useState({
@@ -52,7 +73,7 @@ const PostContainer = () => {
     endDate: "",
     image: "",
   });
-  const { createEvent } = useCreateEvent();
+  const { createEvent, loading } = useCreateEvent();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,7 +99,7 @@ const PostContainer = () => {
 
     const createdEvent = await createEvent(newEvent);
     if (createdEvent) {
-      setEvents([...events, createEvent]);
+      setEvents([...events, createdEvent]);
       setAddButton(false); // Close the popup after the event is created
     }
   };
@@ -87,8 +108,19 @@ const PostContainer = () => {
     return <div>Loading events...</div>;
   }
 
+  // Ensure events is always an array
+  if (!Array.isArray(events)) {
+    console.log(events);
+    return <div>Loading events...</div>;
+  }
+
   return (
     <>
+      {authUser.userType === "Organizer" && (
+        <div>
+          <button onClick={toggleAdd}>Add event</button>
+        </div>
+      )}
       <div
         className="post-container"
         onMouseEnter={handleMouseEnter}
@@ -96,14 +128,9 @@ const PostContainer = () => {
       >
         <div className={`post-wrapper ${isPaused ? "paused" : ""}`}>
           {events.map((event) => (
-            <Post key={event.id} event={event} />
+            <Post key={event._id} event={event} />
           ))}
         </div>
-        {authUser.userType === "Organizer" && (
-          <div>
-            <button onClick={toggleAdd}>Add event</button>
-          </div>
-        )}
       </div>
       <Popup trigger={addButton} setTrigger={toggleAdd} className="popup">
         <form onSubmit={HandleAddEvent} className="create-event-form">
@@ -153,7 +180,9 @@ const PostContainer = () => {
             onChange={handleChange}
             required
           />
-          <button type="submit">Create Event</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create Event"}
+          </button>
         </form>
       </Popup>
     </>

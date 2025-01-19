@@ -1,37 +1,64 @@
-/* Chat popup styles */
 .chat-popup {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 300px;
-    max-height: 400px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-    z-index: 1000;
-  }
-  
-  .chat-popup .inner-chat-popup {
-    padding: 20px;
+    position: absolute; /* Use absolute for dynamic alignment */
+    background-color: #ffffff; /* Clean white background */
+    border-radius: 12px; /* Smooth rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Softer shadow for depth */
+    overflow: hidden; /* Prevents content overflow */
+    z-index: 1000; /* Ensures it stays on top */
+    display: flex;
+    flex-direction: column;
     user-select: none;
+    transition: height 0.3s ease-in-out, transform 0.3s ease-in-out;
+    width: 95%; /* Adjusted width for better responsiveness */
   }
-  /* Inner popup styles */
-.inner-popup {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative; /* Use relative positioning for inner content */
-    user-select: none; /* Disable selection in the content area */
-    max-width: 700px;
-    width: 100%; /* Ensure the width is contained within the popup */
-    overflow: hidden; /* Prevent content from overflowing */
-    transition: max-height 0.3s ease-in-out;
-    margin-bottom: 10px;
+  .popupChat-header,
+.popupChat-body {
+  user-select: none; /* Ensures the header and body cannot be selected */
+}
+  /* Popup Header */
+  .popupChat-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    width: 95%;
+    font-weight: bold;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    justify-content: flex-start; /* Align buttons to the left */
   }
   
-  .inner-popup.collapsed {
-    max-height: 90px; /* Shrink the popup's height when collapsed */
-    overflow: hidden;
+  .popupChat-header button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: white;
+    margin-right: 10px; /* Add space between buttons */
   }
+  
+  .popupChat-header button:hover {
+    color: #d4f7c5; /* Light green on hover */
+  }
+  
+  
+  /* Popup Body */
+  .popupChat-body {
+    padding: 20px; /* Comfortable padding */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+    flex-grow: 1; /* Make the body fill the available space */
+    background-color: #f5faf2; /* Light pastel green for a soft touch */
+  }
+  
+  .popupChat-body.collapsed {
+    height: 0; /* Collapse height */
+    padding: 0; /* Remove padding when collapsed */
+  }
+  
+  /* Add transition for smooth collapse */
+  .popupChat-body.collapsed,
+  .popupChat-header button {
+    transition: all 0.3s ease-in-out;
+  }
+  

@@ -1,16 +1,9 @@
 // External libraries
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PostContainer from "./PostContainer";
-import PieChart from "../Charts/Pie";
-import {
-  FaDoorOpen,
-  FaCog,
-  FaInfoCircle,
-  FaSearch,
-  FaBars,
-  FaCamera,
-} from "react-icons/fa";
+import ChatPopup from "../Popup/ChatPopup";
+import { FaDoorOpen, FaCog, FaSearch, FaBars, FaCamera } from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
 import {
   GoogleMap,
@@ -18,24 +11,23 @@ import {
   useJsApiLoader,
   InfoWindow,
 } from "@react-google-maps/api";
-
-// Internal libraries and components
+import useStyles from "./DrawerStyle";
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
 // Styles and assets
-import "../drawerstyle.css";
+
 import "./Home.css";
-import background_fornow from "../Assets/background_login.png";
 import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
 
 // Components
 import Popup from "../Popup/Popup";
+import Members from "../Members/Members";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
-import Members from "../Members/Members";
 
 const Home = () => {
+  const classes = useStyles(); // Use custom styles
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
@@ -48,8 +40,8 @@ const Home = () => {
     navigate("/");
   };
   const handleSettings = () => navigate("/settings");
-  const handleInfo = () => alert("Info Button Clicked");
-  const handleMoreInfo = () => navigate("/moreinfo");
+
+  const handleMoreInfo = () => navigate("/CommunityInfo");
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -123,13 +115,25 @@ const Home = () => {
   const [isMember, setIsMember] = useState();
   const [showMembers, setShowMembers] = useState(false);
   const [users, setUsers] = useState([]);
-  const [statistics, setStatistics] = useState(false);
+  const chartRef = useRef(null); // Ref to access the pie chart instance
+
+  const openPopup = () => setButtonPopup(true);
+  const closePopup = () => setButtonPopup(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
   // Pie chart download function
+  const downloadChart = () => {
+    const chart = chartRef.current.chartInstance; // Get the chart instance
+    const imageUrl = chart.toBase64Image(); // Generate the image as base64 string
+
+    const a = document.createElement("a");
+    a.href = imageUrl;
+    a.download = "pie-chart.png"; // Set the file name
+    a.click(); // Trigger download
+  };
 
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
 
@@ -142,45 +146,6 @@ const Home = () => {
       fetchMembershipStatus();
     }
   }, [selectedCommunity]);
-
-  useEffect(() => {
-    console.log("USEEFFECT IS WORKING");
-    if (showMembers || statistics) {
-      lookUsers(selectedCommunity).then((fetchedUsers) => {
-        setUsers(fetchedUsers); // Store the users in state
-      });
-    }
-  }, [showMembers, statistics]);
-
-  //Look users of selected community
-  const lookUsers = async (selectedCommunity) => {
-    try {
-      const response = await fetch("/find-users-by-community", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          communityId: selectedCommunity._id,
-        }),
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (response.ok) {
-        if (data.users && data.users.length > 0) {
-          console.log("Users found:", data.users);
-          return data.users;
-        } else {
-          console.log(data.message); // "There are no users in {community.name}"
-          return [];
-        }
-      } else {
-        console.error("Error:", data.message);
-        return [];
-      }
-    } catch (err) {
-      console.error("An error occurred while showing members", err);
-      return [];
-    }
-  };
 
   //Leave community
   async function leaveCommunity(selectedCommunity) {
@@ -491,9 +456,6 @@ const Home = () => {
         <button className="settings-button" onClick={handleSettings}>
           <FaCog size={30} color="white" />
         </button>
-        <button className="info-button" onClick={handleInfo}>
-          <FaInfoCircle size={30} color="white" />
-        </button>
 
         <div className="search-bar">
           <input
@@ -605,6 +567,12 @@ const Home = () => {
                         Remove from favorites
                       </button>
                     )}
+                  {/* Pie charts */}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => downloadChart}>Pie Charts</button>
+                  )}
+                  {/* Render the PieChart but hide it from view */}
+                  {/* <PieChart users={users} chartRef={chartRef} /> */}
 
                   {authUser.userType === "Official" && (
                     <button
@@ -626,42 +594,8 @@ const Home = () => {
                     </button>
                   )}
                   {authUser.userType === "Official" && (
-                    <div>
-                      {/* Ternary operator to switch between "Show Statistics" and "Hide Charts" */}
-                      {statistics ? (
-                        // When statistics is true, show the "Hide Charts" button and the charts
-                        <div>
-                          <button
-                            onClick={() => {
-                              setStatistics(false); // Hide the charts and set statistics to false
-                            }}
-                          >
-                            Hide Charts
-                          </button>
-
-                          {/* Render charts when statistics is true */}
-                          {users &&
-                            Array.isArray(users) &&
-                            users.length > 0 && (
-                              <PieChart
-                                data={users}
-                                setStatistics={setStatistics}
-                              />
-                            )}
-                        </div>
-                      ) : (
-                        // When statistics is false, show the "Show Statistics" button
-                        <button
-                          onClick={() => {
-                            setStatistics(true); // Show the charts and set statistics to true
-                          }}
-                        >
-                          Show Statistics
-                        </button>
-                      )}
-                    </div>
+                    <button onClick={() => {}}>Show statistics</button>
                   )}
-
                   <button
                     onClick={() => {
                       handleMoreInfo();
@@ -766,18 +700,15 @@ const Home = () => {
             </button>
           </div>
         </Popup>
+
         {/* Chat Popup */}
-        {authUser.userType === "User" && (
-          <Popup
-            trigger={isChatOpen}
-            setTrigger={toggleChat}
-            position="bottom-right"
-          >
-            <div className="chat">
+        {authUser.userType === "User" && isChatOpen && (
+          <ChatPopup trigger={isChatOpen} setTrigger={setIsChatOpen}>
+            <div className="inner-chat-popup">
               <Sidebar />
               <MessageContainer />
             </div>
-          </Popup>
+          </ChatPopup>
         )}
 
         {/* Right Toolbox for Favorites */}
@@ -825,16 +756,28 @@ const Home = () => {
           anchor="right"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
+          classes={{ paper: classes.drawerPaper }}
         >
           <div
-            className="drawer-content"
+            className={classes.drawerContent}
             onMouseLeave={() => setDrawerOpen(false)}
           >
+            {/* User Greeting */}
+            <div className={classes.drawerText}>Hello!</div>
+
             {/* Profile Section */}
-            <div className="profile-section">
-              <img src={newPfp} alt="Profile" className="profile-pic" />
-              <FaCamera size={50} color="gray" className="change-pfp-icon" />
-              <button onClick={triggerFileInput} className="change-profile-btn">
+            <div className={classes.profileSection}>
+              <img src={newPfp} alt="Profile" className={classes.profilePic} />
+              <FaCamera
+                size={30}
+                color="#067029"
+                className={classes.changePfpIcon}
+                onClick={triggerFileInput} // Trigger the file input on icon click
+              />
+              <button
+                onClick={triggerFileInput}
+                className={classes.changeProfileBtn}
+              >
                 Change Profile
               </button>
               {/* Hidden File Input */}
@@ -842,15 +785,23 @@ const Home = () => {
                 id="fileInput"
                 type="file"
                 accept="image/*"
-                onChange={handleFileChange}
+                onChange={handleFileChange} // Handle the file input change
                 style={{ display: "none" }}
               />
             </div>
 
-            {/* Other Drawer Buttons */}
-            <button onClick={handleBackToLogin}>Back to Login</button>
-            <button onClick={handleSettings}>Settings</button>
-            <button onClick={handleInfo}>Info</button>
+            {/* Quote Section */}
+            <div className={classes.quoteSection}>
+              "Nature does not hurry, yet everything is accomplished." – Lao Tzu
+            </div>
+
+            {/* Settings Button */}
+            <button
+              onClick={handleSettings}
+              className={classes.changeProfileBtn}
+            >
+              Settings
+            </button>
           </div>
         </Drawer>
 

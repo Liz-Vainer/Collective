@@ -39,7 +39,7 @@ const Conversation = ({ conversation }) => {
           <p>{conversation.name}</p>
         </div>
         <div>
-          <button onClick={handleRemove}>remove friend</button>
+          <button onClick={handleRemove}>remove</button>
         </div>
       </div>
     </div>

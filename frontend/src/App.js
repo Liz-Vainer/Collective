@@ -13,6 +13,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import CommunityInfo from "./Components/CommunityInfo/CommunityInfo";
 
 function App() {
   const { authUser } = useUser();
@@ -35,6 +36,10 @@ function App() {
             element={authUser ? <Navigate to="/home" /> : <Login />}
           />
           <Route
+            path="/CommunityInfo"
+            element={authUser ? <CommunityInfo /> : <Navigate to="/" />}
+          />
+          <Route
             path="/signup"
             element={authUser ? <Navigate to="/home" /> : <Signup />}
           />
@@ -51,6 +56,6 @@ function App() {
       </Router>
     </div>
   );
-}
+};
 
 export default App;

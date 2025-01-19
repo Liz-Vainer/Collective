@@ -19,27 +19,28 @@ const Member = ({ user, communityId }) => {
   };
 
   return (
-    <div>
-      <div className="member">
-        {/* User Details Section */}
-        <div className="user-details">
-          <img alt="Profile" src={user.profilePic} className="profile-pic" />
-          <p>{user.name}</p>
-        </div>
+    <>
+      <div>
+        <div className="member">
+          {/* User Details Section */}
+          <div className="user-details">
+            <img alt="Profile" src={user.profilePic} className="profile-pic" />
+            <p>{user.name}</p>
+          </div>
 
-        {/* User info Button */}
-        <div className="info">
-          <button onClick={toggleInfo}>Info</button>
-        </div>
+          {/* User info Button */}
+          <div className="info">
+            <button onClick={toggleInfo}>Info</button>
+          </div>
 
-        {/* Remove User Button */}
-        <div className="info">
-          <button onClick={toggleRemove} disabled={isRemoving || isLoading}>
-            {isRemoving ? "Removing..." : "Remove from community"}
-          </button>
+          {/* Remove User Button */}
+          <div className="info">
+            <button onClick={toggleRemove} disabled={isRemoving || isLoading}>
+              {isRemoving ? "Removing..." : "Remove from community"}
+            </button>
+          </div>
         </div>
       </div>
-
       {/* User Info Popup */}
       <Popup
         trigger={infoButton}
@@ -84,7 +85,7 @@ const Member = ({ user, communityId }) => {
           </div>
         </div>
       </Popup>
-    </div>
+    </>
   );
 };
 

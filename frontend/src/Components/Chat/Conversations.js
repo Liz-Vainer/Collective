@@ -1,11 +1,12 @@
 import React from "react";
 import Conversation from "./Conversation";
-import useGetConversations from "../../hooks/useGetConversation";
+import useGetConversation from "../../hooks/useGetConversation";
 import useListenFriends from "../../hooks/useListenFriends";
 
 const Conversations = () => {
-  const { friends, loading } = useGetConversations();
+  const { friends, loading } = useGetConversation();
   useListenFriends();
+  console.log(friends);
 
   // Render loading spinner or message while data is loading
   if (loading) {

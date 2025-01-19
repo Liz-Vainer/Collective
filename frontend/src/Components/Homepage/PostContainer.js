@@ -8,6 +8,7 @@ import useRemoveEvent from "../../hooks/useRemoveEvent";
 import useEvents from "../../zustand/useEvents";
 import useIsParticipant from "../../hooks/useIsParticipant";
 import useJoinEvent from "../../hooks/useJoinEvent";
+import useLeaveEvent from "../../hooks/useLeaveEvent";
 
 // Function to convert image URL to base64
 const convertImageToBase64 = async (imageUrl) => {
@@ -27,6 +28,7 @@ const Post = ({ event }) => {
   const { removeEvent, loading } = useRemoveEvent();
   const [isParticipant, setIsParticipant] = useState(null);
   const { joinEvent } = useJoinEvent();
+  const { leaveEvent } = useLeaveEvent();
   const { isParticipant: checkParticipant } = useIsParticipant(); // Destructure isParticipant from useIsParticipant
 
   useEffect(() => {
@@ -53,6 +55,10 @@ const Post = ({ event }) => {
         setIsParticipant(true);
       }
     } else {
+      const success = await leaveEvent(event._id, authUser.id);
+      if (success) {
+        setIsParticipant(success);
+      }
     }
   };
   // Handle like click

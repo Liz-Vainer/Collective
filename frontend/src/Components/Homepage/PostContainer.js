@@ -9,6 +9,8 @@ import useEvents from "../../zustand/useEvents";
 import useIsParticipant from "../../hooks/useIsParticipant";
 import useJoinEvent from "../../hooks/useJoinEvent";
 import useLeaveEvent from "../../hooks/useLeaveEvent";
+import useLikeEvent from "../../hooks/useLikeEvent";
+import useDislikeEvent from "../../hooks/useDislikeEvent";
 
 // Function to convert image URL to base64
 const convertImageToBase64 = async (imageUrl) => {
@@ -30,6 +32,8 @@ const Post = ({ event }) => {
   const { joinEvent } = useJoinEvent();
   const { leaveEvent } = useLeaveEvent();
   const { isParticipant: checkParticipant } = useIsParticipant(); // Destructure isParticipant from useIsParticipant
+  const { likeEvent } = useLikeEvent();
+  const { dislikeEvent } = useDislikeEvent();
 
   useEffect(() => {
     // Check if the user is a participant when the component mounts
@@ -62,10 +66,16 @@ const Post = ({ event }) => {
     }
   };
   // Handle like click
-  const handleLike = () => {};
+  const handleLike = async () => {
+    const likes = await likeEvent(event._id);
+    event.likes = likes;
+  };
 
   // Handle dislike click
-  const handleDislike = () => {};
+  const handleDislike = async () => {
+    const dislikes = await dislikeEvent(event._id);
+    event.dislikes = dislikes;
+  };
 
   return (
     <div className="post">

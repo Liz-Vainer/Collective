@@ -979,11 +979,13 @@ export const checkJoinedEvent = async (req, res) => {
 export const likeEvent = async (req, res) => {
   const { eventId } = req.body;
   try {
-    const event = await Event.findOne({ eventId });
+    const event = await Event.findById(eventId);
     event.likes = event.likes + 1;
     await event.save();
 
-    res.status(200).json({ message: "Event liked succesfully" });
+    res
+      .status(200)
+      .json({ message: "Event liked succesfully", likes: event.likes });
   } catch (error) {
     return res.status(500).json({
       message: "An error occurred in likeEvent",
@@ -995,11 +997,14 @@ export const likeEvent = async (req, res) => {
 export const dislikeEvent = async (req, res) => {
   const { eventId } = req.body;
   try {
-    const event = await Event.findOne({ eventId });
+    const event = await Event.findById(eventId);
     event.dislikes = event.dislikes + 1;
     await event.save();
 
-    res.status(200).json({ message: "Event disliked succesfully" });
+    res.status(200).json({
+      message: "Event disliked succesfully",
+      dislikes: event.dislikes,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "An error occurred in dislikeEvent",

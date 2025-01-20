@@ -15,7 +15,6 @@
     "@mui/material": "^6.3.1",
     "@sinonjs/referee-sinon": "^12.0.0",
     "bcrypt": "^5.1.1",
-    "chai-http": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -27,7 +26,9 @@
     "node-pre-gyp": "^0.17.0"
   },
   "devDependencies": {
+    "@types/chai": "^5.0.1",
     "chai": "^5.1.2",
+    "chai-http": "^5.1.1",
     "jsverify": "^0.8.4",
     "knuth-shuffle": "^1.0.8",
     "mocha": "^11.0.1",

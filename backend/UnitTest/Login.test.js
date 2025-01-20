@@ -2,6 +2,8 @@ import * as chai from 'chai';
 import chaiHttp from 'chai-http';  // Import chai-http
 import app from '../index.js'; // Import your app from index.js
 
+console.log(chai); 
+
 chai.use(chaiHttp);  // Register chai-http with chai
 const { expect } = chai;  // Destructure the expect function
 

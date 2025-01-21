@@ -26,6 +26,7 @@ import {
   likeEvent,
   dislikeEvent,
   checkJoinedEvent,
+  deleteAccount,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -131,5 +132,8 @@ router.post("/events/like", protectRoute, likeEvent);
 
 //dislike event
 router.post("/events/dislike", protectRoute, dislikeEvent);
+
+//delete account (user deletes himself)
+router.delete("/delete-account", protectRoute, deleteAccount);
 
 export default router;

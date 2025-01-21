@@ -17,11 +17,14 @@ const Signup = () => {
   const [formValidationName, setFormValidationName] = useState(true);
   const [formValidationEmail, setFormValidationEmail] = useState(true);
   const [formValidationPassword, setFormValidationPassword] = useState(true);
+  const [formValidationConfirmPassword, setFormValidationConfirmPassword] =
+    useState(true);
   const carouselRef = useRef(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false); // To prevent simultaneous animations
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("male");
   const [age, setAge] = useState(null);
@@ -39,7 +42,7 @@ const Signup = () => {
   ];
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State to toggle password visibility
-  
+
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
@@ -51,7 +54,6 @@ const Signup = () => {
       setShowContainer(false); // Hide the container if userType changes
     }
   }, [userType]); // Depend on userType change
-
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prev) => !prev);
@@ -115,6 +117,21 @@ const Signup = () => {
         setFormValidationPassword(false);
       }
     }
+    if (confirmPassword === "") {
+      setFormValidationConfirmPassword(false);
+      flag = false;
+    } else {
+      setFormValidationConfirmPassword(true);
+    }
+    if (confirmPassword) {
+      if (password !== confirmPassword) {
+        setFormValidationConfirmPassword(false);
+        flag = false;
+      } else {
+        setFormValidationConfirmPassword(true);
+      }
+    }
+
     if (!flag) {
       return false;
     } else {
@@ -143,10 +160,7 @@ const Signup = () => {
   };
 
   return (
-    <div
-      className="body"
-   
-    >
+    <div className="body">
       <div className="container">
         <div className="welcome-message">
           <h1>Welcome to Collective!</h1>
@@ -165,7 +179,9 @@ const Signup = () => {
               placeholder="Name"
               onChange={(e) => setName(e.target.value)}
             />
-            {!formValidationName &&    <div className="error-popup">Invalid or empty field</div>}
+            {!formValidationName && (
+              <div className="error-popup">Invalid or empty field</div>
+            )}
           </div>
           <div className="input">
             <img src={email_icon} alt="email" className="image" />
@@ -176,7 +192,7 @@ const Signup = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
             {!formValidationEmail && (
-                <div className="error-popup">Invalid or empty field</div>
+              <div className="error-popup">Invalid or empty field</div>
             )}
           </div>
 
@@ -195,7 +211,7 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             {!formValidationPassword && (
-               <div className="error-popup">Invalid or empty field</div>
+              <div className="error-popup">Invalid or empty field</div>
             )}
           </div>
           <div className="input">
@@ -211,11 +227,11 @@ const Signup = () => {
               name="ConfirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
-            {!formValidationPassword && (
-                 <div className="error-popup">Invalid or empty field</div>
+            {!formValidationConfirmPassword && (
+              <div className="error-popup">Invalid or empty field</div>
             )}
           </div>
           <div className="question">
@@ -235,7 +251,7 @@ const Signup = () => {
       </div>
 
       {userType === "citizen" && (
-        <div className={`second-container ${showContainer ? 'show' : ''}`}>
+        <div className={`second-container ${showContainer ? "show" : ""}`}>
           <h2>Can you tell us more about you?</h2>
           <h3>(Optional)</h3>
 
@@ -349,25 +365,25 @@ const Signup = () => {
       )}
 
       <div className="submit-container">
-          <div
-            className="submit"
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            Back to Login
-          </div>
-          <div
-            className="submit"
-            onClick={() => {
-              if (validation1()) {
-                handleSignup();
-              }
-            }}
-          >
-            Continue
-          </div>
+        <div
+          className="submit"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          Back to Login
         </div>
+        <div
+          className="submit"
+          onClick={() => {
+            if (validation1()) {
+              handleSignup();
+            }
+          }}
+        >
+          Continue
+        </div>
+      </div>
     </div>
   );
 };

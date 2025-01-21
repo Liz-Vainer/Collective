@@ -41,7 +41,10 @@ const Home = () => {
   };
   const handleSettings = () => navigate("/settings");
 
-  const handleMoreInfo = () => navigate("/CommunityInfo");
+  const handleMoreInfo = () => {
+    const selectedCommunityId = selectedCommunity._id; // Example: passing only the community ID
+    navigate(`/CommunityInfo?id=${selectedCommunityId}`);
+  };
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -566,9 +569,9 @@ const Home = () => {
                       </button>
                     )}
                   {/* Pie charts */}
-                  {authUser.userType === "Official" && (
+                  {/* {authUser.userType === "Official" && (
                     <button onClick={() => downloadChart}>Pie Charts</button>
-                  )}
+                  )} */}
                   {/* Render the PieChart but hide it from view */}
                   {/* <PieChart users={users} chartRef={chartRef} /> */}
 
@@ -591,9 +594,9 @@ const Home = () => {
                       Show members
                     </button>
                   )}
-                  {authUser.userType === "Official" && (
+                  {/* {authUser.userType === "Official" && (
                     <button onClick={() => {}}>Show statistics</button>
-                  )}
+                  )} */}
                   <button
                     onClick={() => {
                       handleMoreInfo();

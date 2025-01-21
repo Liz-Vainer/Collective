@@ -1,18 +1,33 @@
 import React from "react";
+import "./VerticalComponent.css";
+import { useUser } from "../../context/UserContext";
 
-const VerticalComponent = () => {
+const VerticalComponent = ({ onItemClick }) => {
+  const { authUser } = useUser();
+  const menuItems = [
+    "Profile",
+    "Community Settings",
+    "Help",
+    "Credits",
+    "Delete account",
+  ];
+
   return (
     <div className="vertical-container">
       <div className="profile">
-        <img src="/path-to-profile-image.jpg" alt="Profile" className="profile-image" />
-        <h3>John Doe</h3>
+        <img
+          src={authUser.profilePic}
+          alt="Profile"
+          className="profile-image"
+        />
       </div>
       <div className="settings-list">
         <ul>
-          <li>Profile</li>
-          <li>Settings</li>
-          <li>Privacy</li>
-          <li>Notifications</li>
+          {menuItems.map((item) => (
+            <li key={item} onClick={() => onItemClick(item)}>
+              {item}
+            </li>
+          ))}
         </ul>
       </div>
     </div>

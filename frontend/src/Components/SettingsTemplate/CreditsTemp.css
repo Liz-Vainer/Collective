@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&family=Open+Sans:wght@400&family=Roboto:wght@400&display=swap');
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* Disable scrolling */
+  margin: 0;
+  padding: 0;
+}
+
+.frontend-icon::before {
+  content: "💻"; /* Frontend development icon */
+  font-size: 35px; /* Slightly smaller font size */
+  margin-left: 8px; /* Slightly smaller margin */
+  display: inline-block;
+  animation: bounce 2s infinite;
+}
+
+.cog-icon::before {
+  content: "⚙️"; /* Cog icon */
+  font-size: 35px; /* Slightly smaller font size */
+  margin-left: 8px; /* Slightly smaller margin */
+  display: inline-block;
+  animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px); /* Slightly smaller bounce */
+  }
+  60% {
+    transform: translateY(-7px); /* Slightly smaller bounce */
+  }
+}
+
+.credits-container {
+  text-align: center;
+  padding: 15px; /* Slightly smaller padding */
+  overflow: hidden;
+  height: 100%;
+}
+
+.team-members {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px; /* Slightly smaller gap */
+}
+
+.team-member {
+  display: flex;
+  align-items: center;
+  width: 100%; /* Allow full width to push content to the edges */
+  max-width: 750px; /* Slightly smaller max-width */
+}
+
+.team-member.left {
+  font-family: 'Roboto Slab', serif; 
+  flex-direction: row; /* Image on the left, description on the right */
+  justify-content: left; /* Align to the left */
+  gap: 25px; /* Slightly smaller gap */
+}
+
+.team-member.right {
+  font-family: 'Roboto Slab', serif; 
+  flex-direction: row-reverse; /* Image on the right, description on the left */
+  justify-content: right; /* Align to the right */
+  gap: 25px; /* Slightly smaller gap */
+}
+
+.profile-picture {
+  width: 150px; /* Slightly smaller width */
+  height: 150px; /* Slightly smaller height */
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.description {
+  text-align: left;
+  font-family: 'Roboto Slab', serif;
+  font-size: 18px; /* Slightly smaller font size */
+  max-width: 550px; /* Slightly smaller max-width */
+}
+
+h3 {
+  display: inline-block;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  font-size: 30px; /* Slightly smaller font size */
+}
+h2{
+    font-size: 40px;
+    margin: 0;
+    color: #037c33;
+    font-family: 'Roboto Slab', serif;
+}

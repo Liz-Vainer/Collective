@@ -1,0 +1,82 @@
+/* Friends List Container */
+.members-container {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto; /* Allow scrolling if the list is too long */
+    background-color: #fafafa;
+    border-radius: 10px;
+  }
+  
+  /* Existing Users List (Each user item) */
+  .member {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    width: 100%; /* Ensures the container takes up the full width */
+  }
+  
+  .member:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.02);
+  }
+  
+  /* User Details Section */
+  .user-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1; /* Ensures the name takes the available space */
+  }
+  
+  .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .user-details p {
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    white-space: nowrap; /* Prevent name from wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Show ellipsis for overflowing text */
+  }
+  
+  /* Add Friend Button Container */
+  .info {
+    margin-left: 15px; /* Add margin for spacing */
+    display: flex; /* To align the button */
+    justify-content: flex-end; /* Ensure button is aligned to the right */
+  }
+  
+  /* Add Friend Button */
+  .info button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .info button:hover {
+    background-color: #45a049;
+  }
+  
+  .info button:focus {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
+  }
+  
+  

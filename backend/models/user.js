@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
     gender: { type: String, required: false },
     profilePic: { type: String, required: false, default: "" },
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

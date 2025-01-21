@@ -1,12 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&family=Open+Sans:wght@400&family=Roboto:wght@400&display=swap');
+
 .container {
     padding: 20px;
-    font-family: Arial, sans-serif;
+    position: relative;
+    height: 900px;
+    width: 900px;
+
   }
   
   .header {
     text-align: center;
     margin-bottom: 20px;
-    color: #333;
+    color: #008f15;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 40px;
   }
   
   .content {
@@ -19,6 +27,7 @@
     background: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
+    height: 600px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
   
@@ -29,4 +38,20 @@
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
+  .back-home-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #008f15;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
   
+  .back-home-btn:hover {
+    background-color: #007c13;
+  }

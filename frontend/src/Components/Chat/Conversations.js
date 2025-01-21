@@ -1,11 +1,25 @@
+import React from "react";
 import Conversation from "./Conversation";
-import useGetConversations from "../../hooks/useGetConversation";
+import useGetConversation from "../../hooks/useGetConversation";
+import useListenFriends from "../../hooks/useListenFriends";
+
 const Conversations = () => {
-  const { conversations } = useGetConversations();
-  console.log(conversations);
+  const { friends, loading } = useGetConversation();
+  useListenFriends();
+  console.log(friends);
+
+  // Render loading spinner or message while data is loading
+  if (loading) {
+    return <div>Loading...</div>; // You can replace this with a spinner or a more styled message
+  }
+
+  // Ensure friends is always an array before calling map()
+  const friendsArray = Array.isArray(friends) ? friends : [];
+
+  // Render conversations once the data is loaded
   return (
     <div className="convs">
-      {conversations.map((conversation) => (
+      {friendsArray.map((conversation) => (
         <Conversation key={conversation._id} conversation={conversation} />
       ))}
     </div>

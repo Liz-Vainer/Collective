@@ -1,33 +1,80 @@
-/*==== BODY STYLES ====*/
-.body {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  height: 100vh;
-  background-size: cover;
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-image: url('../Assets/background_login.png');
   background-position: center;
-  background-repeat: no-repeat;
-  padding: 20px;
-  color: white;
-}
-
-/*==== IMAGE STYLES ====*/
-.image {
-  width: 20px;
-  height: 20px;
+  background-attachment: fixed; /* Ensures the background stays fixed while scrolling */
 }
 
 /*==== CONTAINER STYLES ====*/
 .container {
+  display: flex;
   flex-direction: column;
-  margin: auto;
   margin-top: 20px;
-  background: #ffff;
+  background: #fff;
+  padding-bottom: 30px;
+  max-width: 600px;
+  border: 5px solid #4a7652;
+  border-radius: 20px;
+  
+}
+
+.second-container {
+  display: flex;
+  flex-direction: column;
+  opacity: 0; /* Initially hidden */
+  transition: opacity 1s ease-in;
+   margin-top: -180px;
+  background: #fff;
   padding-bottom: 30px;
   width: 600px;
+  border: 5px solid #4a7652;
   border-radius: 20px;
-  margin-bottom: 200px;
+}
+.second-container.show {
+  opacity: 1; /* Fade in when show class is added */
+}
+.second-container h2,h3{
+  color: #4a7652;
+  font-size: 35px;
+  font-weight: 800;
+  align-items: center;
+  margin-left: 10px;
+  margin-top: 30px;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+}
+
+.submit-container {
+  margin-top: 20px;
+  flex-direction: row; /* Changed from column to row */
+  background: #fff;
+  padding-bottom: 15px;
+  width: 600px;
+  border: 5px solid #4a7652;
+  border-radius: 20px;
+  display: flex;
+  gap: 20px; /* Added gap between buttons */
+}
+
+.submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  height: 59px;
+  margin-left: 40px;
+  margin-top: 15px;
+  color: #fff;
+  background: #4a7652;
+  border-radius: 50px;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background-color: #96ca98;
 }
 
 /*==== HEADER STYLES ====*/
@@ -37,14 +84,15 @@
   align-items: center;
   gap: 9px;
   width: 100%;
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 .text {
   color: #4a7652;
   font-size: 48px;
   font-weight: 700;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  margin-top: 5px;
 }
 
 .undrline {
@@ -70,10 +118,11 @@
   height: 80px;
   background: #eaeaea;
   border-radius: 6px;
+  position: relative
 }
 
 .input img {
-  margin: 0px 30px;
+  margin: 0 30px;
 }
 
 .input input {
@@ -86,83 +135,31 @@
   font-size: 19px;
 }
 
-/*==== FORGOT PASSWORD STYLES ====*/
-.forgotPassword {
-  padding-left: 62px;
-  margin-top: 7px;
-  color: #797979;
-  font-size: 18px;
-}
-
-.forgotPassword span {
-  color: #4a7652;
-  cursor: pointer;
-}
-
 /*==== BUTTON CONTAINER STYLES ====*/
-.submit-container {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin: 60px auto;
-}
 
-.submit {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 220px;
-  height: 59px;
-  color: #fff;
-  background: #4a7652;
-  border-radius: 50px;
-  font-size: 19px;
-  font-weight: 70;
-  cursor: pointer;
-}
-
-.gray {
-  background: #eaeaea;
-  color: #676767;
-}
-
-.submit:hover {
-  background-color: #96ca98;
-}
 
 /*==== NEW BODY STYLES ====*/
 
-.container h2,
-h3 {
-  color: #4a7652;
-  font-size: 35px;
-  font-weight: 800;
-  align-items: center;
-  margin: 0px;
-  margin-left: 20px;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
-}
 
 /*==== CAROUSEL STYLES ====*/
 .carousel-container {
-  width: 300px; /* Fixed width of the carousel */
-  height: 200px; /* Fixed height of the carousel */
+  width: 300px;
+  height: 200px;
   margin: 30px auto;
-  overflow: hidden; /* Hide images that overflow */
+  overflow: hidden;
   position: relative;
 }
 
 .carousel-wrapper {
-  display: flex; /* Align images horizontally */
-  transition: transform 1s ease-in-out; /* Smooth transition */
+  display: flex;
+  transition: transform 1s ease-in-out;
   width: 1500px; /* 5 images, each 300px wide */
 }
 
 .carousel-image {
   width: 300px;
   height: 200px;
-  object-fit: cover; /* Ensures the image covers the area */
+  object-fit: cover;
 }
 
 /*==== AGE INPUT STYLES ====*/
@@ -170,30 +167,25 @@ h3 {
   border: 3px solid #4a7652;
   border-radius: 5px;
   padding: 5px;
-  width: 60px; /* Adjust width for the input */
+  width: 60px;
   font-size: 14px;
-  color: #000; /* Text color */
+  color: #000;
   margin-left: 10px;
 }
 
 /*==== RELIGION LIST STYLES ====*/
 .religion-list {
-  background-color: rgba(255, 255, 255, 0.5); /* Transparent white background */
-  border: 3px solid #4a7652; /* Colored border (blue in this case) */
-  border-radius: 5px; /* Rounded corners */
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 3px solid #4a7652;
+  border-radius: 5px;
   margin-left: 10px;
-  padding: 5px; /* Adds padding inside the dropdown */
-  width: 150px; /* Adjust the width of the dropdown */
-  color: #000; /* Text color */
+  padding: 5px;
+  width: 150px;
+  color: #000;
 }
 
 .religion-list option {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.9
-  ); /* Transparent option background */
+  background-color: rgba(255, 255, 255, 0.9);
   color: #000;
 }
 
@@ -207,33 +199,6 @@ h3 {
   text-align: left;
 }
 
-/*==== BUTTON STYLES ====*/
-.buttons {
-  display: flex;
-  gap: 10px;
-}
-
-button {
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-.continue-btn {
-  background-color: #4caf50;
-}
-
-.back-btn {
-  background-color: #f44336;
-}
-
 /*==== BACK BUTTON STYLES ====*/
 .back-button {
   display: flex;
@@ -245,7 +210,7 @@ button:hover {
   background: #4a7652;
   border-radius: 50px;
   font-size: 19px;
-  font-weight: 70;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -258,7 +223,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .welcome-message h1 {
@@ -267,4 +232,47 @@ button:hover {
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   color: #18392b;
   margin: 0;
+}
+
+
+
+/*==== TOGGLE BUTTON STYLES ====*/
+.toggle-button {
+  background-color: #4a7652;
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.toggle-button:hover {
+  background-color: #96ca98;
+}
+
+.password-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.error-popup {
+  position: absolute;
+  top: 55px; /* Adjust this based on where the input is */
+  left: 10px; /* Adjust this for alignment */
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  
+}
+
+.input:hover .error-popup {
+  visibility: visible; /* Show the error message on hover */
 }

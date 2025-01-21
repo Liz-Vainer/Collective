@@ -7,9 +7,12 @@ import methodOverride from "method-override";
 import connectToMongoDB from "./db/connectToMongoDb.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { app, server } from "./socket/socket.js";
+import path from "path";
 
-// Initialize Express
-const app = express();
+const __dirname = path.resolve();
+
+dotenv.config();
 
 // Middleware setup
 app.use(express.json());
@@ -26,10 +29,19 @@ app.use(
 app.use("/", userRoutes);
 app.use("/messages", messageRoutes);
 
+// app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+// });
+
 // Start the server
 const PORT = 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   connectToMongoDB();
   console.log(`Server is running on port ${PORT}`);
 });
+
 export default app;
+
+

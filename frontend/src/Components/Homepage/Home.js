@@ -1,32 +1,33 @@
-import React, { useState, useCallback, useEffect } from "react";
-import background_fornow from "../Assets/background_login.png";
+// External libraries
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
-import {
-  FaDoorOpen,
-  FaCog,
-  FaInfoCircle,
-  FaSearch,
-  FaBars,
-  FaCamera,
-} from "react-icons/fa";
+import PostContainer from "./PostContainer";
+import ChatPopup from "../Popup/ChatPopup";
+import { FaDoorOpen, FaCog, FaSearch, FaBars, FaCamera } from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
-import "../drawerstyle.css";
 import {
   GoogleMap,
   Marker,
   useJsApiLoader,
   InfoWindow,
 } from "@react-google-maps/api";
-import "./Home.css";
-import Popup from "../Popup/Popup";
-import Sidebar from "../Chat/Sidebar";
-import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
-import MessageContainer from "../Messages/MessageContainer";
+import useStyles from "./DrawerStyle";
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
+// Styles and assets
+
+import "./Home.css";
+import user_icon from "../Assets/person_icon.png"; //temporary until we make community icon
+
+// Components
+import Popup from "../Popup/Popup";
+import Members from "../Members/Members";
+import Sidebar from "../Chat/Sidebar";
+import MessageContainer from "../Messages/MessageContainer";
+
 const Home = () => {
+  const classes = useStyles(); // Use custom styles
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
@@ -39,8 +40,8 @@ const Home = () => {
     navigate("/");
   };
   const handleSettings = () => navigate("/settings");
-  const handleInfo = () => alert("Info Button Clicked");
-  const handleMoreInfo = () => navigate("/moreinfo");
+
+  const handleMoreInfo = () => navigate("/CommunityInfo");
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -71,16 +72,13 @@ const Home = () => {
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/get-fake-communities",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include", // This ensures cookies are sent
-          }
-        );
+        const response = await fetch("/get-fake-communities", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // This ensures cookies are sent
+        });
         const data = await response.json();
 
         if (response.ok) {
@@ -114,12 +112,120 @@ const Home = () => {
   const [lng, setCommunityLng] = useState();
   const [lat, setCommunityLat] = useState();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMember, setIsMember] = useState();
+  const [showMembers, setShowMembers] = useState(false);
+  const [users, setUsers] = useState([]);
+  const chartRef = useRef(null); // Ref to access the pie chart instance
+
+  const openPopup = () => setButtonPopup(true);
+  const closePopup = () => setButtonPopup(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
+  // Pie chart download function
+  const downloadChart = () => {
+    const chart = chartRef.current.chartInstance; // Get the chart instance
+    const imageUrl = chart.toBase64Image(); // Generate the image as base64 string
+
+    const a = document.createElement("a");
+    a.href = imageUrl;
+    a.download = "pie-chart.png"; // Set the file name
+    a.click(); // Trigger download
+  };
+
   const [newPfp, setNewPfp] = useState(authUser.profilePic); // To hold the newly selected profile picture
+
+  useEffect(() => {
+    if (selectedCommunity) {
+      const fetchMembershipStatus = async () => {
+        const result = await checkJoined(selectedCommunity);
+        setIsMember(result);
+      };
+      fetchMembershipStatus();
+    }
+  }, [selectedCommunity]);
+
+  //Leave community
+  async function leaveCommunity(selectedCommunity) {
+    try {
+      const response = await fetch("/leave-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(`Left the ${selectedCommunity.name}!`);
+        setIsMember(false);
+      } else {
+        console.error(
+          `Your are still a member of the ${selectedCommunity.name}!`,
+          data
+        );
+      }
+    } catch (err) {
+      console.error("An error occurred while trying to leave a community", err);
+    }
+  }
+  //Join community
+  async function joinCommunity(selectedCommunity) {
+    try {
+      const response = await fetch("/join-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(`Joined the ${selectedCommunity.name}!`);
+        setIsMember(true);
+      } else {
+        console.error(
+          `Your are not a member of the ${selectedCommunity.name}!`,
+          data
+        );
+      }
+    } catch (err) {
+      console.error("An error occurred while trying to join a community", err);
+    }
+  }
+  //Check if user is a member of the community
+  async function checkJoined(selectedCommunity) {
+    try {
+      const response = await fetch("/check-joined-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          communityId: selectedCommunity._id,
+          userId: authUser.id,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log("This is response from checkJoined: ", data);
+      if (response.ok) {
+        return data.member;
+      } else {
+        console.error("Your are not a member of this community!", data);
+        return data.member;
+      }
+    } catch (err) {
+      console.error(
+        "An error occurred while checking community membership",
+        err
+      );
+    }
+  }
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -204,7 +310,7 @@ const Home = () => {
   const addToFavorites = async (community) => {
     if (!favorites.some((fav) => fav.name === community.name)) {
       try {
-        const response = await fetch("http://localhost:3000/users/add-to-fav", {
+        const response = await fetch("/users/add-to-fav", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -218,8 +324,6 @@ const Home = () => {
         });
 
         const data = await response.json();
-        console.log(favorites); // Check the current favorites before adding
-        console.log(data); // Check what is returned by the backend
 
         if (response.ok) {
           authUser.favorites = data.favorites;
@@ -240,7 +344,7 @@ const Home = () => {
   //adding communities for official user
   const addCommunityPopup = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/add-community`, {
+      const response = await fetch(`/add-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -255,9 +359,7 @@ const Home = () => {
 
         setTimeout(async () => {
           // Wait for state update, then fetch updated communities
-          const communitiesResponse = await fetch(
-            "http://localhost:3000/get-fake-communities"
-          );
+          const communitiesResponse = await fetch("/get-fake-communities");
           const communitiesData = await communitiesResponse.json();
           if (communitiesResponse.ok) {
             setCommunities(communitiesData.communities);
@@ -279,7 +381,7 @@ const Home = () => {
   const removeCommunity = async (community) => {
     try {
       const name = community.name;
-      const response = await fetch(`http://localhost:3000/remove-community`, {
+      const response = await fetch(`/remove-community`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -291,9 +393,7 @@ const Home = () => {
       const data = await response.json();
 
       if (response.ok) {
-        const response = await fetch(
-          "http://localhost:3000/get-fake-communities"
-        );
+        const response = await fetch("/get-fake-communities");
         const data = await response.json();
         setCommunities(data.communities); // Update with fresh data
         alert("Community deleted!");
@@ -306,7 +406,7 @@ const Home = () => {
   //deleting community from favotites
   const removeFavorite = async (community) => {
     try {
-      const response = await fetch(`http://localhost:3000/remove-favorite`, {
+      const response = await fetch(`/remove-favorite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -356,9 +456,6 @@ const Home = () => {
         <button className="settings-button" onClick={handleSettings}>
           <FaCog size={30} color="white" />
         </button>
-        <button className="info-button" onClick={handleInfo}>
-          <FaInfoCircle size={30} color="white" />
-        </button>
 
         <div className="search-bar">
           <input
@@ -388,7 +485,7 @@ const Home = () => {
           ))}
         </div>
       </div>
-
+      <PostContainer />
       {/* Main Content Section */}
       <div className="main-container">
         <div className="center-main">
@@ -410,7 +507,6 @@ const Home = () => {
                 onClick={() => setSelectedCommunity(community)}
               />
             ))}
-
             {/* InfoWindow for Selected Community */}
             {selectedCommunity && (
               <InfoWindow
@@ -439,6 +535,24 @@ const Home = () => {
                         </button>
                       </div>
                     )}
+                  {authUser.userType !== "Official" && !isMember && (
+                    <div>
+                      <button onClick={() => joinCommunity(selectedCommunity)}>
+                        Join Community
+                      </button>
+                    </div>
+                  )}
+                  {authUser.userType !== "Official" && isMember && (
+                    <div>
+                      <button
+                        onClick={() => {
+                          leaveCommunity(selectedCommunity);
+                        }}
+                      >
+                        Leave Community
+                      </button>
+                    </div>
+                  )}
 
                   {authUser.userType !== "Official" &&
                     authUser.favorites.some(
@@ -453,6 +567,12 @@ const Home = () => {
                         Remove from favorites
                       </button>
                     )}
+                  {/* Pie charts */}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => downloadChart}>Pie Charts</button>
+                  )}
+                  {/* Render the PieChart but hide it from view */}
+                  {/* <PieChart users={users} chartRef={chartRef} /> */}
 
                   {authUser.userType === "Official" && (
                     <button
@@ -463,6 +583,18 @@ const Home = () => {
                     >
                       Remove Community
                     </button>
+                  )}
+                  {authUser.userType === "Official" && (
+                    <button
+                      onClick={() => {
+                        setShowMembers(true);
+                      }}
+                    >
+                      Show members
+                    </button>
+                  )}
+                  {authUser.userType === "Official" && (
+                    <button onClick={() => {}}>Show statistics</button>
                   )}
                   <button
                     onClick={() => {
@@ -476,7 +608,18 @@ const Home = () => {
             )}
           </GoogleMap>
         </div>
-
+        {/* Pop up for showing members*/}
+        <Popup
+          trigger={showMembers}
+          setTrigger={setShowMembers}
+          position="bottom-right"
+          className="popup"
+        >
+          <div className="">
+            <h2>Member List</h2>
+            <Members selectedCommunity={selectedCommunity} />
+          </div>
+        </Popup>
         {/*Popup for adding communities */}
         <Popup
           className="popup"
@@ -558,16 +701,16 @@ const Home = () => {
           </div>
         </Popup>
 
-        <Popup
-          trigger={isChatOpen}
-          setTrigger={toggleChat}
-          position="bottom-right"
-        >
-          <div className="chat">
-            <Sidebar />
-            <MessageContainer />
-          </div>
-        </Popup>
+        {/* Chat Popup */}
+        {authUser.userType === "User" && isChatOpen && (
+          <ChatPopup trigger={isChatOpen} setTrigger={setIsChatOpen}>
+            <div className="inner-chat-popup">
+              <Sidebar />
+              <MessageContainer />
+            </div>
+          </ChatPopup>
+        )}
+
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
           <div className="right-toolside">
@@ -600,7 +743,7 @@ const Home = () => {
         )}
 
         <button
-          className="drawer-toggle-button"
+          className="drawer-trigger"
           onClick={() => setDrawerOpen(true)}
           onMouseEnter={() => setDrawerOpen(true)} // Open on hover
           // Open the drawer on button click
@@ -613,16 +756,28 @@ const Home = () => {
           anchor="right"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
+          classes={{ paper: classes.drawerPaper }}
         >
           <div
-            className="drawer-content"
+            className={classes.drawerContent}
             onMouseLeave={() => setDrawerOpen(false)}
           >
+            {/* User Greeting */}
+            <div className={classes.drawerText}>Hello!</div>
+
             {/* Profile Section */}
-            <div className="profile-section">
-              <img src={newPfp} alt="Profile" className="profile-pic" />
-              <FaCamera size={50} color="gray" className="change-pfp-icon" />
-              <button onClick={triggerFileInput} className="change-profile-btn">
+            <div className={classes.profileSection}>
+              <img src={newPfp} alt="Profile" className={classes.profilePic} />
+              <FaCamera
+                size={30}
+                color="#067029"
+                className={classes.changePfpIcon}
+                onClick={triggerFileInput} // Trigger the file input on icon click
+              />
+              <button
+                onClick={triggerFileInput}
+                className={classes.changeProfileBtn}
+              >
                 Change Profile
               </button>
               {/* Hidden File Input */}
@@ -630,15 +785,23 @@ const Home = () => {
                 id="fileInput"
                 type="file"
                 accept="image/*"
-                onChange={handleFileChange}
+                onChange={handleFileChange} // Handle the file input change
                 style={{ display: "none" }}
               />
             </div>
 
-            {/* Other Drawer Buttons */}
-            <button onClick={handleBackToLogin}>Back to Login</button>
-            <button onClick={handleSettings}>Settings</button>
-            <button onClick={handleInfo}>Info</button>
+            {/* Quote Section */}
+            <div className={classes.quoteSection}>
+              "Nature does not hurry, yet everything is accomplished." – Lao Tzu
+            </div>
+
+            {/* Settings Button */}
+            <button
+              onClick={handleSettings}
+              className={classes.changeProfileBtn}
+            >
+              Settings
+            </button>
           </div>
         </Drawer>
 

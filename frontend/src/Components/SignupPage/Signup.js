@@ -189,11 +189,11 @@ const Signup = () => {
               style={{ cursor: "pointer" }} // Add pointer cursor
             />
             <input
-              name="password"
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+  name="password"
+  type={showPassword ? "text" : "password"} // Use showPassword here
+  placeholder="Password"
+  onChange={(e) => setPassword(e.target.value)}
+/>
             {!formValidationPassword && (
                <div className="error-popup">Invalid or empty field</div>
             )}

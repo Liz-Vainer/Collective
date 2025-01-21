@@ -711,7 +711,12 @@ const closePopup = () => setButtonPopup(false);
             </button>
           </div>
         </Popup>
-
+        <button
+          className={`chat-button ${isChatOpen ? "hidden" : ""}`}
+          onClick={toggleChat}
+        >
+          Chat
+        </button>
         {/* Chat Popup */}
         {authUser.userType === "User" && isChatOpen && (
         <ChatPopup trigger={isChatOpen} setTrigger={setIsChatOpen}>
@@ -810,12 +815,7 @@ const closePopup = () => setButtonPopup(false);
   </div>
 </Drawer>
 
-        <button
-          className={`chat-button ${isChatOpen ? "hidden" : ""}`}
-          onClick={toggleChat}
-        >
-          Chat
-        </button>
+        
       </div>
     </div>
   );

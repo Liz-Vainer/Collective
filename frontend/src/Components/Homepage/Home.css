@@ -7,11 +7,12 @@ html, body {
   background-position: center;
   background-repeat: no-repeat;
   font-family: 'Roboto', sans-serif;
+  
 }
 .mainbody {
     display: flex;
     flex-direction: row;
-    margin-top: 100px;
+    margin-top: 50px;
     height: 100%;
     justify-content: flex-start;
     width: 85%px;

@@ -29,31 +29,26 @@ describe("POST /signup with protected route", function () {
     );
   });
 
-  after(async () => {
-    await User.deleteMany(); // Remove all test users
-  });
-
   it("should return 401 if no token is provided", async () => {
-    const response = await chai.request(app)
-      .post("/signup")
-      .send({
-        name: "John Doe",
-        email: "john.doe@example.com",
-        password: "password123",
-        userType: "user",
-        age: 25,
-        religion: "Religion",
-        ethnicity: "Ethnicity",
-        interest: "Interest",
-        gender: "Male",
-      });
+    const response = await chai.request(app).post("/signup").send({
+      name: "John Doe",
+      email: "john.doe@example.com",
+      password: "password123",
+      userType: "user",
+      age: 25,
+      religion: "Religion",
+      ethnicity: "Ethnicity",
+      interest: "Interest",
+      gender: "Male",
+    });
 
     expect(response).to.have.status(401);
     expect(response.body.error).to.equal("Unauthorized - No Token Provided");
   });
 
   it("should return 200 for successful signup with a valid token", async () => {
-    const response = await chai.request(app)
+    const response = await chai
+      .request(app)
       .post("/signup")
       .set("Cookie", `jwt=${token}`) // Send the token in the request cookies
       .send({
@@ -73,7 +68,8 @@ describe("POST /signup with protected route", function () {
   });
 
   it("should return 400 for missing required fields", async () => {
-    const response = await chai.request(app)
+    const response = await chai
+      .request(app)
       .post("/signup")
       .set("Cookie", `jwt=${token}`) // Send the token in the request cookies
       .send({

@@ -12,7 +12,9 @@
   "license": "ISC",
   "description": "Backend for the Collective app",
   "dependencies": {
-    "@mui/material": "^6.3.1",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.0",
     "@sinonjs/referee-sinon": "^12.0.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
@@ -23,7 +25,8 @@
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mongoose": "^8.9.2",
-    "node-pre-gyp": "^0.17.0"
+    "node-pre-gyp": "^0.17.0",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@types/chai": "^5.0.1",

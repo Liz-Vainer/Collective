@@ -453,9 +453,7 @@ const Home = () => {
         <button className="exit-button" onClick={handleBackToLogin}>
           <FaDoorOpen size={30} color="white" />
         </button>
-        <button className="settings-button" onClick={handleSettings}>
-          <FaCog size={30} color="white" />
-        </button>
+        
 
         <div className="search-bar">
           <input

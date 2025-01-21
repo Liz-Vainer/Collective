@@ -1,7 +1,6 @@
 import React from "react";
 import "./MainComponent.css";
 import ProfileTemplate from "../SettingsTemplate/ProfileTemplate";
-import CommunitySettingsTemplate from "../SettingsTemplate/ComSetTem";
 import HelpTemplate from "../SettingsTemplate/HelpTemplate";
 import CreditsTemp from "../SettingsTemplate/CreditsTemp";
 
@@ -19,8 +18,7 @@ const MainComponent = ({ selectedItem }) => {
     switch (selectedItem) {
       case "Profile":
         return <ProfileTemplate />;
-      case "Community Settings":
-        return <CommunitySettingsTemplate />;
+     
       case "Help":
         return <HelpTemplate />;
       case "Credits":

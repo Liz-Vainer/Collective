@@ -38,6 +38,7 @@ import {
   createEvent,
   deleteEvent,
   fetchEvents,
+  fetchParticipants,
 } from "../controllers/events.controlles.js";
 
 // Create new user (SignUp)
@@ -135,5 +136,8 @@ router.post("/events/dislike", protectRoute, dislikeEvent);
 
 //delete account (user deletes himself)
 router.delete("/delete-account", protectRoute, deleteAccount);
+
+//fetch all participants of a specific event
+router.post("/events/parts", protectRoute, fetchParticipants);
 
 export default router;

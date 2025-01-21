@@ -11,7 +11,6 @@ const useGetEvents = () => {
         if (!data) {
           throw new Error(data.error);
         }
-        console.log("all events:", data.events);
         setEvents(data.events);
       } catch (err) {
         console.error("Error fetching events:", err);

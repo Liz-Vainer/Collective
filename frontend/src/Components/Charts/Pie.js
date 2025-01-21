@@ -13,6 +13,7 @@ const capitalizeFirstLetter = (str) => {
 };
 
 export const MultipleCharts = ({ data }) => {
+  console.log("This is data", data);
   const ref1 = useRef(null);
   const ref2 = useRef(null);
   const ref3 = useRef(null);
@@ -63,6 +64,7 @@ export const MultipleCharts = ({ data }) => {
 
   // Count the occurrences of each religion in the data
   const religionCounts = data.reduce((acc, item) => {
+    console.log("This is religionCounts", acc);
     if (item.religion) {
       const religion = item.religion.toLowerCase(); // Convert to lowercase for consistency
       acc[religion] = (acc[religion] || 0) + 1;

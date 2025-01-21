@@ -1,63 +1,69 @@
 /* CommunityInfo.css */
 
 .community-info {
-    font-family: 'Roboto Slab', serif;
-    color: #333;
-    padding: 20px;
-    margin: 0 auto;
-    max-width: 800px;
-    position: relative;
-  }
-  
-  .community-info h1 {
-    font-size: 2em;
-    margin-bottom: 10px;
-  }
-  
-  .community-info p {
-    font-size: 1em;
-    line-height: 1.5;
-    margin-bottom: 20px;
-  }
-  
-  .community-info a {
-    color: #067029;
-    text-decoration: none;
-    margin-top: 20px;
-    margin-bottom: 10px; /* Adjust this to control the space below */
-    margin-left: 5px; /* Adjust left margin if needed */
-    margin-right: 5px; /* Adjust right margin if needed */
+  font-family: "Roboto Slab", serif;
+  color: #333;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 800px;
+  position: relative;
 }
-  
-  .community-info a:hover {
-    text-decoration: underline;
-    font-weight: bold;
 
+.community-info h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
 }
-  
-  /* Style for the section content */
-  .section-content {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .section-content img {
-    width: 100%;
-    max-width: 600px;
-    margin-top: 10px;
-  }
-  
-  /* Optional: Style for side content links */
-  .sideContainer ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sideContainer li {
-    margin-bottom: 10px;
-  }
 
+.community-info p {
+  font-size: 1em;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
 
+.community-info a {
+  color: #067029;
+  text-decoration: none;
+  margin-top: 20px;
+  margin-bottom: 10px; /* Adjust this to control the space below */
+  margin-left: 5px; /* Adjust left margin if needed */
+  margin-right: 5px; /* Adjust right margin if needed */
+}
+
+.community-info a:hover {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+/* Style for the section content */
+.section-content {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.section-content img {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 10px;
+}
+
+/* Optional: Style for side content links */
+.sideContainer ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sideContainer li {
+  margin-bottom: 10px;
+}
+.community-charts {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 700px;
+}

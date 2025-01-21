@@ -445,6 +445,47 @@ export const checkJoined = async (req, res) => {
   }
 };
 
+export const deleteAccount = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    // Remove the user from any community they're part of
+    const result = await Community.updateOne(
+      { users: userId },
+      { $pull: { users: userId } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log(
+        `User ID ${userId} was successfully removed from a community.`
+      );
+    } else {
+      console.log(`User ID ${userId} was not found in any community.`);
+    }
+
+    // Attempt to delete the user from one of the collections
+    const userCollections = [User, Organizer, Official];
+
+    for (const collection of userCollections) {
+      const user = await collection.findById(userId);
+      if (user) {
+        res.cookie("jwt", "", { maxAge: 0 });
+        await collection.deleteOne({ _id: userId });
+        console.log(`User ID ${userId} deleted from ${collection.modelName}.`);
+        return res.status(200).json({ message: "User successfully deleted" });
+      }
+    }
+
+    // If no matching user was found
+    return res.status(404).json({ message: "User not found" });
+  } catch (error) {
+    console.error("Error during account deletion:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+};
+
 export const removeUserFromCommunity = async (req, res) => {
   const { communityId, userId } = req.body;
   try {

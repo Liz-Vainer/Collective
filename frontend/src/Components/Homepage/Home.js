@@ -3,14 +3,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PostContainer from "./PostContainer";
 import ChatPopup from "../Popup/ChatPopup";
-import {
-  FaDoorOpen,
-  FaCog,
-
-  FaSearch,
-  FaBars,
-  FaCamera,
-} from "react-icons/fa";
+import { FaDoorOpen, FaCog, FaSearch, FaBars, FaCamera } from "react-icons/fa";
 import Drawer from "@mui/material/Drawer";
 import {
   GoogleMap,
@@ -18,7 +11,7 @@ import {
   useJsApiLoader,
   InfoWindow,
 } from "@react-google-maps/api";
-import useStyles from './DrawerStyle';
+import useStyles from "./DrawerStyle";
 import { useUser } from "../../context/UserContext";
 import useLogout from "../../hooks/useLogout";
 
@@ -49,9 +42,6 @@ const Home = () => {
   const handleSettings = () => navigate("/settings");
 
   const handleMoreInfo = () => navigate("/CommunityInfo");
-
-
-
 
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
@@ -128,7 +118,7 @@ const Home = () => {
   const chartRef = useRef(null); // Ref to access the pie chart instance
 
   const openPopup = () => setButtonPopup(true);
-const closePopup = () => setButtonPopup(false);
+  const closePopup = () => setButtonPopup(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -466,7 +456,6 @@ const closePopup = () => setButtonPopup(false);
         <button className="settings-button" onClick={handleSettings}>
           <FaCog size={30} color="white" />
         </button>
-      
 
         <div className="search-bar">
           <input
@@ -719,13 +708,13 @@ const closePopup = () => setButtonPopup(false);
         </button>
         {/* Chat Popup */}
         {authUser.userType === "User" && isChatOpen && (
-        <ChatPopup trigger={isChatOpen} setTrigger={setIsChatOpen}>
-          <div className="inner-chat-popup">
-            <Sidebar />
-            <MessageContainer />
-          </div>
-        </ChatPopup>
-      )}
+          <ChatPopup trigger={isChatOpen} setTrigger={setIsChatOpen}>
+            <div className="inner-chat-popup">
+              <Sidebar />
+              <MessageContainer />
+            </div>
+          </ChatPopup>
+        )}
 
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
@@ -769,51 +758,57 @@ const closePopup = () => setButtonPopup(false);
 
         {/* Drawer Component */}
         <Drawer
-  anchor="right"
-  open={drawerOpen}
-  onClose={() => setDrawerOpen(false)}
-  classes={{ paper: classes.drawerPaper }}
->
-  <div
-    className={classes.drawerContent}
-    onMouseLeave={() => setDrawerOpen(false)}
-  >
-    {/* User Greeting */}
-    <div className={classes.drawerText}>Hello!</div>
+          anchor="right"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          classes={{ paper: classes.drawerPaper }}
+        >
+          <div
+            className={classes.drawerContent}
+            onMouseLeave={() => setDrawerOpen(false)}
+          >
+            {/* User Greeting */}
+            <div className={classes.drawerText}>Hello!</div>
 
-    {/* Profile Section */}
-    <div className={classes.profileSection}>
-      <img src={newPfp} alt="Profile" className={classes.profilePic} />
-      <FaCamera
-        size={30}
-        color="#067029"
-        className={classes.changePfpIcon}
-        onClick={triggerFileInput} // Trigger the file input on icon click
-      />
-      <button onClick={triggerFileInput} className={classes.changeProfileBtn}>
-        Change Profile
-      </button>
-      {/* Hidden File Input */}
-      <input
-        id="fileInput"
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange} // Handle the file input change
-        style={{ display: "none" }}
-      />
-    </div>
+            {/* Profile Section */}
+            <div className={classes.profileSection}>
+              <img src={newPfp} alt="Profile" className={classes.profilePic} />
+              <FaCamera
+                size={30}
+                color="#067029"
+                className={classes.changePfpIcon}
+                onClick={triggerFileInput} // Trigger the file input on icon click
+              />
+              <button
+                onClick={triggerFileInput}
+                className={classes.changeProfileBtn}
+              >
+                Change Profile
+              </button>
+              {/* Hidden File Input */}
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange} // Handle the file input change
+                style={{ display: "none" }}
+              />
+            </div>
 
-    {/* Quote Section */}
-    <div className={classes.quoteSection}>
-      "Nature does not hurry, yet everything is accomplished." – Lao Tzu
-    </div>
+            {/* Quote Section */}
+            <div className={classes.quoteSection}>
+              "Nature does not hurry, yet everything is accomplished." – Lao Tzu
+            </div>
 
-    {/* Settings Button */}
-    <button onClick={handleSettings} className={classes.changeProfileBtn}>
-      Settings
-    </button>
-  </div>
-</Drawer>
+            {/* Settings Button */}
+            <button
+              onClick={handleSettings}
+              className={classes.changeProfileBtn}
+            >
+              Settings
+            </button>
+          </div>
+        </Drawer>
 
         
       </div>

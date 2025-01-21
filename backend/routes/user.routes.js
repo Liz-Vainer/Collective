@@ -25,6 +25,7 @@ import {
   leaveEvent,
   likeEvent,
   dislikeEvent,
+  checkJoinedEvent,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -116,11 +117,14 @@ router.post("/events/join", protectRoute, joinEvent);
 //leave event
 router.post("/events/leave", protectRoute, leaveEvent);
 
+//check if in event
+router.post("/events/is-part", protectRoute, checkJoinedEvent);
+
 //create event
 router.post("/events/create", protectRoute, createEvent);
 
 //delete event
-router.post("/events/leave", protectRoute, deleteEvent);
+router.post("/events/delete", protectRoute, deleteEvent);
 
 //like event
 router.post("/events/like", protectRoute, likeEvent);

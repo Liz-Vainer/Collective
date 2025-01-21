@@ -889,7 +889,9 @@ export const removeFriend = async (req, res) => {
       io.to(receiverSocketId).emit("removeFriend", user);
     }
 
-    res.status(200).json({ message: "friend removed succesfully!" });
+    res
+      .status(200)
+      .json({ message: "friend removed succesfully!", friends: user.friends });
   } catch (err) {
     console.error("Error in removeFriend: ", err.message);
     res.status(500).json({ err: "Internal server error" });
@@ -919,17 +921,28 @@ export const leaveEvent = async (req, res) => {
 
 //join Event
 export const joinEvent = async (req, res) => {
-  const { EventId, user } = req.body;
+  const { EventId, userId } = req.body;
+
+  // Validate input
+  if (!EventId || !userId) {
+    return res.status(400).json({ message: "EventId and userId are required" });
+  }
+
   try {
-    const event = await Event.findById(EventId);
-    if (!event) {
+    // Use $addToSet to prevent duplicates and update directly in the database
+    const updatedEvent = await Event.findByIdAndUpdate(
+      EventId,
+      { $addToSet: { participants: userId } },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedEvent) {
       return res.status(404).json({ message: "Event not found" });
     }
-    event.participants.push(user);
-    await event.save();
+
     return res.status(200).json({
       message: "User successfully added to the Event",
-      participants: event.participants,
+      participants: updatedEvent.participants,
     });
   } catch (err) {
     console.error("Error in joinEvent", err);
@@ -966,11 +979,13 @@ export const checkJoinedEvent = async (req, res) => {
 export const likeEvent = async (req, res) => {
   const { eventId } = req.body;
   try {
-    const event = await Event.findOne({ eventId });
+    const event = await Event.findById(eventId);
     event.likes = event.likes + 1;
     await event.save();
 
-    res.status(200).json({ message: "Event liked succesfully" });
+    res
+      .status(200)
+      .json({ message: "Event liked succesfully", likes: event.likes });
   } catch (error) {
     return res.status(500).json({
       message: "An error occurred in likeEvent",
@@ -982,11 +997,14 @@ export const likeEvent = async (req, res) => {
 export const dislikeEvent = async (req, res) => {
   const { eventId } = req.body;
   try {
-    const event = await Event.findOne({ eventId });
+    const event = await Event.findById(eventId);
     event.dislikes = event.dislikes + 1;
     await event.save();
 
-    res.status(200).json({ message: "Event disliked succesfully" });
+    res.status(200).json({
+      message: "Event disliked succesfully",
+      dislikes: event.dislikes,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "An error occurred in dislikeEvent",

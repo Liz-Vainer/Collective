@@ -2,8 +2,10 @@ import { useState } from "react";
 
 const useCreateEvent = () => {
   const [event, setEvent] = useState();
+  const [loading, setLoading] = useState(false); // State to track loading status
 
   const createEvent = async (newEvent) => {
+    setLoading(true); // Set loading to true when the request starts
     try {
       const res = await fetch(`/events/create`, {
         method: "POST",
@@ -20,12 +22,15 @@ const useCreateEvent = () => {
       });
       const data = await res.json();
       setEvent(data);
-      return event;
+      setLoading(false); // Set loading to false once the request completes
+      return data; // Return the created event data
     } catch (err) {
-      console.log("error sending messsage: ", err);
+      console.log("error sending message: ", err);
+      setLoading(false); // Set loading to false if an error occurs
     }
   };
-  return { createEvent };
+
+  return { createEvent, loading }; // Return loading status along with createEvent function
 };
 
 export default useCreateEvent;

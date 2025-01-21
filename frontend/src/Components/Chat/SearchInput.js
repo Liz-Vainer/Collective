@@ -4,7 +4,7 @@ import useGetConversation from "../../hooks/useGetConversation";
 const SearchInput = () => {
   const [search, setSearch] = useState("");
   const { setSelectedConversation } = useConversation();
-  const { conversations } = useGetConversation();
+  const { friends } = useGetConversation();
 
   const handelSubmit = (e) => {
     e.preventDefault();
@@ -14,7 +14,8 @@ const SearchInput = () => {
       return alert("Search term must be at least 3 characters long");
     }
 
-    const conversation = conversations.find((c) =>
+    console.log("friends:", friends);
+    const conversation = friends.find((c) =>
       c.name.toLowerCase().includes(search.toLowerCase())
     );
 

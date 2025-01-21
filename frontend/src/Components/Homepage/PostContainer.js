@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./PostContainer.css";
 import useGetEvents from "../../hooks/useGetEvents";
 import { useUser } from "../../context/UserContext";
 import Popup from "../Popup/Popup";
 import useCreateEvent from "../../hooks/useCreateEvent";
+import useRemoveEvent from "../../hooks/useRemoveEvent";
+import useEvents from "../../zustand/useEvents";
+import useIsParticipant from "../../hooks/useIsParticipant";
+import useJoinEvent from "../../hooks/useJoinEvent";
+import useLeaveEvent from "../../hooks/useLeaveEvent";
+import useLikeEvent from "../../hooks/useLikeEvent";
+import useDislikeEvent from "../../hooks/useDislikeEvent";
 
 // Function to convert image URL to base64
 const convertImageToBase64 = async (imageUrl) => {
@@ -19,14 +26,61 @@ const convertImageToBase64 = async (imageUrl) => {
 };
 
 const Post = ({ event }) => {
+  const { authUser } = useUser();
+  const { removeEvent, loading } = useRemoveEvent();
+  const [isParticipant, setIsParticipant] = useState(null);
+  const { joinEvent } = useJoinEvent();
+  const { leaveEvent } = useLeaveEvent();
+  const { isParticipant: checkParticipant } = useIsParticipant(); // Destructure isParticipant from useIsParticipant
+  const { likeEvent } = useLikeEvent();
+  const { dislikeEvent } = useDislikeEvent();
+
+  useEffect(() => {
+    // Check if the user is a participant when the component mounts
+    const fetchParticipantStatus = async () => {
+      const status = await checkParticipant(event._id, authUser.id);
+      setIsParticipant(status);
+    };
+
+    fetchParticipantStatus();
+  }, [authUser.id, event._id, checkParticipant]);
+
+  const handleRemove = async () => {
+    await removeEvent(event.name);
+  };
+
+  const handleParticipants = async () => {};
+
+  const handleJoinOrLeave = async () => {
+    if (!isParticipant) {
+      // If not a participant, join the event
+      const success = await joinEvent(event._id, authUser.id);
+      if (success) {
+        setIsParticipant(true);
+      }
+    } else {
+      const success = await leaveEvent(event._id, authUser.id);
+      if (success) {
+        setIsParticipant(success);
+      }
+    }
+  };
   // Handle like click
-  const handleLike = () => {};
+  const handleLike = async () => {
+    const likes = await likeEvent(event._id);
+    event.likes = likes;
+  };
 
   // Handle dislike click
-  const handleDislike = () => {};
+  const handleDislike = async () => {
+    const dislikes = await dislikeEvent(event._id);
+    event.dislikes = dislikes;
+  };
 
   return (
     <div className="post">
+      <p className="name">{event.name}</p>
+
       <img src={event.image} alt={`Post ${event.id}`} className="post-image" />
       <div className="post-actions">
         <button className="like-button" onClick={() => handleLike()}>
@@ -35,14 +89,41 @@ const Post = ({ event }) => {
         <button className="dislike-button" onClick={() => handleDislike()}>
           👎 {event.dislikes}
         </button>
+        {authUser.userType === "Organizer" && (
+          <div>
+            <button
+              onClick={() => handleRemove()}
+              disabled={loading} // Disable button while loading
+            >
+              {loading ? "Removing..." : "Remove"}{" "}
+              {/* Display different text during loading */}
+            </button>
+            <button onClick={() => handleParticipants()}>participants</button>
+          </div>
+        )}
+        {authUser.userType === "User" && (
+          <div>
+            <button
+              onClick={() => handleJoinOrLeave()}
+              disabled={loading} // Disable button while loading
+            >
+              {isParticipant ? "Leave" : "Join"}{" "}
+              {/* Display different text during loading */}
+            </button>
+          </div>
+        )}
       </div>
+      <p className="date">
+        {event.start} - {event.end}
+      </p>
     </div>
   );
 };
 
 const PostContainer = () => {
   const { authUser } = useUser();
-  const { events, setEvents } = useGetEvents();
+  const { events, setEvents } = useEvents();
+  useGetEvents();
   const [isPaused, setIsPaused] = useState(false);
   const [addButton, setAddButton] = useState(false);
   const [newEvent, setNewEvent] = useState({
@@ -52,7 +133,7 @@ const PostContainer = () => {
     endDate: "",
     image: "",
   });
-  const { createEvent } = useCreateEvent();
+  const { createEvent, loading } = useCreateEvent();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,7 +159,7 @@ const PostContainer = () => {
 
     const createdEvent = await createEvent(newEvent);
     if (createdEvent) {
-      setEvents([...events, createEvent]);
+      setEvents([...events, createdEvent]);
       setAddButton(false); // Close the popup after the event is created
     }
   };
@@ -87,8 +168,19 @@ const PostContainer = () => {
     return <div>Loading events...</div>;
   }
 
+  // Ensure events is always an array
+  if (!Array.isArray(events)) {
+    console.log(events);
+    return <div>Loading events...</div>;
+  }
+
   return (
     <>
+      {authUser.userType === "Organizer" && (
+        <div>
+          <button onClick={toggleAdd}>Add event</button>
+        </div>
+      )}
       <div
         className="post-container"
         onMouseEnter={handleMouseEnter}
@@ -96,14 +188,9 @@ const PostContainer = () => {
       >
         <div className={`post-wrapper ${isPaused ? "paused" : ""}`}>
           {events.map((event) => (
-            <Post key={event.id} event={event} />
+            <Post key={event._id} event={event} />
           ))}
         </div>
-        {authUser.userType === "Organizer" && (
-          <div>
-            <button onClick={toggleAdd}>Add event</button>
-          </div>
-        )}
       </div>
       <Popup trigger={addButton} setTrigger={toggleAdd} className="popup">
         <form onSubmit={HandleAddEvent} className="create-event-form">
@@ -153,7 +240,9 @@ const PostContainer = () => {
             onChange={handleChange}
             required
           />
-          <button type="submit">Create Event</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create Event"}
+          </button>
         </form>
       </Popup>
     </>

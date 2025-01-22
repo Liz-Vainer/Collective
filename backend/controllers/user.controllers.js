@@ -664,7 +664,7 @@ export const updateProfilePicture = async (req, res) => {
   }
 };
 
-//frinds for chat
+//friends for chat
 export const showFriends = async (req, res) => {
   try {
     const loggedUserId = req.user.id;

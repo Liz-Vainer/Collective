@@ -43,3 +43,4 @@ describe('POST /logout', () => {
     expect(response.headers['set-cookie'][0]).to.include('jwt=; Max-Age=0');
   });
 });// should be fail there is navigate
+

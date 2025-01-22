@@ -50,7 +50,7 @@ describe("POST /joinEvent", function () {
 
   let eventId;
   let userId;
-  
+
   it("should successfully add a user to the event", async () => {
     const response = await chai.request(app)
       .post("/joinEvent")
@@ -68,7 +68,7 @@ describe("POST /joinEvent", function () {
     const response = await chai.request(app)
       .post("/joinEvent")
       .send({
-        EventId: mongoose.Types.ObjectId(), // Invalid event ID
+        EventId: mongoose.Types.ObjectId(), 
         userId: userId,
       });
 

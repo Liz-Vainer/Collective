@@ -320,12 +320,12 @@ export const logout = async (req, res) => {
 //to find all users in a community
 export const findUsers = async (req, res) => {
   const { communityId } = req.body;
-  console.log(communityId);
   try {
     const community = await Community.findById(communityId);
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
+    console.log(community.users);
     if (community.users.length > 0) {
       let arrayUsers = [];
       for (let i = 0; i < community.users.length; i++) {

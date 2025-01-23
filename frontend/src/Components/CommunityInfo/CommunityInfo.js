@@ -7,7 +7,7 @@ import communityPost1 from "../Assets/communityPost_1.jpg";
 import MultipleCharts from "../Charts/Pie";
 import { useUser } from "../../context/UserContext";
 
-const CommunityInfo = () => {
+const CommunityInfo = (communityId) => {
   const [communityData, setCommunityData] = useState([]);
   const [currentSection, setCurrentSection] = useState(null);
   const [users, setUsers] = useState([]);
@@ -21,7 +21,9 @@ const CommunityInfo = () => {
   const { authUser } = useUser(); // Destructure user from context
 
   useEffect(() => {
+    console.log("id", selectedCommunityId);
     if (!selectedCommunityId) return;
+    console.log("id", selectedCommunityId);
 
     const fetchUsers = async () => {
       setLoadingUsers(true);

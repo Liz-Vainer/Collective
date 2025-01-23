@@ -742,7 +742,7 @@ const Home = () => {
             {authUser.userType === "User" && (
               <div className="events-joined">
                 <h3>Events Joined</h3>
-                {userEvents.length > 0 ? (
+                {userEvents ? (
                   <ul>
                     {userEvents.map((eventName, index) => (
                       <li key={index}>{eventName}</li>

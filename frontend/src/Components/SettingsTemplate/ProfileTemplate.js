@@ -43,6 +43,7 @@ const ProfileTemplate = () => {
   };
 
   const handleSave = async () => {
+    console.log("This is authUser", authUser);
     const userData = {
       userID: authUser.id,
       gender: gender,

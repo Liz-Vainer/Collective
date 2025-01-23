@@ -39,6 +39,7 @@ const ProfileTemplate = () => {
   };
 
   const handleSave = async () => {
+    console.log("This is authUser", authUser);
     const userData = {
       userID: authUser.id,
       gender: gender,
@@ -73,10 +74,12 @@ const ProfileTemplate = () => {
 
   return (
     <div>
-       <div className="profile-header">
-    <h2>Profile</h2>
-    <button className="back-home-button" onClick={handleSave}>Back home</button>
-  </div>
+      <div className="profile-header">
+        <h2>Profile</h2>
+        <button className="back-home-button" onClick={handleSave}>
+          Back home
+        </button>
+      </div>
       <ul>
         <li>
           <strong>Name:</strong> {authUser.name}
@@ -85,10 +88,7 @@ const ProfileTemplate = () => {
         <li>
           <strong>Gender:</strong>
           {isEditing.gender ? (
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-            >
+            <select value={gender} onChange={(e) => setGender(e.target.value)}>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
@@ -179,8 +179,6 @@ const ProfileTemplate = () => {
           </button>
         </li>
       </ul>
-      
-
     </div>
   );
 };

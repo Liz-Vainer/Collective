@@ -63,7 +63,8 @@ const CommunityInfo = () => {
         sideContent: [
           { name: "Upcoming Events", type: "event" },
           { name: "Trending Topics", type: "topics" },
-          ...(authUser?.userType === "Official"
+          ...(authUser?.userType === "Official" ||
+          authUser?.userType === "Organizer"
             ? [{ name: "Charts", type: "charts" }]
             : []), // Conditionally add "Charts" if user is Official
           { name: "Resources", type: "resources" },
@@ -103,7 +104,7 @@ const CommunityInfo = () => {
           </div>
         );
       case "charts":
-        if (authUser?.userType !== "Official") {
+        if (authUser?.userType === "User") {
           return <div>Access to charts is restricted.</div>;
         }
         return (

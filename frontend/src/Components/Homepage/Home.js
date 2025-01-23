@@ -736,19 +736,20 @@ const Home = () => {
               ))}
             </ul>
 
-            {/* New container for Events Joined */}
-            <div className="events-joined">
-              <h3>Events Joined</h3>
-              {userEvents.length > 0 ? (
-                <ul>
-                  {userEvents.map((eventName, index) => (
-                    <li key={index}>{eventName}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No events joined yet.</p>
-              )}
-            </div>
+            {authUser.userType === "User" && (
+              <div className="events-joined">
+                <h3>Events Joined</h3>
+                {userEvents.length > 0 ? (
+                  <ul>
+                    {userEvents.map((eventName, index) => (
+                      <li key={index}>{eventName}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No events joined yet.</p>
+                )}
+              </div>
+            )}
           </div>
         )}
 

@@ -52,7 +52,10 @@ const Home = () => {
     }, 500);
   };
 
-  const handleMoreInfo = () => navigate("/CommunityInfo");
+  const handleMoreInfo = () => {
+    const selectedCommunityId = selectedCommunity._id; // Example: passing only the community ID
+    navigate(`/CommunityInfo?id=${selectedCommunityId}`);
+  };
 
   useEffect(() => {
     // Remove any move transition classes when this component loads

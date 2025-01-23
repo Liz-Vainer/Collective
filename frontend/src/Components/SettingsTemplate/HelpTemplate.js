@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import "./HelpTemplate.css";
-
+import { useNavigate } from "react-router-dom";
 const HelpTemplate = () => {
   const handleEmailClick = () => {
     const userConfirmed = window.confirm(
       "Do you want to open your email app to contact support?"
     );
     if (userConfirmed) {
-      window.location.href = "mailto:support@company.com?subject=Help%20Request&body=Describe%20your%20issue%20here.";
+      window.location.href = "mailto:liza.vainer2018@gmail.com?subject=Help%20Request&body=Describe%20your%20issue%20here.";
     }
   };
-
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    navigate('/home');
+  };
   const FAQItem = ({ question, answer }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -29,7 +32,10 @@ const HelpTemplate = () => {
 
   return (
     <div className="help-container">
-      <h2>Need some help?</h2>
+       <div className="profile-header">
+    <h2>Need some help?</h2>
+    <button className="back-home-button" onClick={handleNavigate}>Back home</button>
+  </div>
       <div className="faq-section">
         <h3>Frequently Asked Questions</h3>
         <FAQItem

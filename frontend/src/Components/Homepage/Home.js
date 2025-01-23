@@ -3,13 +3,18 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PostContainer from "./PostContainer";
 import ChatPopup from "../Popup/ChatPopup";
-import { FaDoorOpen, FaCog, FaSearch, FaBars, FaCamera } from "react-icons/fa";
+
+import { FaDoorOpen, FaSearch, FaBars, FaCamera 
+} from "react-icons/fa";
+
 import Drawer from "@mui/material/Drawer";
 import {
   GoogleMap,
   Marker,
   useJsApiLoader,
   InfoWindow,
+  OverlayView,
+  
 } from "@react-google-maps/api";
 import useStyles from "./DrawerStyle";
 import { useUser } from "../../context/UserContext";
@@ -39,13 +44,19 @@ const Home = () => {
     logout();
     navigate("/");
   };
-  const handleSettings = () => navigate("/settings");
-
-  const handleMoreInfo = () => {
-    const selectedCommunityId = selectedCommunity._id; // Example: passing only the community ID
-    navigate(`/CommunityInfo?id=${selectedCommunityId}`);
+  const handleSettings = () => {
+    document.body.classList.add("move-left");
+    setTimeout(() => {
+      navigate("/settings");
+    }, 500);
   };
 
+  const handleMoreInfo = () => navigate("/CommunityInfo");
+
+  useEffect(() => {
+    // Remove any move transition classes when this component loads
+    document.body.classList.remove('move-left', 'move-right');
+  }, []);
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
     height: "80%",
@@ -117,11 +128,7 @@ const Home = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMember, setIsMember] = useState();
   const [showMembers, setShowMembers] = useState(false);
-  const [users, setUsers] = useState([]);
   const chartRef = useRef(null); // Ref to access the pie chart instance
-
-  const openPopup = () => setButtonPopup(true);
-  const closePopup = () => setButtonPopup(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -176,6 +183,8 @@ const Home = () => {
       console.error("An error occurred while trying to leave a community", err);
     }
   }
+  
+  
   //Join community
   async function joinCommunity(selectedCommunity) {
     try {
@@ -493,121 +502,114 @@ const Home = () => {
           <h1>Welcome to Be'er Sheba!</h1>
           {/* Google Map */}
           <GoogleMap
-            className="google-map"
-            mapContainerStyle={mapContainerStyle}
-            center={center}
-            zoom={15}
-            onLoad={onLoad}
-            onUnmount={onUnmount}
-          >
-            {/* Markers for Filtered Communities */}
-            {filteredCommunities.map((community) => (
-              <Marker
-                key={community._id}
-                position={{ lat: community.lat, lng: community.lng }}
-                onClick={() => setSelectedCommunity(community)}
-              />
-            ))}
-            {/* InfoWindow for Selected Community */}
-            {selectedCommunity && (
-              <InfoWindow
-                className="info-window"
-                position={{
-                  lat: selectedCommunity.lat,
-                  lng: selectedCommunity.lng,
+  className="google-map"
+  mapContainerStyle={mapContainerStyle}
+  center={center}
+  zoom={15}
+  onLoad={onLoad}
+  onUnmount={onUnmount}
+  options={{ suppressInfoWindows: true }} // Correct option
+>
+  {/* Markers for Filtered Communities */}
+  {filteredCommunities.map((community) => (
+    <Marker
+      key={community._id}
+      position={{ lat: community.lat, lng: community.lng }}
+      onClick={() => setSelectedCommunity(community)}
+      options={{ suppressInfoWindows: true }} // Correct option
+    />
+  ))}
+
+  {/* InfoWindow for Selected Community */}
+  {selectedCommunity && (
+    <OverlayView
+      position={{
+        lat: selectedCommunity.lat,
+        lng: selectedCommunity.lng,
+      }}
+      mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET} // Correct pane
+    >
+      <div className="info-window-content">
+        <button
+          className="close-button"
+          onClick={() => setSelectedCommunity(null)}
+        >
+          X
+        </button>
+        <h3>{selectedCommunity.name}</h3>
+        <p>Welcome to {selectedCommunity.name} community!</p>
+        <div className="action-buttons">
+          {authUser.userType !== "Official" &&
+            !authUser.favorites.some(
+              (fav) => fav.name === selectedCommunity.name
+            ) && (
+              <button
+                onClick={() => {
+                  addToFavorites(selectedCommunity);
+                  setSelectedCommunity(null);
                 }}
-                onCloseClick={() => setSelectedCommunity(null)}
               >
-                <div className="info-window-content">
-                  <h3>{selectedCommunity.name}</h3>
-                  <p>Welcome to {selectedCommunity.name} community!</p>
-                  {authUser.userType !== "Official" &&
-                    !authUser.favorites.some(
-                      (fav) => fav.name === selectedCommunity.name
-                    ) && (
-                      <div>
-                        <button
-                          onClick={() => {
-                            addToFavorites(selectedCommunity);
-                            setSelectedCommunity(null);
-                          }}
-                        >
-                          Add to Favorites
-                        </button>
-                      </div>
-                    )}
-                  {authUser.userType !== "Official" && !isMember && (
-                    <div>
-                      <button onClick={() => joinCommunity(selectedCommunity)}>
-                        Join Community
-                      </button>
-                    </div>
-                  )}
-                  {authUser.userType !== "Official" && isMember && (
-                    <div>
-                      <button
-                        onClick={() => {
-                          leaveCommunity(selectedCommunity);
-                        }}
-                      >
-                        Leave Community
-                      </button>
-                    </div>
-                  )}
-
-                  {authUser.userType !== "Official" &&
-                    authUser.favorites.some(
-                      (fav) => fav.name === selectedCommunity.name
-                    ) && (
-                      <button
-                        onClick={() => {
-                          removeFavorite(selectedCommunity);
-                          setSelectedCommunity(false);
-                        }}
-                      >
-                        Remove from favorites
-                      </button>
-                    )}
-                  {/* Pie charts */}
-                  {/* {authUser.userType === "Official" && (
-                    <button onClick={() => downloadChart}>Pie Charts</button>
-                  )} */}
-                  {/* Render the PieChart but hide it from view */}
-                  {/* <PieChart users={users} chartRef={chartRef} /> */}
-
-                  {authUser.userType === "Official" && (
-                    <button
-                      onClick={() => {
-                        removeCommunity(selectedCommunity);
-                        setSelectedCommunity(false);
-                      }}
-                    >
-                      Remove Community
-                    </button>
-                  )}
-                  {authUser.userType === "Official" && (
-                    <button
-                      onClick={() => {
-                        setShowMembers(true);
-                      }}
-                    >
-                      Show members
-                    </button>
-                  )}
-                  {/* {authUser.userType === "Official" && (
-                    <button onClick={() => {}}>Show statistics</button>
-                  )} */}
-                  <button
-                    onClick={() => {
-                      handleMoreInfo();
-                    }}
-                  >
-                    More info
-                  </button>
-                </div>
-              </InfoWindow>
+                Add to Favorites
+              </button>
             )}
-          </GoogleMap>
+          {authUser.userType !== "Official" && !isMember && (
+            <button onClick={() => joinCommunity(selectedCommunity)}>
+              Join Community
+            </button>
+          )}
+          {authUser.userType !== "Official" && isMember && (
+            <button
+              onClick={() => {
+                leaveCommunity(selectedCommunity);
+              }}
+            >
+              Leave Community
+            </button>
+          )}
+          {authUser.userType !== "Official" &&
+            authUser.favorites.some(
+              (fav) => fav.name === selectedCommunity.name
+            ) && (
+              <button
+                onClick={() => {
+                  removeFavorite(selectedCommunity);
+                  setSelectedCommunity(false);
+                }}
+              >
+                Remove from favorites
+              </button>
+            )}
+          {authUser.userType === "Official" && (
+            <button
+              onClick={() => {
+                removeCommunity(selectedCommunity);
+                setSelectedCommunity(false);
+              }}
+            >
+              Remove Community
+            </button>
+          )}
+          {authUser.userType === "Official" && (
+            <button
+              onClick={() => {
+                setShowMembers(true);
+              }}
+            >
+              Show members
+            </button>
+          )}
+          <button
+            onClick={() => {
+              handleMoreInfo();
+            }}
+          >
+            More info
+          </button>
+        </div>
+      </div>
+    </OverlayView>
+  )}
+</GoogleMap>
         </div>
         {/* Pop up for showing members*/}
         <Popup
@@ -719,15 +721,31 @@ const Home = () => {
 
         {/* Right Toolbox for Favorites */}
         {authUser.userType !== "Official" && (
-          <div className="right-toolside">
-            <h3>Your Favorites</h3>
-            <ul>
-              {favorites.map((fav) => (
-                <li key={fav._id}>{fav.name}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+  <div className="right-toolside">
+    <h3>Your Favorites</h3>
+    <ul>
+      {favorites.map((fav) => (
+        <li key={fav._id}>
+          {fav.name}
+          <button
+            onClick={() => handleMoreInfo(fav)}
+            className="more-info-btn"
+          >
+            More Info
+          </button>
+        </li>
+      ))}
+    </ul>
+    
+    {/* New container for Events Joined */}
+    <div className="events-joined">
+      <h3>Events Joined</h3>
+      <ul>
+       
+      </ul>
+    </div>
+  </div>
+)}
 
         {/*Right toolbox for city official user*/}
         {/* Right Toolbox for Favorites */}

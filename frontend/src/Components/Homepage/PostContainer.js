@@ -13,6 +13,7 @@ import useLikeEvent from "../../hooks/useLikeEvent";
 import useDislikeEvent from "../../hooks/useDislikeEvent";
 import useGetParticipants from "../../hooks/useGetParticipants";
 import "../Members/Members.css";
+import useUserEvents from "../../zustand/useUserEvents";
 
 // Function to convert image URL to base64
 const convertImageToBase64 = async (imageUrl) => {
@@ -39,6 +40,7 @@ const Post = ({ event }) => {
   const { getParticipants, loading1 } = useGetParticipants();
   const [showParticipants, setShowParticipans] = useState(false);
   const [participants, setParticipants] = useState([]);
+  const { userEvents, setUserEvents } = useUserEvents();
 
   const togglePart = () => {
     setShowParticipans(!showParticipants);
@@ -70,11 +72,15 @@ const Post = ({ event }) => {
       const success = await joinEvent(event._id, authUser.id);
       if (success) {
         setIsParticipant(true);
+        setUserEvents([...userEvents, event.name]);
       }
     } else {
       const success = await leaveEvent(event._id, authUser.id);
       if (success) {
         setIsParticipant(success);
+        setUserEvents(
+          userEvents.filter((eventName) => eventName !== event.name)
+        );
       }
     }
   };

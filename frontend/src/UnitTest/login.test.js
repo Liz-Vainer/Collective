@@ -43,7 +43,6 @@ describe("useLogin", () => {
       const { getByText } = render(<TestComponent setAuthUser={setAuthUserStub} />);
       
       await act(async () => {
-        // wait for the effect to complete
       });
 
       expect(fetchStub.calledOnce).to.be.true;
@@ -65,7 +64,6 @@ describe("useLogin", () => {
       const { getByText } = render(<TestComponent setAuthUser={setAuthUserStub} />);
       
       await act(async () => {
-        // wait for the effect to complete
       });
 
       expect(fetchStub.calledOnce).to.be.true;

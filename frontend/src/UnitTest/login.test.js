@@ -2,7 +2,7 @@ import { render, act } from "@testing-library/react";
 import { expect } from "chai";
 import sinon from "sinon";
 import React, { useState, useEffect } from "react";
-import useLogin from "../../components/login/useLogin"; 
+import useLogin from "../../components/LoginPage/useLogin"; 
 
 const TestComponent = ({ setAuthUser }) => {
   const login = useLogin({ setAuthUser });

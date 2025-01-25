@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import useSignup from "../../components/SignupPage/useSignup"; 
 
 describe("useSignup", () => {
   let originalFetch;
@@ -38,6 +39,6 @@ describe("useSignup", () => {
       "male"
     );
 
-    expect(result).to.be.true; // Check if the result is true,successful signup
+    expect(result).to.be.true; // Check if the result is true, successful signup
   });
 });

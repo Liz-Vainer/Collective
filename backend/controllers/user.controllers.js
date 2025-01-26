@@ -1,11 +1,11 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"; //crypting for hashed password
 import User from "../models/user.js"; // user model
 import Organizer from "../models/orginaizer.js"; // Organizer model
 import Official from "../models/official.js"; // Official model
 import Community from "../models/community.js"; // Community model
 import Event from "../models/events.js"; // Event model
-import generateTokenAndSetCookie from "../utils/generateToken.js";
-import { getReceiverSocketId, io } from "../socket/socket.js";
+import generateTokenAndSetCookie from "../utils/generateToken.js"; //token generator for security
+import { getReceiverSocketId, io } from "../socket/socket.js"; //socket for realtime communication with the server
 
 // Function to try to log in by checking each model (User, Organizer, Official)
 const handleLogin = async (name, password, res) => {
@@ -13,7 +13,7 @@ const handleLogin = async (name, password, res) => {
     let user;
     let userType = "";
     // Check User model
-    user = await User.findOne({ name });
+    user = await User.findOne({ name }); //trying to find user type for model
     if (user) {
       userType = "User";
     } else {
@@ -31,23 +31,25 @@ const handleLogin = async (name, password, res) => {
     }
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials" }); //if user is not found
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials" }); //checking if the passwords match in the database
     }
 
-    generateTokenAndSetCookie(user._id, res);
+    generateTokenAndSetCookie(user._id, res); //generating token for the logged user
     let isReligious;
     if (user.religion !== "no") {
+      //checking if the user has selected religion
       isReligious = true;
     } else {
       isReligious = false;
     }
 
     res.json({
+      //returning user data for usage in the front
       message: `${userType} Login successful`,
       id: user.id,
       userType,
@@ -61,6 +63,7 @@ const handleLogin = async (name, password, res) => {
       name: user.name,
     });
   } catch (err) {
+    //error handeling
     console.error("Login error:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -79,7 +82,7 @@ const handleSignup = async (
   interest,
   gender
 ) => {
-  let Model;
+  let Model; //setting usertype for correct model
   switch (userType) {
     case "citizen":
       userType = "User";
@@ -99,15 +102,16 @@ const handleSignup = async (
 
   const existingUser = await Model.findOne({ name });
   if (existingUser) {
-    return res.status(400).json({ message: "User already exists" });
+    return res.status(400).json({ message: "User already exists" }); //checking if user already exists
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10); //hashing the password for security
 
-  const boyPic = `https://avatar.iran.liara.run/public/boy?username=${name}`;
-  const girlPic = `https://avatar.iran.liara.run/public/girl?username=${name}`;
+  const boyPic = `https://avatar.iran.liara.run/public/boy?username=${name}`; //default pic for male
+  const girlPic = `https://avatar.iran.liara.run/public/girl?username=${name}`; //default pic for female
 
   const newUser = new Model({
+    //creating new user using the user model inthe database
     name,
     email,
     password: hashedPassword,
@@ -120,15 +124,17 @@ const handleSignup = async (
   });
 
   try {
-    await newUser.save();
-    generateTokenAndSetCookie(newUser._id, res);
+    await newUser.save(); //saving new user
+    generateTokenAndSetCookie(newUser._id, res); //generating token for the user for security in routes
     let isReligious;
     if (newUser.religion !== "no") {
+      //checking if user is religios
       isReligious = true;
     } else {
       isReligious = false;
     }
     res.status(201).json({
+      //returning new user data for front usage
       message: `${userType} Login successful`,
       id: newUser.id,
       userType,
@@ -141,6 +147,7 @@ const handleSignup = async (
       name: newUser.name,
     });
   } catch (err) {
+    //error handeling
     console.error("Error creating user:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -158,13 +165,15 @@ export const signup = async (req, res) => {
     ethnicity,
     interest,
     gender,
-  } = req.body;
+  } = req.body; //params that are recived from front
 
   if (!name || !password || !email || !userType) {
+    //if fields are missing
     return res.status(400).json({ message: "All fields are required" });
   }
 
   await handleSignup(
+    //calling handle signup function
     name,
     email,
     password,

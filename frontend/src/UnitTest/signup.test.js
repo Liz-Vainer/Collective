@@ -1,11 +1,14 @@
 import { expect } from "chai";
-import useSignup from "../../components/SignupPage/useSignup"; 
+import sinon from 'sinon';
+import useSignup from "../components/SignupPage/useSignup";
 
 describe("useSignup", () => {
   let originalFetch;
+  let contextMock;
 
   beforeEach(() => {
     originalFetch = global.fetch;
+    contextMock = { setAuthUser: sinon.spy() };
 
     global.fetch = async (url, options) => {
       if (url === "/signup" && options.method === "POST") {
@@ -19,13 +22,11 @@ describe("useSignup", () => {
   });
 
   afterEach(() => {
-    // Restore the original fetch function after tests
     global.fetch = originalFetch;
   });
 
   it("should successfully sign up the user", async () => {
-    const mockSetAuthUser = (user) => {}; 
-    const signup = useSignup(mockSetAuthUser); // Call useSignup with the mocked context function
+    const signup = useSignup(contextMock.setAuthUser);
 
     const result = await signup(
       "John Doe",
@@ -39,6 +40,6 @@ describe("useSignup", () => {
       "male"
     );
 
-    expect(result).to.be.true; // Check if the result is true, successful signup
+    expect(result).to.be.true;
   });
 });

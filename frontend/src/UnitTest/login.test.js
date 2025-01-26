@@ -1,8 +1,7 @@
 import { render, act } from "@testing-library/react";
 import { expect } from "chai";
 import sinon from "sinon";
-import React, { useState, useEffect } from "react";
-import useLogin from "../../components/LoginPage/useLogin"; 
+import App from './App';
 
 const TestComponent = ({ setAuthUser }) => {
   const login = useLogin({ setAuthUser });
@@ -71,7 +70,6 @@ describe("useLogin", () => {
     });
   });
 
-  // Test for error handling during fetch failure (e.g. network issues)
   describe("login error handling", () => {
     it("should return false if there is a fetch error", async () => {
       fetchStub.rejects(new Error("Network error"));

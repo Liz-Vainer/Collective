@@ -26,6 +26,8 @@ import {
   likeEvent,
   dislikeEvent,
   checkJoinedEvent,
+  deleteAccount,
+  EventsJoined,
 } from "../controllers/user.controllers.js";
 import {
   add_community,
@@ -37,6 +39,7 @@ import {
   createEvent,
   deleteEvent,
   fetchEvents,
+  fetchParticipants,
 } from "../controllers/events.controlles.js";
 
 // Create new user (SignUp)
@@ -131,5 +134,14 @@ router.post("/events/like", protectRoute, likeEvent);
 
 //dislike event
 router.post("/events/dislike", protectRoute, dislikeEvent);
+
+//delete account (user deletes himself)
+router.delete("/delete-account", protectRoute, deleteAccount);
+
+//fetch all participants of a specific event
+router.post("/events/parts", protectRoute, fetchParticipants);
+
+//fetch array of user's joined events
+router.post("/events/user-events", protectRoute, EventsJoined);
 
 export default router;

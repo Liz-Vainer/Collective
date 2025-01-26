@@ -3,13 +3,16 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PostContainer from "./PostContainer";
 import ChatPopup from "../Popup/ChatPopup";
-import { FaDoorOpen, FaCog, FaSearch, FaBars, FaCamera } from "react-icons/fa";
+
+import { FaDoorOpen, FaSearch, FaBars, FaCamera } from "react-icons/fa";
+
 import Drawer from "@mui/material/Drawer";
 import {
   GoogleMap,
   Marker,
   useJsApiLoader,
   InfoWindow,
+  OverlayView,
 } from "@react-google-maps/api";
 import useStyles from "./DrawerStyle";
 import { useUser } from "../../context/UserContext";
@@ -25,13 +28,16 @@ import Popup from "../Popup/Popup";
 import Members from "../Members/Members";
 import Sidebar from "../Chat/Sidebar";
 import MessageContainer from "../Messages/MessageContainer";
+import useUserEvents from "../../zustand/useUserEvents";
+import useGetJoinedEvents from "../../hooks/useGetJoinedEvents";
 
 const Home = () => {
   const classes = useStyles(); // Use custom styles
   const { authUser, setAuthUser } = useUser(); // Destructure user from context
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { loading, logout } = useLogout();
-
+  const { userEvents } = useUserEvents();
+  useGetJoinedEvents(authUser.id);
   //===================== Navigation Handlers =====================
   const navigate = useNavigate();
 
@@ -39,10 +45,22 @@ const Home = () => {
     logout();
     navigate("/");
   };
-  const handleSettings = () => navigate("/settings");
+  const handleSettings = () => {
+    document.body.classList.add("move-left");
+    setTimeout(() => {
+      navigate("/settings");
+    }, 500);
+  };
 
-  const handleMoreInfo = () => navigate("/CommunityInfo");
+  const handleMoreInfo = () => {
+    const selectedCommunityId = selectedCommunity._id; // Example: passing only the community ID
+    navigate(`/CommunityInfo?id=${selectedCommunityId}`);
+  };
 
+  useEffect(() => {
+    // Remove any move transition classes when this component loads
+    document.body.classList.remove("move-left", "move-right");
+  }, []);
   //===================== Google Map Configuration =====================
   const mapContainerStyle = {
     height: "80%",
@@ -114,11 +132,7 @@ const Home = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMember, setIsMember] = useState();
   const [showMembers, setShowMembers] = useState(false);
-  const [users, setUsers] = useState([]);
   const chartRef = useRef(null); // Ref to access the pie chart instance
-
-  const openPopup = () => setButtonPopup(true);
-  const closePopup = () => setButtonPopup(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -173,6 +187,7 @@ const Home = () => {
       console.error("An error occurred while trying to leave a community", err);
     }
   }
+
   //Join community
   async function joinCommunity(selectedCommunity) {
     try {
@@ -453,9 +468,6 @@ const Home = () => {
         <button className="exit-button" onClick={handleBackToLogin}>
           <FaDoorOpen size={30} color="white" />
         </button>
-        <button className="settings-button" onClick={handleSettings}>
-          <FaCog size={30} color="white" />
-        </button>
 
         <div className="search-bar">
           <input
@@ -498,6 +510,7 @@ const Home = () => {
             zoom={15}
             onLoad={onLoad}
             onUnmount={onUnmount}
+            options={{ suppressInfoWindows: true }} // Correct option
           >
             {/* Markers for Filtered Communities */}
             {filteredCommunities.map((community) => (
@@ -505,26 +518,33 @@ const Home = () => {
                 key={community._id}
                 position={{ lat: community.lat, lng: community.lng }}
                 onClick={() => setSelectedCommunity(community)}
+                options={{ suppressInfoWindows: true }} // Correct option
               />
             ))}
+
             {/* InfoWindow for Selected Community */}
             {selectedCommunity && (
-              <InfoWindow
-                className="info-window"
+              <OverlayView
                 position={{
                   lat: selectedCommunity.lat,
                   lng: selectedCommunity.lng,
                 }}
-                onCloseClick={() => setSelectedCommunity(null)}
+                mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET} // Correct pane
               >
                 <div className="info-window-content">
+                  <button
+                    className="close-button"
+                    onClick={() => setSelectedCommunity(null)}
+                  >
+                    X
+                  </button>
                   <h3>{selectedCommunity.name}</h3>
                   <p>Welcome to {selectedCommunity.name} community!</p>
-                  {authUser.userType !== "Official" &&
-                    !authUser.favorites.some(
-                      (fav) => fav.name === selectedCommunity.name
-                    ) && (
-                      <div>
+                  <div className="action-buttons">
+                    {authUser.userType !== "Official" &&
+                      !authUser.favorites.some(
+                        (fav) => fav.name === selectedCommunity.name
+                      ) && (
                         <button
                           onClick={() => {
                             addToFavorites(selectedCommunity);
@@ -533,17 +553,13 @@ const Home = () => {
                         >
                           Add to Favorites
                         </button>
-                      </div>
-                    )}
-                  {authUser.userType !== "Official" && !isMember && (
-                    <div>
+                      )}
+                    {authUser.userType !== "Official" && !isMember && (
                       <button onClick={() => joinCommunity(selectedCommunity)}>
                         Join Community
                       </button>
-                    </div>
-                  )}
-                  {authUser.userType !== "Official" && isMember && (
-                    <div>
+                    )}
+                    {authUser.userType !== "Official" && isMember && (
                       <button
                         onClick={() => {
                           leaveCommunity(selectedCommunity);
@@ -551,60 +567,49 @@ const Home = () => {
                       >
                         Leave Community
                       </button>
-                    </div>
-                  )}
-
-                  {authUser.userType !== "Official" &&
-                    authUser.favorites.some(
-                      (fav) => fav.name === selectedCommunity.name
-                    ) && (
+                    )}
+                    {authUser.userType !== "Official" &&
+                      authUser.favorites.some(
+                        (fav) => fav.name === selectedCommunity.name
+                      ) && (
+                        <button
+                          onClick={() => {
+                            removeFavorite(selectedCommunity);
+                            setSelectedCommunity(false);
+                          }}
+                        >
+                          Remove from favorites
+                        </button>
+                      )}
+                    {authUser.userType === "Official" && (
                       <button
                         onClick={() => {
-                          removeFavorite(selectedCommunity);
+                          removeCommunity(selectedCommunity);
                           setSelectedCommunity(false);
                         }}
                       >
-                        Remove from favorites
+                        Remove Community
                       </button>
                     )}
-                  {/* Pie charts */}
-                  {authUser.userType === "Official" && (
-                    <button onClick={() => downloadChart}>Pie Charts</button>
-                  )}
-                  {/* Render the PieChart but hide it from view */}
-                  {/* <PieChart users={users} chartRef={chartRef} /> */}
-
-                  {authUser.userType === "Official" && (
+                    {authUser.userType === "Official" && (
+                      <button
+                        onClick={() => {
+                          setShowMembers(true);
+                        }}
+                      >
+                        Show members
+                      </button>
+                    )}
                     <button
                       onClick={() => {
-                        removeCommunity(selectedCommunity);
-                        setSelectedCommunity(false);
+                        handleMoreInfo();
                       }}
                     >
-                      Remove Community
+                      More info
                     </button>
-                  )}
-                  {authUser.userType === "Official" && (
-                    <button
-                      onClick={() => {
-                        setShowMembers(true);
-                      }}
-                    >
-                      Show members
-                    </button>
-                  )}
-                  {authUser.userType === "Official" && (
-                    <button onClick={() => {}}>Show statistics</button>
-                  )}
-                  <button
-                    onClick={() => {
-                      handleMoreInfo();
-                    }}
-                  >
-                    More info
-                  </button>
+                  </div>
                 </div>
-              </InfoWindow>
+              </OverlayView>
             )}
           </GoogleMap>
         </div>
@@ -700,7 +705,12 @@ const Home = () => {
             </button>
           </div>
         </Popup>
-
+        <button
+          className={`chat-button ${isChatOpen ? "hidden" : ""}`}
+          onClick={toggleChat}
+        >
+          Chat
+        </button>
         {/* Chat Popup */}
         {authUser.userType === "User" && isChatOpen && (
           <ChatPopup trigger={isChatOpen} setTrigger={setIsChatOpen}>
@@ -717,9 +727,32 @@ const Home = () => {
             <h3>Your Favorites</h3>
             <ul>
               {favorites.map((fav) => (
-                <li key={fav._id}>{fav.name}</li>
+                <li key={fav._id}>
+                  {fav.name}
+                  <button
+                    onClick={() => handleMoreInfo(fav)}
+                    className="more-info-btn"
+                  >
+                    More Info
+                  </button>
+                </li>
               ))}
             </ul>
+
+            {authUser.userType === "User" && (
+              <div className="events-joined">
+                <h3>Events Joined</h3>
+                {userEvents.length > 0 ? (
+                  <ul>
+                    {userEvents.map((eventName, index) => (
+                      <li key={index}>{eventName}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No events joined yet.</p>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -804,13 +837,6 @@ const Home = () => {
             </button>
           </div>
         </Drawer>
-
-        <button
-          className={`chat-button ${isChatOpen ? "hidden" : ""}`}
-          onClick={toggleChat}
-        >
-          Chat
-        </button>
       </div>
     </div>
   );

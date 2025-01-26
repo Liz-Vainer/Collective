@@ -1,7 +1,9 @@
 import { useState } from "react";
+import useUserEvents from "../zustand/useUserEvents";
 
 const useJoinEvent = () => {
   const [loading, setLoading] = useState(false); // Add loading state
+  const { setUserEvents } = useUserEvents();
 
   const joinEvent = async (eventId, userId) => {
     setLoading(true); // Set loading to true before starting the operation
@@ -22,7 +24,8 @@ const useJoinEvent = () => {
       }
 
       const data = await res.json();
-      console.log(data);
+      console.log("join event: ", data);
+      setUserEvents(data.userEvents);
       return true;
     } catch (err) {
       console.log("Error joining event: ", err);

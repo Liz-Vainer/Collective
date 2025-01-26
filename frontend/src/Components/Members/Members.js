@@ -4,6 +4,7 @@ import useGetMembers from "../../hooks/useGetMembers";
 
 const Members = ({ selectedCommunity }) => {
   const { members } = useGetMembers(selectedCommunity._id);
+  console.log(members);
 
   if (members)
     return (

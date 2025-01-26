@@ -38,6 +38,10 @@ const ProfileTemplate = () => {
     }));
   };
 
+  const handleBack = () => {
+    navigate("/home");
+  };
+
   const handleSave = async () => {
     const userData = {
       userID: authUser.id,
@@ -65,7 +69,6 @@ const ProfileTemplate = () => {
       const resData = await response.json();
       setAuthUser(resData);
       localStorage.setItem("user-info", JSON.stringify(resData));
-      navigate("/home");
     } catch (error) {
       console.error("Error while updating user settings:", error.message);
     }
@@ -73,10 +76,12 @@ const ProfileTemplate = () => {
 
   return (
     <div>
-       <div className="profile-header">
-    <h2>Profile</h2>
-    <button className="back-home-button" onClick={handleSave}>Back home</button>
-  </div>
+      <div className="profile-header">
+        <h2>Profile</h2>
+        <button className="back-home-button" onClick={handleBack}>
+          Back home
+        </button>
+      </div>
       <ul>
         <li>
           <strong>Name:</strong> {authUser.name}
@@ -85,10 +90,7 @@ const ProfileTemplate = () => {
         <li>
           <strong>Gender:</strong>
           {isEditing.gender ? (
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-            >
+            <select value={gender} onChange={(e) => setGender(e.target.value)}>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
@@ -96,9 +98,7 @@ const ProfileTemplate = () => {
           ) : (
             <span>{gender}</span>
           )}
-          <button onClick={() => toggleEdit("gender")}>
-            {isEditing.gender ? "Save" : "Edit"}
-          </button>
+          <button onClick={() => toggleEdit("gender")}>Edit</button>
         </li>
         <hr />
         <li>
@@ -114,9 +114,7 @@ const ProfileTemplate = () => {
           ) : (
             <span>{age}</span>
           )}
-          <button onClick={() => toggleEdit("age")}>
-            {isEditing.age ? "Save" : "Edit"}
-          </button>
+          <button onClick={() => toggleEdit("age")}>Edit</button>
         </li>
         <hr />
         <li>
@@ -133,9 +131,7 @@ const ProfileTemplate = () => {
           ) : (
             <span>{religion}</span>
           )}
-          <button onClick={() => toggleEdit("religion")}>
-            {isEditing.religion ? "Save" : "Edit"}
-          </button>
+          <button onClick={() => toggleEdit("religion")}>Edit</button>
         </li>
         <hr />
         <li>
@@ -154,9 +150,7 @@ const ProfileTemplate = () => {
           ) : (
             <span>{ethnicity}</span>
           )}
-          <button onClick={() => toggleEdit("ethnicity")}>
-            {isEditing.ethnicity ? "Save" : "Edit"}
-          </button>
+          <button onClick={() => toggleEdit("ethnicity")}>Edit</button>
         </li>
         <hr />
         <li>
@@ -174,13 +168,10 @@ const ProfileTemplate = () => {
           ) : (
             <span>{interest}</span>
           )}
-          <button onClick={() => toggleEdit("interest")}>
-            {isEditing.interest ? "Save" : "Edit"}
-          </button>
+          <button onClick={() => toggleEdit("interest")}>Edit</button>
         </li>
       </ul>
-      
-
+      <button onClick={handleSave}>Save changes</button>
     </div>
   );
 };

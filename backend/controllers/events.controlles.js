@@ -1,4 +1,5 @@
 import Event from "../models/events.js"; // Event model
+import User from "../models/user.js";
 
 export const createEvent = async (req, res) => {
   const { eventName, location, eventImg, start, end } = req.body;
@@ -54,13 +55,22 @@ export const fetchEvents = async (req, res) => {
   }
 };
 
-// export const fetchParticipants = async (req, res) => {
-//   const { eventId } = req.body;
-//   try {
-//     const event = await Event.findById({ eventId });
-//     res.json({ participants: event.participants });
-//   } catch (err) {
-//     console.error("Error fetching communities:", err);
-//     res.status(500).json({ message: "Failed to fetch communities." });
-//   }
-// };
+export const fetchParticipants = async (req, res) => {
+  const { eventId } = req.body;
+  console.log(eventId);
+  try {
+    const event = await Event.findById(eventId);
+    const participants = await Promise.all(
+      event.participants.map(async (participantId) => {
+        const user = await User.findById(participantId).select(
+          "name profilePic" // Adjust the fields as needed
+        );
+        return user;
+      })
+    );
+    res.json({ participants });
+  } catch (err) {
+    console.error("Error in fetchParticipants:", err);
+    res.status(500).json({ message: "Failed to fetch participants." });
+  }
+};

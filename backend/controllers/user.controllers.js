@@ -446,6 +446,47 @@ export const checkJoined = async (req, res) => {
   }
 };
 
+export const deleteAccount = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    // Remove the user from any community they're part of
+    const result = await Community.updateOne(
+      { users: userId },
+      { $pull: { users: userId } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log(
+        `User ID ${userId} was successfully removed from a community.`
+      );
+    } else {
+      console.log(`User ID ${userId} was not found in any community.`);
+    }
+
+    // Attempt to delete the user from one of the collections
+    const userCollections = [User, Organizer, Official];
+
+    for (const collection of userCollections) {
+      const user = await collection.findById(userId);
+      if (user) {
+        res.cookie("jwt", "", { maxAge: 0 });
+        await collection.deleteOne({ _id: userId });
+        console.log(`User ID ${userId} deleted from ${collection.modelName}.`);
+        return res.status(200).json({ message: "User successfully deleted" });
+      }
+    }
+
+    // If no matching user was found
+    return res.status(404).json({ message: "User not found" });
+  } catch (error) {
+    console.error("Error during account deletion:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+};
+
 export const removeUserFromCommunity = async (req, res) => {
   const { communityId, userId } = req.body;
   try {
@@ -901,18 +942,33 @@ export const removeFriend = async (req, res) => {
 
 //leave Event
 export const leaveEvent = async (req, res) => {
-  const { EventId, user } = req.body;
+  const { EventId, userId } = req.body;
   try {
     const event = await Event.findById(EventId);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    const userIndex = event.participants.indexOf(user);
+    const userIndex = event.participants.indexOf(userId);
     event.participants.splice(userIndex, 1);
     await event.save();
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Remove the event name from the user's joinedEvents array
+    const eventIndex = user.joinedEvents.indexOf(event.name);
+    if (eventIndex > -1) {
+      user.joinedEvents.splice(eventIndex, 1);
+      await user.save();
+    }
+
     return res.status(200).json({
       message: "User successfully left the Event",
       participants: event.participants,
+      userEvents: user.joinedEvents,
     });
   } catch (err) {
     console.error("Error in leaveEvent ", err);
@@ -941,9 +997,16 @@ export const joinEvent = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
+    const user = await User.findById(userId);
+    if (!user.joinedEvents.includes(updatedEvent.name)) {
+      user.joinedEvents.push(updatedEvent.name);
+      await user.save();
+    }
+
     return res.status(200).json({
       message: "User successfully added to the Event",
       participants: updatedEvent.participants,
+      userEvents: user.joinedEvents,
     });
   } catch (err) {
     console.error("Error in joinEvent", err);
@@ -1010,6 +1073,24 @@ export const dislikeEvent = async (req, res) => {
     return res.status(500).json({
       message: "An error occurred in dislikeEvent",
       error: error.message,
+    });
+  }
+};
+
+export const EventsJoined = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({
+      events: user.joinedEvents,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: "An error occurred in EventsJoined",
+      error: e.message,
     });
   }
 };

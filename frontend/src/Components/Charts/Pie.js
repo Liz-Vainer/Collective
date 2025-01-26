@@ -5,12 +5,15 @@ import { CategoryScale } from "chart.js";
 
 Chart.register(CategoryScale);
 
+// const { members } = useGetMembers(selectedCommunity._id);
+
 // Utility function to capitalize the first letter
 const capitalizeFirstLetter = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 export const MultipleCharts = ({ data }) => {
+  console.log("This is data", data);
   const ref1 = useRef(null);
   const ref2 = useRef(null);
   const ref3 = useRef(null);
@@ -61,6 +64,7 @@ export const MultipleCharts = ({ data }) => {
 
   // Count the occurrences of each religion in the data
   const religionCounts = data.reduce((acc, item) => {
+    console.log("This is religionCounts", acc);
     if (item.religion) {
       const religion = item.religion.toLowerCase(); // Convert to lowercase for consistency
       acc[religion] = (acc[religion] || 0) + 1;
@@ -101,8 +105,6 @@ export const MultipleCharts = ({ data }) => {
     }
     return acc;
   }, {});
-
-  console.log("Interest Counts:", interestCounts); // Debugging
 
   // Prepare data for the Interest Distribution Bar chart
   const chartData3 = {
@@ -248,10 +250,11 @@ export const MultipleCharts = ({ data }) => {
     },
   };
 
-  console.log("Doughnut Chart Data:", chartData4);
   return (
     <div className="charts">
-      <button type="button" onClick={downloadImage}></button>
+      <button type="button" onClick={downloadImage}>
+        Download Charts
+      </button>
       <div className="pie" style={{ margin: "auto" }}>
         <Bar ref={ref1} data={chartData1} options={options} />
       </div>

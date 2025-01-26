@@ -6,7 +6,6 @@ const VerticalComponent = ({ onItemClick }) => {
   const { authUser } = useUser();
   const menuItems = [
     "Profile",
-    "Community Settings",
     "Help",
     "Credits",
     "Delete account",

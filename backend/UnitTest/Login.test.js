@@ -22,7 +22,7 @@ describe('POST /login', () => {
 });
 
 describe('POST /logout', () => {
-  it('should fail becuse it is in the front navigate', async () => {
+  it('should fail because it is in the front navigate', async () => {
     // First, simulate logging in to get a JWT cookie
     const loginResponse = await chai.request(app)
       .post('/login')

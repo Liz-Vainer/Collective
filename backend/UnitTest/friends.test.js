@@ -7,7 +7,7 @@ import { expect } from 'chai';
 
 chai.use(chaiHttp);
 
-  describe('POST /acceptFriendRequest', () => {
+  describe('POST /accept Friend Request', () => {
     it('should accept a friend request and add both users as friends', async () => {
       const mockUser = {
         _id: 'user1',
@@ -30,7 +30,7 @@ chai.use(chaiHttp);
       global.getReceiverSocketId = getReceiverSocketId;
 
       const res = await chai.request(app)
-        .post('/acceptFriendRequest')
+        .post('/accept Friend Request')
         .send({ requesterId: 'requesterId' })
         .set('Authorization', 'Bearer valid-jwt-token'); // Adjust according to your authentication method
 
@@ -51,7 +51,7 @@ chai.use(chaiHttp);
       sinon.stub(User, 'findById').resolves(null); // Simulate user not found
 
       const res = await chai.request(app)
-        .post('/acceptFriendRequest')
+        .post('/accept Friend Request')
         .send({ requesterId: 'requesterId' })
         .set('Authorization', 'Bearer valid-jwt-token');
 

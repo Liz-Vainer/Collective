@@ -1,14 +1,14 @@
-import { expect } from "chai";
-import sinon from 'sinon';
-import useSignup from "../components/SignupPage/useSignup";
+const { expect } = require("chai");
+const useSignup = require("../components/SignupPage/useSignup");
 
 describe("useSignup", () => {
   let originalFetch;
   let contextMock;
 
   beforeEach(() => {
+    contextMock = { setAuthUser: (user) => { contextMock.authUser = user; } };
+
     originalFetch = global.fetch;
-    contextMock = { setAuthUser: sinon.spy() };
 
     global.fetch = async (url, options) => {
       if (url === "/signup" && options.method === "POST") {
@@ -41,5 +41,10 @@ describe("useSignup", () => {
     );
 
     expect(result).to.be.true;
+
+    expect(contextMock.authUser).to.deep.equal({
+      name: "John Doe",
+      email: "john.doe@example.com",
+    });
   });
 });

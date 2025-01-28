@@ -9,26 +9,26 @@ chai.use(chaiHttp);
 const { expect } = chai;
 
 //JOIN EVENT
-describe("POST /joinEvent", function () {
+describe("POST /join Event", function () {
   this.timeout(10000); 
   let eventId;
   let userId;
   
   it("should return 400 for missing EventId or userId", async () => {
     const response = await chai.request(app)
-      .post("/joinEvent")
+      .post("/join Event")
       .send({
         EventId: "", 
         userId: "",
       });
 
-    expect(response).to.have.status(400);
-    expect(response.body.message).to.equal("EventId and userId are required");
+     expect(response).to.have.status(400);
+     expect(response.body.message).to.equal("EventId and userId are required");
   });
 
   it("should successfully add a user to the event", async () => {
     const response = await chai.request(app)
-      .post("/joinEvent")
+      .post("/join Event")
       .send({
         EventId: eventId,
         userId: userId,
@@ -41,7 +41,7 @@ describe("POST /joinEvent", function () {
 
   it("should return 404 if the event does not exist", async () => {
     const response = await chai.request(app)
-      .post("/joinEvent")
+      .post("/join Event")
       .send({
         EventId: mongoose.Types.ObjectId(), 
         userId: userId,
@@ -75,7 +75,7 @@ describe("POST /remove_fav", function () {
   });
 
   //LEAVE EVENT
-  describe('POST /leaveEvent', () => {
+  describe('POST /leave Event', () => {
     it('should remove the user from the event participants', async () => {
       const mockEvent = {
         participants: ['user1', 'user2'],
@@ -166,7 +166,7 @@ describe('POST /create Event', () => {
     });
 });
 //DELETE EVENT
-describe('DELETE /deleteEvent', () => {
+describe('DELETE /delete Event', () => {
     it('should successfully delete an existing event', async () => {
       const deleteEventData = {
         eventName: 'New Event',
@@ -177,3 +177,76 @@ describe('DELETE /deleteEvent', () => {
       };
     });
   });
+
+
+ //add a community
+ describe("POST /add Community", function () {
+  this.timeout(10000);
+
+  it("should return 400 if the community already exists", async () => {
+    const response = await chai.request(app)
+      .post("/add Community")
+      .send({
+        name: "Park Y.A",
+        category: "Entertainment",
+        lat: 34.791462, 
+        lng: 31.252973,
+      });
+
+    if (response.body.error) {
+      console.log('Error:', response.body.error); 
+    }
+
+    expect(response).to.have.status(400);
+    expect(response.body.message).to.equal("Community already exists");
+  });
+
+  it("should return 400 if the community has the same coordinates", async () => {
+    const response = await chai.request(app)
+      .post("/add Community")
+      .send({
+        name: "Park Y.A",
+        category: "Entertainment",
+        lat: 34.791462, 
+        lng: 31.252973,
+      });
+
+    if (response.body.error) {
+      console.log('Error:', response.body.error);
+    }
+
+    expect(response).to.have.status(400);
+    expect(response.body.message).to.equal("Community with the same cords already exists");
+  });
+}); 
+describe('POST /removeCommunity', () => {
+  let communityStub;
+
+  afterEach(() => {
+    communityStub.restore(); 
+  });
+
+  it('should return 404 if the community is not found', async () => {
+    // Mock the result of deleteOne to simulate community not found
+    communityStub.resolves({ deletedCount: 0 });
+
+    const response = await chai.request(app)
+      .post('/removeCommunity')
+      .send({ name: 'Non-existent Community' });
+
+    expect(response).to.have.status(404);
+    expect(response.body.message).to.equal('not found.');
+  });
+
+  it('should successfully delete a community', async () => {
+    // Mock the result of deleteOne to simulate successful deletion
+    communityStub.resolves({ deletedCount: 1 });
+
+    const response = await chai.request(app)
+      .post('/removeCommunity')
+      .send({ name: 'Existing Community' });
+
+    expect(response).to.have.status(200);
+    expect(response.body.message).to.equal('deleted successfully!');
+  });
+});

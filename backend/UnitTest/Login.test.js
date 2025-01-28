@@ -21,6 +21,7 @@ describe('POST /login', () => {
   });
 });
 
+// should be fail there is navigate
 describe('POST /logout', () => {
   it('should fail because it is in the front navigate', async () => {
     // First, simulate logging in to get a JWT cookie
@@ -42,5 +43,5 @@ describe('POST /logout', () => {
     expect(response.headers['set-cookie']).to.have.lengthOf(1);
     expect(response.headers['set-cookie'][0]).to.include('jwt=; Max-Age=0');
   });
-});// should be fail there is navigate
+});
 

@@ -3,52 +3,28 @@ import chaiHttp from "chai-http";
 import app from "../index.js"; 
 import sinon from 'sinon';
 import express from 'express';
+import jwt from 'jsonwebtoken';
 
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
-//JOIN EVENT
-describe("POST /join Event", function () {
-  this.timeout(10000); 
-  let eventId;
-  let userId;
-  
-  it("should return 400 for missing EventId or userId", async () => {
-    const response = await chai.request(app)
-      .post("/join Event")
+//add to fav
+describe("POST /add to fav", function () {
+  this.timeout(10000); // Set timeout to 10 seconds for all tests in this block
+
+  it("should add a community to favorites successfully", async () => {
+    const response = await chai
+      .request(app)
+      .post("/add_to_fav")
       .send({
-        EventId: "", 
-        userId: "",
+        id: ObjectId(''),
+        community: "Park Y.A",
       });
 
-     expect(response).to.have.status(400);
-     expect(response.body.message).to.equal("EventId and userId are required");
-  });
-
-  it("should successfully add a user to the event", async () => {
-    const response = await chai.request(app)
-      .post("/join Event")
-      .send({
-        EventId: eventId,
-        userId: userId,
-      });
-
-    expect(response).to.have.status(200);
-    expect(response.body.message).to.equal("User successfully added to the Event");
-    expect(response.body.participants).to.include(userId.toString());
-  });
-
-  it("should return 404 if the event does not exist", async () => {
-    const response = await chai.request(app)
-      .post("/join Event")
-      .send({
-        EventId: mongoose.Types.ObjectId(), 
-        userId: userId,
-      });
-
-    expect(response).to.have.status(404);
-    expect(response.body.message).to.equal("Event not found");
+    expect(re6787a809637aa9c21113129fsponse).to.have.status(200);
+    expect(response.body.message).to.equal("Community added to favorites");
+    expect(response.body.favorites).to.include("Park Y.A");
   });
 });
 
@@ -73,111 +49,6 @@ describe("POST /remove_fav", function () {
       expect(response.body.favorites).to.not.include(community);
     });
   });
-
-  //LEAVE EVENT
-  describe('POST /leave Event', () => {
-    it('should remove the user from the event participants', async () => {
-      const mockEvent = {
-        participants: ['user1', 'user2'],
-        save: sinon.stub().resolves()
-      };
-      sinon.stub(Event, 'findById').resolves(mockEvent);
-
-      const res = await chai.request(app)
-        .post('/leaveEvent')
-        .send({ EventId: 'eventId123', user: 'user1' });
-
-      expect(res.status).to.equal(200);
-      expect(res.body.message).to.equal('User successfully left the Event');
-      expect(res.body.participants).to.deep.equal(['user2']);
-
-      Event.findById.restore();
-    });
-
-    it('should return 404 if the event is not found', async () => {
-      sinon.stub(Event, 'findById').resolves(null); 
-
-      const res = await chai.request(app)
-        .post('/leaveEvent')
-        .send({ EventId: 'invalidEventId', user: 'user1' });
-
-      expect(res.status).to.equal(404);
-      expect(res.body.message).to.equal('Event not found');
-
-      Event.findById.restore();
-    });
-});
-//CREATE EVENT
-describe('POST /create Event', () => {
-      /*  it('should return 400 if the event already exists', async () => {
-      // Stub findOne to return an event that matches the incoming data
-      sinon.stub(Event, 'findOne').callsFake(async (query) => {
-        // Check if the query matches your existing event criteria
-        if (
-          query.name === 'Event1' && 
-          query.location === 'Park Y.A' &&
-          query.start === '2025-01-16'
-        ) {
-          return {
-            name: 'Event1',
-            location: 'Park Y.A',
-            image: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gxYSUNDX1BST0ZJTEU…',
-            start: '2025-01-16',
-            end: '2025-01-23',
-          };
-        }
-        return null;
-      });
-
-      const res = await chai.request(app)
-        .post('/createEvent')
-        .send({
-          eventName: 'Event1',
-          location: 'Park Y.A',
-          eventImg: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gxYSUNDX1BST0ZJTEU…',
-          start: '2025-01-16',
-          end: '2025-01-23',
-        });
-
-      expect(res.status).to.equal(400);
-      expect(res.body.message).to.equal('Event already exists');
-
-      Event.findOne.restore();
-    });*/
-
-    it('should return 400 if the event already exists', async () => {
-        const ExistsEventData = {
-          eventName: 'exists Event',
-          location: 'exists Location',
-          eventImg: 'newImage.jpg',
-          start: '2025-02-01T00:00:00Z',
-          end: '2025-02-01T02:00:00Z',
-        };
-      });
-
-    it('should successfully create a new event', async () => {
-      const newEventData = {
-        eventName: 'New Event',
-        location: 'New Location',
-        eventImg: 'newImage.jpg',
-        start: '2025-02-01T00:00:00Z',
-        end: '2025-02-01T02:00:00Z',
-      };
-    });
-});
-//DELETE EVENT
-describe('DELETE /delete Event', () => {
-    it('should successfully delete an existing event', async () => {
-      const deleteEventData = {
-        eventName: 'New Event',
-        location: 'New Location',
-        eventImg: 'newImage.jpg',
-        start: '2025-02-01T00:00:00Z',
-        end: '2025-02-01T02:00:00Z',
-      };
-    });
-  });
-
 
  //add a community
  describe("POST /add Community", function () {
@@ -219,6 +90,8 @@ describe('DELETE /delete Event', () => {
     expect(response.body.message).to.equal("Community with the same cords already exists");
   });
 }); 
+
+//remove community
 describe('POST /removeCommunity', () => {
   let communityStub;
 
@@ -250,3 +123,443 @@ describe('POST /removeCommunity', () => {
     expect(response.body.message).to.equal('deleted successfully!');
   });
 });
+
+//leave Community
+  describe("leaveCommunity", () => {
+    it("should return 404 if the community is not found", async () => {
+      const req = { body: { communityId: "123", userId: "456" } };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+
+      sinon.stub(Community, "findById").resolves(null);
+
+      await leaveCommunity(req, res);
+
+      expect(res.status.calledWith(404)).to.be.true;
+      expect(res.json.calledWith({ message: "Community not found" })).to.be.true;
+    });
+
+    it("should remove a user from the community and return success", async () => {
+      const req = { body: { communityId: "123", userId: "456" } };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+
+      const mockCommunity = {
+        users: ["456", "789"],
+        save: sinon.stub().resolves(),
+      };
+
+      sinon.stub(Community, "findById").resolves(mockCommunity);
+
+      await leaveCommunity(req, res);
+
+      expect(mockCommunity.users).to.not.include("456");
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(
+        res.json.calledWith({
+          message: "User successfully left to the community",
+          member: true,
+        })
+      ).to.be.true;
+    });
+  });
+
+//join Community
+  describe("joinCommunity", () => {
+    it("should return 404 if the community is not found", async () => {
+      const req = { body: { communityId: "123", userId: "456" } };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+
+      sinon.stub(Community, "findById").resolves(null);
+
+      await joinCommunity(req, res);
+
+      expect(res.status.calledWith(404)).to.be.true;
+      expect(res.json.calledWith({ message: "Community not found" })).to.be.true;
+    });
+
+    it("should add a user to the community and return success", async () => {
+      const req = { body: { communityId: "123", userId: "456" } };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+
+      const mockCommunity = {
+        users: ["789"],
+        save: sinon.stub().resolves(),
+      };
+
+      sinon.stub(Community, "findById").resolves(mockCommunity);
+
+      await joinCommunity(req, res);
+
+      expect(mockCommunity.users).to.include("456");
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(
+        res.json.calledWith({
+          message: "User successfully added to the community",
+          member: true,
+        })
+      ).to.be.true;
+    });
+  });
+
+  //fetch_communities
+  describe("fetch_communities Controller", () => {
+    afterEach(() => {
+      sinon.restore(); // Restore all mocks/stubs after each test
+    });
+  
+    it("should return a list of communities when found", async () => {
+      const req = {}; // No specific request data needed for fetching communities
+      const res = {
+        json: sinon.stub(), // Mock json response method
+      };
+  
+      // Mock community data to return
+      const mockCommunities = [
+        { name: "Community 1", description: "Description 1" },
+        { name: "Community 2", description: "Description 2" },
+      ];
+  
+      // Mock the Community.find() method to return the mock data
+      sinon.stub(Community, "find").resolves(mockCommunities);
+  
+      // Call the function
+      await fetch_communities(req, res);
+  
+      // Assertions
+      expect(Community.find.calledOnce).to.be.true; // Ensure Community.find() was called once
+      expect(res.json.calledWith({ communities: mockCommunities })).to.be.true; // Ensure correct communities are returned in response
+    });
+  
+    it("should return a 500 error if there is an exception", async () => {
+      const req = {};
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      // Simulate an error by making Community.find() throw an error
+      sinon.stub(Community, "find").throws(new Error("Database error"));
+  
+      // Call the function
+      await fetch_communities(req, res);
+  
+      // Assertions
+      expect(Community.find.calledOnce).to.be.true; // Ensure Community.find() was called once
+      expect(res.status.calledWith(500)).to.be.true; // Ensure status 500 is returned for error
+      expect(res.json.calledWith({ message: "failed to fetch communities." })).to.be.true; // Ensure correct error message is returned
+    });
+  });
+
+
+//Settings
+  describe("Settings", () => {
+    afterEach(() => {
+      sinon.restore(); // Restore all mocks/stubs after each test
+    });
+  
+    it("should update settings for a user in the User collection", async () => {
+      const req = {
+        body: {
+          userID: "123",
+          gender: "female",
+          age: 25,
+          religion: "Christianity",
+          ethnicity: "Asian",
+          interest: "Sports",
+          userType: "user",
+        },
+      };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      const mockUser = {
+        id: "123",
+        gender: "female",
+        age: 25,
+        religion: "Christianity",
+        ethnicity: "Asian",
+        interest: "Sports",
+        name: "Test User",
+        profilePic: "test-pic.jpg",
+      };
+  
+      sinon.stub(User, "findByIdAndUpdate").resolves(mockUser);
+  
+      await settings(req, res);
+  
+      expect(User.findByIdAndUpdate.calledOnce).to.be.true;
+      expect(User.findByIdAndUpdate.calledWith("123")).to.be.true;
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(
+        res.json.calledWithMatch({
+          message: "User settings updated successfully",
+          id: "123",
+          userType: "user",
+          age: 25,
+          gender: "female",
+          isReligious: true,
+          religioun: "Christianity",
+          ethnicity: "Asian",
+          interest: "Sports",
+          name: "Test User",
+          profilePic: "test-pic.jpg",
+        })
+      ).to.be.true;
+    });
+  
+    it("should update settings for a user in the Organizer collection", async () => {
+      const req = {
+        body: {
+          userID: "123",
+          gender: "male",
+          age: 30,
+          religion: "no",
+          ethnicity: "Hispanic",
+          interest: "Music",
+          userType: "organizer",
+        },
+      };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      const mockOrganizer = {
+        id: "123",
+        gender: "male",
+        age: 30,
+        religion: "no",
+        ethnicity: "Hispanic",
+        interest: "Music",
+        name: "Test Organizer",
+        profilePic: "test-organizer.jpg",
+      };
+  
+      sinon.stub(User, "findByIdAndUpdate").resolves(null);
+      sinon.stub(Organizer, "findByIdAndUpdate").resolves(mockOrganizer);
+  
+      await settings(req, res);
+  
+      expect(Organizer.findByIdAndUpdate.calledOnce).to.be.true;
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(
+        res.json.calledWithMatch({
+          message: "teOrganizer settings updated successfully",
+          id: "123",
+          userType: "organizer",
+          age: 30,
+          gender: "male",
+          isReligious: false,
+          religioun: "no",
+          ethnicity: "Hispanic",
+          interest: "Music",
+          name: "Test Organizer",
+          profilePic: "test-organizer.jpg",
+        })
+      ).to.be.true;
+    });
+  
+    it("should update settings for a user in the Official collection", async () => {
+      const req = {
+        body: {
+          userID: "123",
+          gender: "non-binary",
+          age: 40,
+          religion: "Islam",
+          ethnicity: "Middle Eastern",
+          interest: "Politics",
+          userType: "official",
+        },
+      };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      const mockOfficial = {
+        id: "123",
+        gender: "non-binary",
+        age: 40,
+        religion: "Islam",
+        ethnicity: "Middle Eastern",
+        interest: "Politics",
+        name: "Test Official",
+        profilePic: "test-official.jpg",
+      };
+  
+      sinon.stub(User, "findByIdAndUpdate").resolves(null);
+      sinon.stub(Organizer, "findByIdAndUpdate").resolves(null);
+      sinon.stub(Official, "findByIdAndUpdate").resolves(mockOfficial);
+  
+      await settings(req, res);
+  
+      expect(Official.findByIdAndUpdate.calledOnce).to.be.true;
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(
+        res.json.calledWithMatch({
+          message: "Official settings updated successfully",
+          id: "123",
+          userType: "official",
+          age: 40,
+          gender: "non-binary",
+          isReligious: true,
+          religioun: "Islam",
+          ethnicity: "Middle Eastern",
+          interest: "Politics",
+          name: "Test Official",
+          profilePic: "test-official.jpg",
+        })
+      ).to.be.true;
+    });
+  
+    it("should return 404 if the user is not found in any collection", async () => {
+      const req = {
+        body: {
+          userID: "123",
+          gender: "female",
+          age: 25,
+          religion: "no",
+          ethnicity: "Asian",
+          interest: "Sports",
+          userType: "user",
+        },
+      };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      sinon.stub(User, "findByIdAndUpdate").resolves(null);
+      sinon.stub(Organizer, "findByIdAndUpdate").resolves(null);
+      sinon.stub(Official, "findByIdAndUpdate").resolves(null);
+  
+      await settings(req, res);
+  
+      expect(res.status.calledWith(404)).to.be.true;
+      expect(
+        res.json.calledWith({ message: "User not found in any collection" })
+      ).to.be.true;
+    });
+  
+    it("should return 500 if an error occurs", async () => {
+      const req = { body: { userID: "123" } };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      sinon.stub(User, "findByIdAndUpdate").throws(new Error("Database error"));
+  
+      await settings(req, res);
+  
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(
+        res.json.calledWith({
+          message: "An error occurred while updating user settings",
+        })
+      ).to.be.true;
+    });
+  });
+
+  //remove User FromCommunity
+  describe("removeUserFromCommunity Controller", () => {
+    afterEach(() => {
+      sinon.restore(); // Restore all mocks/stubs after each test
+    });
+  
+    it("should remove a user from the community successfully", async () => {
+      const req = {
+        body: {
+          communityId: "community123",
+          userId: "user123",
+        },
+      };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      // Mock community data with users array
+      const mockCommunity = {
+        _id: "community123",
+        users: ["user123", "user456"],
+        save: sinon.stub().resolves(),
+      };
+  
+      // Mock the Community.findById() method to return the mock community data
+      sinon.stub(Community, "findById").resolves(mockCommunity);
+  
+      // Call the function
+      await removeUserFromCommunity(req, res);
+  
+      // Assertions
+      expect(Community.findById.calledOnceWith("community123")).to.be.true; // Ensure findById was called with correct communityId
+      expect(mockCommunity.users).to.not.include("user123"); // Ensure the user was removed from the users array
+      expect(res.status.calledWith(200)).to.be.true; // Ensure status 200 is returned
+      expect(res.json.calledWith({
+        message: "User successfully Removed from the community",
+        members: mockCommunity.users,
+      })).to.be.true; // Ensure the correct response is sent
+    });
+  
+    it("should return a 404 error if the community is not found", async () => {
+      const req = {
+        body: {
+          communityId: "nonexistentCommunityId",
+          userId: "user123",
+        },
+      };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      // Simulate community not being found by returning null
+      sinon.stub(Community, "findById").resolves(null);
+  
+      // Call the function
+      await removeUserFromCommunity(req, res);
+  
+      // Assertions
+      expect(Community.findById.calledOnceWith("nonexistentCommunityId")).to.be.true; // Ensure findById was called with the correct communityId
+      expect(res.status.calledWith(404)).to.be.true; // Ensure status 404 is returned
+      expect(res.json.calledWith({ message: "Community not found" })).to.be.true; // Ensure correct error message is returned
+    });
+  
+    it("should return a 500 error if there is an exception", async () => {
+      const req = {
+        body: {
+          communityId: "community123",
+          userId: "user123",
+        },
+      };
+      const res = {
+        status: sinon.stub().returnsThis(),
+        json: sinon.stub(),
+      };
+  
+      // Simulate an error by making Community.findById() throw an error
+      sinon.stub(Community, "findById").throws(new Error("Database error"));
+  
+      // Call the function
+      await removeUserFromCommunity(req, res);
+  
+      // Assertions
+      expect(Community.findById.calledOnceWith("community123")).to.be.true; // Ensure findById was called with the correct communityId
+      expect(res.status.calledWith(500)).to.be.true; // Ensure status 500 is returned for error
+      expect(res.json.calledWith({ message: "Internal Server Error (leaving a community)" })).to.be.true; // Ensure correct error message is returned
+    });
+  });

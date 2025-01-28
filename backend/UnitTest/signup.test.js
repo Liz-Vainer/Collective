@@ -38,21 +38,60 @@ describe("POST /signup", function () {
     };
   });
 });
+//delete account
+describe('deleteAccount', () => {
+  let req, res;
 
-describe("POST /add to fav", function () {
-  this.timeout(10000); // Set timeout to 10 seconds for all tests in this block
+  it('should remove the user from a community and delete the user from the User collection', async () => {
+    // Mock Community.updateOne to simulate successful removal from a community
+    Community.updateOne.mockResolvedValue({ modifiedCount: 1 });
 
-  it("should add a community to favorites successfully", async () => {
-    const response = await chai
-      .request(app)
-      .post("/add_to_fav")
-      .send({
-        id: ObjectId(''),
-        community: "Park Y.A",
-      });
+    // Mock User.findById to simulate finding the user in the User collection
+    User.findById.mockResolvedValue({ _id: '12345' });
+    User.deleteOne.mockResolvedValue({});
 
-    expect(re6787a809637aa9c21113129fsponse).to.have.status(200);
-    expect(response.body.message).to.equal("Community added to favorites");
-    expect(response.body.favorites).to.include("Park Y.A");
+    await deleteAccount(req, res);
+
+    // Assertions
+    expect(Community.updateOne).toHaveBeenCalledWith(
+      { users: '12345' },
+      { $pull: { users: '12345' } }
+    );
+    expect(User.findById).toHaveBeenCalledWith('12345');
+    expect(User.deleteOne).toHaveBeenCalledWith({ _id: '12345' });
+    expect(res.cookie).toHaveBeenCalledWith('jwt', '', { maxAge: 0 });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ message: 'User successfully deleted' });
+  });
+
+  it('should return 404 if the user is not found in any collection', async () => {
+    // Mock Community.updateOne to simulate no community modification
+    Community.updateOne.mockResolvedValue({ modifiedCount: 0 });
+
+    // Mock all collections to simulate no user found
+    User.findById.mockResolvedValue(null);
+    Organizer.findById.mockResolvedValue(null);
+    Official.findById.mockResolvedValue(null);
+
+    await deleteAccount(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: 'User not found' });
+  });
+
+  it('should handle errors and return 500', async () => {
+    // Mock Community.updateOne to simulate an error
+    const error = new Error('Database error');
+    Community.updateOne.mockRejectedValue(error);
+
+    await deleteAccount(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'An error occurred',
+      error: error.message,
+    });
   });
 });

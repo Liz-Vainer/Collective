@@ -1,70 +1,64 @@
-# Getting Started with Create React App
+Collective App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Project Description
+Our project aims to assist newcomers, local groups, and parents by addressing challenges in accessing information about their local environment. It provides comprehensive, centralized details about communities, including cultural offerings, public services, and activities, enhanced by visual tools like maps and graphs. Unlike fragmented information sources, our solution fosters a sense of belonging by connecting users to events, opportunities and community engagement.
 
-## Available Scripts
+System Requirements
+1. Node.js version 18 or higher 
+2. npm version 8 or higher.
+3. MongoDB installed and running.
 
-In the project directory, you can run:
+Installation and Running
 
-### `npm start`
+Frontend
+1. Navigate to the Frontend directory:
+   cd Collective/frontend
+2. Install dependencies:
+   npm install
+3. Start the local server:
+   npm start
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Backend
+1. Navigate to the Backend directory:
+   cd Collective/backend
+2. Install dependencies:
+   npm install
+3. Create a .env file in the root Backend directory with the following content:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017/collective
+   JWT_SECRET=your_secret_key
 
-### `npm test`
+4. Start the server:
+   npm start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Tools and Technologies
 
-### `npm run build`
+Frontend:
+- React
+- React Router
+- Zustand
+- Chart.js
+- Material-UI
+- Google Maps API
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Backend:
+- Node.js
+- Express
+- MongoDB
+- Socket.io
+- JWT for user authentication
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Basic Usage
+1. Open your browser and navigate to:
+   - Frontend: http://localhost:3001
+2. The Frontend app is connected by default to the Backend server using a proxy.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Important Notes
+- To use the Google Map, ensure you provide a valid API key in the Frontend configuration file.
+- Automated tests are available in the Frontend via npm test.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Git Code
+This file and the entire project code are available on GitHub under [Collective].
+To clone the repository:
+git clone [https://github.com/Liz-Vainer/Collective.git]

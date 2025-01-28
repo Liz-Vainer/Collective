@@ -1,5 +1,5 @@
 import express from "express";
-const router = express.Router();
+const router = express.Router(); //creating router object
 import {
   add_to_fav,
   fetch_fav,

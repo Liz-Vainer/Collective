@@ -137,7 +137,7 @@ export const MultipleCharts = ({ data }) => {
     labels: ["Male", "Female", "Other"].map(capitalizeFirstLetter), // Capitalize first letter
     datasets: [
       {
-        label: "Age Distribution",
+        label: "Gender Distribution",
         data: [
           data.filter((item) => item.gender.toLowerCase() === "male").length,
           data.filter((item) => item.gender.toLowerCase() === "female").length,

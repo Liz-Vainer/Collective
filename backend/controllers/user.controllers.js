@@ -1,11 +1,11 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"; //crypting for hashed password
 import User from "../models/user.js"; // user model
 import Organizer from "../models/orginaizer.js"; // Organizer model
 import Official from "../models/official.js"; // Official model
 import Community from "../models/community.js"; // Community model
 import Event from "../models/events.js"; // Event model
-import generateTokenAndSetCookie from "../utils/generateToken.js";
-import { getReceiverSocketId, io } from "../socket/socket.js";
+import generateTokenAndSetCookie from "../utils/generateToken.js"; //token generator for security
+import { getReceiverSocketId, io } from "../socket/socket.js"; //socket for realtime communication with the server
 
 
 // Function to try to log in by checking each model (User, Organizer, Official)
@@ -14,7 +14,7 @@ const handleLogin = async (name, password, res) => {
     let user;
     let userType = "";
     // Check User model
-    user = await User.findOne({ name });
+    user = await User.findOne({ name }); //trying to find user type for model
     if (user) {
       userType = "User";
     } else {
@@ -32,23 +32,25 @@ const handleLogin = async (name, password, res) => {
     }
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials" }); //if user is not found
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials" }); //checking if the passwords match in the database
     }
 
-    generateTokenAndSetCookie(user._id, res);
+    generateTokenAndSetCookie(user._id, res); //generating token for the logged user
     let isReligious;
     if (user.religion !== "no") {
+      //checking if the user has selected religion
       isReligious = true;
     } else {
       isReligious = false;
     }
 
     res.json({
+      //returning user data for usage in the front
       message: `${userType} Login successful`,
       id: user.id,
       userType,
@@ -62,6 +64,7 @@ const handleLogin = async (name, password, res) => {
       name: user.name,
     });
   } catch (err) {
+    //error handeling
     console.error("Login error:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -80,7 +83,7 @@ const handleSignup = async (
   interest,
   gender
 ) => {
-  let Model;
+  let Model; //setting usertype for correct model
   switch (userType) {
     case "citizen":
       userType = "User";
@@ -100,15 +103,16 @@ const handleSignup = async (
 
   const existingUser = await Model.findOne({ name });
   if (existingUser) {
-    return res.status(400).json({ message: "User already exists" });
+    return res.status(400).json({ message: "User already exists" }); //checking if user already exists
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10); //hashing the password for security
 
-  const boyPic = `https://avatar.iran.liara.run/public/boy?username=${name}`;
-  const girlPic = `https://avatar.iran.liara.run/public/girl?username=${name}`;
+  const boyPic = `https://avatar.iran.liara.run/public/boy?username=${name}`; //default pic for male
+  const girlPic = `https://avatar.iran.liara.run/public/girl?username=${name}`; //default pic for female
 
   const newUser = new Model({
+    //creating new user using the user model inthe database
     name,
     email,
     password: hashedPassword,
@@ -121,15 +125,17 @@ const handleSignup = async (
   });
 
   try {
-    await newUser.save();
-    generateTokenAndSetCookie(newUser._id, res);
+    await newUser.save(); //saving new user
+    generateTokenAndSetCookie(newUser._id, res); //generating token for the user for security in routes
     let isReligious;
     if (newUser.religion !== "no") {
+      //checking if user is religios
       isReligious = true;
     } else {
       isReligious = false;
     }
     res.status(201).json({
+      //returning new user data for front usage
       message: `${userType} Login successful`,
       id: newUser.id,
       userType,
@@ -142,6 +148,7 @@ const handleSignup = async (
       name: newUser.name,
     });
   } catch (err) {
+    //error handeling
     console.error("Error creating user:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -159,13 +166,15 @@ export const signup = async (req, res) => {
     ethnicity,
     interest,
     gender,
-  } = req.body;
+  } = req.body; //params that are recived from front
 
   if (!name || !password || !email || !userType) {
+    //if fields are missing
     return res.status(400).json({ message: "All fields are required" });
   }
 
   await handleSignup(
+    //calling handle signup function
     name,
     email,
     password,
@@ -183,7 +192,7 @@ export const signup = async (req, res) => {
 export const add_to_fav = async (req, res) => {
   const { id, community, userType } = req.body;
 
-  let Model;
+  let Model; //checking user type
   switch (userType) {
     case "User":
       Model = User;
@@ -209,6 +218,7 @@ export const add_to_fav = async (req, res) => {
     user.favorites.push(community);
     await user.save();
     res.status(200).json({
+      //responding with updated favorites list
       message: "Community added to favorites",
       favorites: user.favorites,
     });
@@ -222,7 +232,7 @@ export const add_to_fav = async (req, res) => {
 export const fetch_fav = async (req, res) => {
   const { id, userType } = req.params;
 
-  let Model;
+  let Model; //checking user type
   switch (userType) {
     case "User":
       Model = User;
@@ -238,12 +248,13 @@ export const fetch_fav = async (req, res) => {
   }
 
   try {
-    const user = await Model.findById(id);
+    const user = await Model.findById(id); //checking if user exsits
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     for (let i = user.favorites.length - 1; i >= 0; i--) {
+      //checking if all communities exsits and update the favorites list
       const fav = user.favorites[i].name;
       const existingCommunity = await Community.findOne({ name: fav }); // Correct query
       if (!existingCommunity) {
@@ -251,8 +262,9 @@ export const fetch_fav = async (req, res) => {
       }
     }
 
-    res.json({ favorites: user.favorites });
+    res.json({ favorites: user.favorites }); //responding with users fav array
   } catch (err) {
+    //error handeling
     console.error("Error retrieving user favorites:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -260,20 +272,21 @@ export const fetch_fav = async (req, res) => {
 
 //login
 export const login = async (req, res) => {
-  const { name, password } = req.body;
+  const { name, password } = req.body; //params recived from front
 
   if (!name || !password) {
+    //if params are misiing
     return res.status(400).json({ message: "Name and password are required" });
   }
 
-  await handleLogin(name, password, res);
+  await handleLogin(name, password, res); //calling login function
 };
 
 //remove favorites
 export const remove_fav = async (req, res) => {
   const { id, community, userType } = req.body;
 
-  let Model;
+  let Model; //checking user type
   switch (userType) {
     case "User":
       Model = User;
@@ -291,17 +304,19 @@ export const remove_fav = async (req, res) => {
   try {
     const user = await Model.findById(id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" }); //checking if user exists
     }
 
     for (let i = user.favorites.length - 1; i >= 0; i--) {
+      //going through the array
       if (user.favorites[i].name === community.name) {
         user.favorites.splice(i, 1); // Remove the item safely
       }
     }
     await user.save();
-    res.json({ favorites: user.favorites });
+    res.json({ favorites: user.favorites }); //responding with new updated array
   } catch (err) {
+    //error handleing
     console.error("Error removing community:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -310,9 +325,10 @@ export const remove_fav = async (req, res) => {
 //logout functionallity
 export const logout = async (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.cookie("jwt", "", { maxAge: 0 }); //terminating the token for the user before logging out
     res.status(200).json({ message: "Logged out successfully" });
   } catch (err) {
+    //error handleing
     console.error("Error logging out:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -321,28 +337,31 @@ export const logout = async (req, res) => {
 //to find all users in a community
 export const findUsers = async (req, res) => {
   const { communityId } = req.body;
-  console.log(communityId);
   try {
-    const community = await Community.findById(communityId);
+    const community = await Community.findById(communityId); //finding the community selected
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
     if (community.users.length > 0) {
+      //making array of users id
       let arrayUsers = [];
       for (let i = 0; i < community.users.length; i++) {
         arrayUsers.push(community.users[i]);
       }
-      const info = await userInfoById(arrayUsers);
+      const info = await userInfoById(arrayUsers); //making array of user objects
       return res.status(200).json({
+        //returning array of user object
         message: `These are all the users from ${community.name}`,
         users: info,
       });
     } else {
       return res.status(200).json({
+        //if community is empty
         message: `There are no users in ${community.name}`,
       });
     }
   } catch (err) {
+    //error handleing
     console.log(
       `There was an arror while trying to get all the users from ${community.name}`
     );
@@ -357,6 +376,7 @@ const userInfoById = async (idArray) => {
   let info = [];
   try {
     for (let i = 0; i < idArray.length; i++) {
+      //making array fo user object
       let user =
         (await User.findById(idArray[i])) ||
         (await Organizer.findById(idArray[i])) ||
@@ -364,7 +384,7 @@ const userInfoById = async (idArray) => {
 
       info.push(user);
     }
-    return info;
+    return info; //returnin the array
   } catch (err) {
     console.error(err);
     throw new Error("Error fetching user information");

@@ -7,7 +7,7 @@ import communityPost1 from "../Assets/communityPost_1.jpg";
 import MultipleCharts from "../Charts/Pie";
 import { useUser } from "../../context/UserContext";
 
-const CommunityInfo = () => {
+const CommunityInfo = (communityId) => {
   const [communityData, setCommunityData] = useState([]);
   const [currentSection, setCurrentSection] = useState(null);
   const [users, setUsers] = useState([]);
@@ -21,7 +21,9 @@ const CommunityInfo = () => {
   const { authUser } = useUser(); // Destructure user from context
 
   useEffect(() => {
+    console.log("id", selectedCommunityId);
     if (!selectedCommunityId) return;
+    console.log("id", selectedCommunityId);
 
     const fetchUsers = async () => {
       setLoadingUsers(true);
@@ -63,7 +65,8 @@ const CommunityInfo = () => {
         sideContent: [
           { name: "Upcoming Events", type: "event" },
           { name: "Trending Topics", type: "topics" },
-          ...(authUser?.userType === "Official"
+          ...(authUser?.userType === "Official" ||
+          authUser?.userType === "Organizer"
             ? [{ name: "Charts", type: "charts" }]
             : []), // Conditionally add "Charts" if user is Official
           { name: "Resources", type: "resources" },
@@ -103,7 +106,7 @@ const CommunityInfo = () => {
           </div>
         );
       case "charts":
-        if (authUser?.userType !== "Official") {
+        if (authUser?.userType === "User") {
           return <div>Access to charts is restricted.</div>;
         }
         return (

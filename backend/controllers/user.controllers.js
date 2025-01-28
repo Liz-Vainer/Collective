@@ -7,6 +7,7 @@ import Event from "../models/events.js"; // Event model
 import generateTokenAndSetCookie from "../utils/generateToken.js"; //token generator for security
 import { getReceiverSocketId, io } from "../socket/socket.js"; //socket for realtime communication with the server
 
+
 // Function to try to log in by checking each model (User, Organizer, Official)
 const handleLogin = async (name, password, res) => {
   try {
@@ -725,7 +726,7 @@ export const updateProfilePicture = async (req, res) => {
   }
 };
 
-//frinds for chat
+//friends for chat
 export const showFriends = async (req, res) => {
   try {
     const loggedUserId = req.user.id;

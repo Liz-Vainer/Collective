@@ -11,7 +11,6 @@ import {
   GoogleMap,
   Marker,
   useJsApiLoader,
-  InfoWindow,
   OverlayView,
 } from "@react-google-maps/api";
 import useStyles from "./DrawerStyle";
@@ -73,18 +72,7 @@ const Home = () => {
   };
 
   //===================== Fake Communities Data =====================
-  const [fakeCommunities, setCommunities] = useState([
-    {
-      _id: "1",
-      name: "Sports Hub",
-      category: "Sport",
-      lat: 31.253,
-      lng: 34.792,
-      openingHours: "08:00-18:00",
-      contactinfo: "08-1234567",
-      contactEmail: "Nathan@nathaniel.com",
-    },
-  ]);
+  const [fakeCommunities, setCommunities] = useState([]);
 
   //fetching communities from database
   useEffect(() => {
